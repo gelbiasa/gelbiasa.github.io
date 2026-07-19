@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   CSS CUSTOM PROPERTIES – DESIGN TOKENS
+   ============================================================ */
+:root {
+  /* Default mode is now Dark Mode */
+  --bg-primary: #0b0c10;
+  --bg-secondary: #12141c;
+  --bg-tertiary: #191c26;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: rgba(255, 255, 255, 0.05);
+  --glass: rgba(18, 20, 28, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+  --accent: #54e5a6;
+  --accent-glow: rgba(84, 229, 166, 0.2);
+  --noise-opacity: 0.02;
+}
+
+.light {
+  /* Optional light mode */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: rgba(15, 23, 42, 0.1);
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
+  --accent: #3dbb84;
+  --accent-glow: rgba(84, 229, 166, 0.25);
+  --noise-opacity: 0.03;
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: var(--text-primary);
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+@layer components {
+  /* Glass card */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow effect */
+  .glow-accent {
+    box-shadow: 0 0 30px var(--accent-glow), 0 0 60px var(--accent-glow);
+  }
+
+  /* Section container */
+  .section-container {
+    @apply max-w-6xl mx-auto px-6 lg:px-8;
+  }
+
+  /* Noise texture overlay */
+  .noise::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: var(--noise-opacity);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grid background */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+      linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* Pill badge */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+  }
+
+  /* Active nav link */
+  .nav-link {
+    @apply relative text-sm font-medium transition-colors duration-200;
+    color: var(--text-secondary);
+  }
+
+  .nav-link:hover {
+    color: var(--text-primary);
+  }
+
+  .nav-link.active {
+    color: var(--accent);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   MESH GRADIENT BACKGROUND
+   ============================================================ */
+.mesh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--bg-primary);
+  overflow: hidden;
+}
+
+.mesh-bg::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -20%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+  animation: meshFloat1 12s ease-in-out infinite;
+}
+
+.mesh-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  right: -20%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 60%);
+  animation: meshFloat2 15s ease-in-out infinite;
+}
+
+@keyframes meshFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(5%, 8%) scale(1.05); }
+  66% { transform: translate(-3%, 5%) scale(0.95); }
+}
+
+@keyframes meshFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-8%, -5%) scale(1.1); }
+}
+
+/* ============================================================
+   HERO CURSOR BLINK
+   ============================================================ */
+.cursor-blink {
+  animation: blink 1.2s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ============================================================
+   SKILL CARD HOVER
+   ============================================================ */
+.skill-card:hover .skill-icon {
+  transform: translateY(-4px) scale(1.1);
+}
+
+/* ============================================================
+   PROJECT CARD IMAGE ZOOM
+   ============================================================ */
+.project-img-wrapper img {
+  transition: transform 0.5s ease;
+}
+
+.project-card:hover .project-img-wrapper img {
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   CONTACT CARD HOVER GLOW
+   ============================================================ */
+.contact-card:hover {
+  box-shadow: 0 0 24px var(--accent-glow);
+  border-color: rgba(99, 102, 241, 0.4);
+}
