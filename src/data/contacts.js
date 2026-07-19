@@ -1,0 +1,55 @@
+import { FaInstagram, FaYoutube, FaLinkedin, FaWhatsapp } from 'react-icons/fa'
+import { MdEmail } from 'react-icons/md'
+
+export const contacts = [
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    handle: '@gelbiasa',
+    url: 'https://www.instagram.com/gelbiasa',
+    Icon: FaInstagram,
+    color: '#E1306C',
+    bg: 'from-pink-500/20 to-purple-500/20',
+    border: 'border-pink-500/30',
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    handle: 'gelbifirmansyah',
+    url: 'https://www.linkedin.com/in/gelbifirmansyah',
+    Icon: FaLinkedin,
+    color: '#0A66C2',
+    bg: 'from-blue-600/20 to-blue-400/20',
+    border: 'border-blue-500/30',
+  },
+  {
+    id: 'email',
+    label: 'Gmail',
+    handle: 'gelbifirmansyah12@gmail.com',
+    url: 'mailto:gelbifirmansyah12@gmail.com',
+    Icon: MdEmail,
+    color: '#EA4335',
+    bg: 'from-red-500/20 to-orange-400/20',
+    border: 'border-red-500/30',
+  },
+  {
+    id: 'whatsapp',
+    label: 'WhatsApp',
+    handle: '+62 856 0631 0648',
+    url: 'https://wa.me/+6285606310648',
+    Icon: FaWhatsapp,
+    color: '#25D366',
+    bg: 'from-green-500/20 to-teal-400/20',
+    border: 'border-green-500/30',
+  },
+  {
+    id: 'youtube',
+    label: 'YouTube',
+    handle: '@gelbifirmansyah5697',
+    url: 'https://www.youtube.com/@gelbifirmansyah5697',
+    Icon: FaYoutube,
+    color: '#FF0000',
+    bg: 'from-red-600/20 to-red-400/20',
+    border: 'border-red-600/30',
+  },
+]
