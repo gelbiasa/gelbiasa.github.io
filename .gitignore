@@ -7,6 +7,7 @@ node_modules/
 dist/
 dist-ssr/
 build/
+# docs/ is intentionally tracked (GitHub Pages source)
 
 # Local env files
 .env
