@@ -102,7 +102,7 @@ export default function Contact() {
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 blur-xl opacity-40" />
               <img
-                src="/images/foto_diri.jpg"
+                src="/images/foto_gelby.png"
                 alt="Gelby"
                 className="relative w-24 h-24 rounded-full object-cover border-2 border-accent/40"
               />

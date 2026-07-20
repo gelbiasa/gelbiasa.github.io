@@ -13,7 +13,7 @@ const fadeUp = {
 const stats = [
   { label: 'Projects Built', value: '5+' },
   { label: 'Technologies', value: '10+' },
-  { label: 'Years Learning', value: '3+' },
+  { label: 'Years Learning', value: '2+' },
 ]
 
 const highlights = [
@@ -61,7 +61,7 @@ export default function About() {
               {/* Decorative ring */}
               <div className="absolute -inset-3 rounded-full border-2 border-dashed border-accent/30 animate-spin" style={{ animationDuration: '20s' }} />
               <img
-                src="/images/foto_diri.jpg"
+                src="/images/foto_gelby.png"
                 alt="M. Isroqi Gelby Firmansyah"
                 className="relative w-52 h-52 md:w-64 md:h-64 rounded-full object-cover border-4 border-accent/40 shadow-2xl shadow-accent/20"
               />
