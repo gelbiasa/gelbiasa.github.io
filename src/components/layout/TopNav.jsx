@@ -10,6 +10,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
     { id: 'home', label: 'Home' },
     { id: 'projects', label: 'Projects' },
     { id: 'skills', label: 'Skills' },
+    { id: 'experience', label: 'Experience' },
     { id: 'about', label: 'About' },
     { id: 'contact', label: 'Contact' },
   ];
@@ -37,6 +38,18 @@ const TopNav = ({ activeTab, setActiveTab }) => {
             : 'h-20 bg-transparent'
         }`}
       >
+        {/* SVG filter defs — spray stencil effect */}
+        <svg className="w-0 h-0 absolute pointer-events-none">
+          <defs>
+            {/* Sparse scattered spray (for edges) */}
+            <filter id="spray-edge" x="-50%" y="-50%" width="200%" height="200%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="5" result="noise" />
+              <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 18 -8" in="noise" result="mask" />
+              <feComposite operator="in" in="SourceGraphic" in2="mask" />
+            </filter>
+          </defs>
+        </svg>
+
         {/* === LOGO === */}
         <button
           onClick={() => handleTabClick('home')}
@@ -55,25 +68,57 @@ const TopNav = ({ activeTab, setActiveTab }) => {
         </button>
 
         {/* === CENTER NAV (Desktop) === */}
-        <nav className="hidden lg:flex items-center gap-1 bg-white/[0.03] border border-white/[0.06] rounded-full px-2 py-1.5 backdrop-blur-sm">
+        <nav className="hidden lg:flex items-center gap-2 px-2 py-1.5">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className="relative px-5 py-1.5 text-xs font-semibold tracking-widest uppercase transition-all duration-300 rounded-full group"
+                className="relative px-4 py-3 text-xs font-bold tracking-widest uppercase transition-all duration-300 rounded-full group"
               >
+                {/* Active spray stencil effect — matches reference */}
                 {isActive && (
-                  <motion.div
-                    layoutId="navPill"
-                    className="absolute inset-0 bg-accent/15 border border-accent/30 rounded-full"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  />
+                  <>
+                    {/* Scattered spray halo (outermost, speckled) */}
+                    <motion.div
+                      layoutId="navSprayHalo"
+                      className="absolute -inset-[60%] pointer-events-none z-[-1]"
+                      style={{
+                        background:
+                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(84,229,166,0.7) 0%, rgba(84,229,166,0.3) 45%, transparent 75%)',
+                        filter: 'url(#spray-edge)',
+                      }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                    />
+                    {/* Medium density ring */}
+                    <motion.div
+                      layoutId="navSprayMid"
+                      className="absolute -inset-[25%] pointer-events-none z-[-1]"
+                      style={{
+                        background:
+                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(84,229,166,0.85) 0%, rgba(84,229,166,0.5) 55%, transparent 80%)',
+                        filter: 'url(#spray-edge)',
+                      }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                    />
+                    {/* Solid dark core — text reads clearly on top */}
+                    <motion.div
+                      layoutId="navSprayCore"
+                      className="absolute inset-[4px] pointer-events-none z-[1] rounded-full"
+                      style={{
+                        background: '#0b0c10',
+                        boxShadow: 'inset 0 0 0 1.5px rgba(84,229,166,0.0)',
+                      }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                    />
+                  </>
                 )}
                 <span
-                  className={`relative z-10 transition-colors duration-300 ${
-                    isActive ? 'text-accent' : 'text-slate-400 group-hover:text-white'
+                  className={`relative z-[2] transition-all duration-300 ${
+                    isActive
+                      ? 'text-accent font-black'
+                      : 'text-slate-400 group-hover:text-white'
                   }`}
                 >
                   {tab.label}
@@ -122,7 +167,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
             >
               <FiX size={22} />
             </button>
-            <nav className="flex flex-col gap-2">
+            <nav className="flex flex-col gap-2 relative">
               {tabs.map((tab, i) => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -132,13 +177,34 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.06 }}
                     onClick={() => handleTabClick(tab.id)}
-                    className={`text-left py-3 px-4 rounded-xl text-sm font-semibold tracking-widest uppercase transition-all duration-200 ${
+                    className={`relative text-left py-3 px-4 rounded-xl text-sm font-bold tracking-widest uppercase transition-all duration-200 overflow-hidden group ${
                       isActive
-                        ? 'bg-accent/10 text-accent border border-accent/20'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        ? 'text-[#0b0c10]'
+                        : 'text-slate-400 hover:text-white border border-transparent'
                     }`}
                   >
-                    {tab.label}
+                    {isActive && (
+                      <>
+                        <motion.div
+                          layoutId="mobileNavSpray"
+                          className="absolute inset-[-30%] z-0 pointer-events-none"
+                          style={{
+                            background: 'radial-gradient(ellipse at left, var(--accent) 25%, transparent 80%)',
+                            filter: 'url(#spray-splatter)',
+                            opacity: 0.9,
+                          }}
+                        />
+                        <motion.div
+                          layoutId="mobileNavSprayCore"
+                          className="absolute inset-y-0 left-0 w-3/4 z-0 pointer-events-none"
+                          style={{
+                            background: 'linear-gradient(to right, var(--accent) 10%, transparent 100%)',
+                            opacity: 0.8,
+                          }}
+                        />
+                      </>
+                    )}
+                    <span className="relative z-10">{tab.label}</span>
                   </motion.button>
                 );
               })}
