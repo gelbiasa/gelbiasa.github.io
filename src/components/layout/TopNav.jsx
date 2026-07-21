@@ -11,7 +11,6 @@ const TopNav = ({ activeTab, setActiveTab }) => {
     { id: 'projects', label: 'Projects' },
     { id: 'skills', label: 'Skills' },
     { id: 'experience', label: 'Experience' },
-    { id: 'about', label: 'About' },
     { id: 'contact', label: 'Contact' },
   ];
 
