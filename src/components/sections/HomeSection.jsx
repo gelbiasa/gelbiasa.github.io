@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMapPin, FiBriefcase, FiBook, FiExternalLink } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMapPin, FiBriefcase, FiBook, FiExternalLink, FiX } from 'react-icons/fi';
 
 /* ─── Typewriter Hook ─── */
 const useTypewriter = (text, speed = 60, startDelay = 400) => {
@@ -28,16 +28,40 @@ const useTypewriter = (text, speed = 60, startDelay = 400) => {
   return { displayed, done };
 };
 
-/* ─── Main Component ─── */
-const HomeSection = ({ setActiveTab }) => {
-  const { displayed, done } = useTypewriter('M. Isroqi Gelby Firmansyah.', 65, 600);
+const TypewriterHeading = ({ text, speed = 65, startDelay = 600 }) => {
+  const { displayed, done } = useTypewriter(text, speed, startDelay);
 
   return (
-    /* 
-      Full-screen section. pt-20 clears the fixed navbar (h-20) on ALL columns.
-      On large screens both columns flex side by side, each individually centered.
-    */
-    <section className="w-full flex-1 flex flex-col lg:flex-row min-h-[100dvh] pt-32 lg:pt-28">
+    <h1
+      className="font-display font-black leading-tight tracking-tight text-white"
+      style={{ fontSize: 'clamp(1.8rem, 4vw, 3.2rem)', whiteSpace: 'nowrap' }}
+    >
+      {displayed}
+      {!done && (
+        <span className="inline-block w-[3px] h-[0.85em] bg-accent ml-1 align-middle animate-pulse rounded-sm" />
+      )}
+      {done && (
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-accent"
+        />
+      )}
+    </h1>
+  );
+};
+
+/* ─── Main Component ─── */
+const HomeSection = ({ setActiveTab }) => {
+  const [showAboutModal, setShowAboutModal] = useState(false);
+
+  return (
+    <>
+      {/* 
+        Full-screen section. pt-20 clears the fixed navbar (h-20) on ALL columns.
+        On large screens both columns flex side by side, each individually centered.
+      */}
+      <section className="w-full flex-1 flex flex-col lg:flex-row min-h-[100dvh] pt-32 lg:pt-28">
 
       {/* ══════════════ LEFT — 60% ══════════════ */}
       <motion.div
@@ -46,35 +70,11 @@ const HomeSection = ({ setActiveTab }) => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
       >
-        {/* Status badge */}
-        <div className="flex items-center gap-2 mb-6">
-          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-          <span className="text-accent text-xs font-bold tracking-[0.2em] uppercase">
-            Available For Work
-          </span>
-        </div>
+
 
         {/* Name — SINGLE LINE typewriter */}
         <div className="mb-7">
-          <h1
-            className="font-display font-black leading-tight tracking-tight text-white"
-            style={{ fontSize: 'clamp(1.8rem, 4vw, 3.2rem)', whiteSpace: 'nowrap' }}
-          >
-            {displayed}
-            {/* Blinking cursor — only shown while typing */}
-            {!done && (
-              <span className="inline-block w-[3px] h-[0.85em] bg-accent ml-1 align-middle animate-pulse rounded-sm" />
-            )}
-            {/* After done, show a static accent dot */}
-            {done && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-accent"
-              >
-              </motion.span>
-            )}
-          </h1>
+          <TypewriterHeading text="M. Isroqi Gelby Firmansyah." />
 
           {/* Subtitle line */}
           <motion.p
@@ -83,37 +83,27 @@ const HomeSection = ({ setActiveTab }) => {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="text-slate-500 font-mono text-sm mt-2 tracking-widest"
           >
-            Full-Stack Developer &amp; UI/UX Designer
+            Laravel Expert &amp; Database Engineer
           </motion.p>
         </div>
 
-        {/* Role chips */}
-        <motion.div
-          className="flex flex-wrap gap-2 mb-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.7 }}
-        >
-          {['Full-Stack Dev', 'UI/UX Designer', 'Laravel Expert'].map((tag) => (
-            <span
-              key={tag}
-              className="px-4 py-1.5 rounded-full text-[11px] font-semibold text-accent border border-accent/30 bg-accent/5 tracking-wider"
-            >
-              {tag}
-            </span>
-          ))}
-        </motion.div>
-
         {/* Bio */}
-        <motion.p
-          className="text-slate-400 text-sm lg:text-base leading-relaxed text-justify mb-8 w-full"
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
+          className="mb-8"
         >
-          D-IV Business Information Systems student at{' '}
-          <span className="text-white font-semibold">Politeknik Negeri Malang</span> with a strong focus on Back-end Development and UI/UX Design. I specialize in engineering robust, scalable enterprise applications using Laravel and React, bridging the gap between complex system architectures and highly intuitive, user-centric digital experiences that leave a lasting impression.
-        </motion.p>
+          <p className="text-slate-400 text-sm lg:text-base leading-relaxed text-justify w-full mb-4">
+            D-IV Business Information Systems student at <span className="text-white font-semibold">Politeknik Negeri Malang</span>. I specialize as a Laravel Expert and Database Engineer, focusing on writing standardized code and designing robust, scalable enterprise architectures.
+          </p>
+          <button
+            onClick={() => setShowAboutModal(true)}
+            className="flex items-center gap-2 text-accent text-sm font-semibold hover:text-accent-light transition-colors group"
+          >
+            Read More <FiArrowRight className="group-hover:translate-x-1 transition-transform" size={14} />
+          </button>
+        </motion.div>
 
 
 
@@ -309,27 +299,14 @@ const HomeSection = ({ setActiveTab }) => {
         {/* Photo spray wrapper */}
         <div className="relative w-full max-w-[290px] aspect-[3/4.15] flex items-center justify-center">
 
-          {/* SVG spray aerosol layers */}
-          <svg
-            className="absolute pointer-events-none"
-            style={{ inset: '-35%', width: '170%', height: '170%' }}
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <defs>
-              <filter id="sprayA" x="-60%" y="-60%" width="220%" height="220%">
-                <feTurbulence type="turbulence" baseFrequency="0.026" numOctaves="4" seed="18" result="t" />
-                <feDisplacementMap in="SourceGraphic" in2="t" scale="35" xChannelSelector="R" yChannelSelector="G" />
-                <feGaussianBlur stdDeviation="14" />
-              </filter>
-              <filter id="sprayB" x="-40%" y="-40%" width="180%" height="180%">
-                <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="3" seed="7" result="t2" />
-                <feDisplacementMap in="SourceGraphic" in2="t2" scale="20" xChannelSelector="R" yChannelSelector="G" />
-                <feGaussianBlur stdDeviation="5" />
-              </filter>
-            </defs>
-            <ellipse cx="50%" cy="50%" rx="38%" ry="40%" fill="#54e5a6" opacity="0.15" filter="url(#sprayA)" />
-            <ellipse cx="50%" cy="52%" rx="28%" ry="30%" fill="#54e5a6" opacity="0.22" filter="url(#sprayB)" />
-          </svg>
+          {/* Lightweight radial glow replacement for heavy SVG filters */}
+          <div
+            className="absolute inset-0 pointer-events-none rounded-full"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(84,229,166,0.12) 0%, transparent 65%)',
+              transform: 'scale(1.4)'
+            }}
+          />
 
           {/* Radial glow */}
           <div
@@ -386,7 +363,33 @@ const HomeSection = ({ setActiveTab }) => {
             </div>
           </motion.div>
 
-          {/* XP badge */}
+          {/* Floating Skill Badges (Optimized without blur) */}
+          <motion.div
+            className="absolute top-1/4 -left-12 lg:-left-24 bg-[#12141c] border border-accent/25 rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <span className="text-white text-[10px] font-bold whitespace-nowrap">Laravel Expert</span>
+          </motion.div>
+
+          <motion.div
+            className="absolute top-1/2 -right-14 lg:-right-28 bg-[#12141c] border border-accent/25 rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <span className="text-white text-[10px] font-bold whitespace-nowrap">Database Engineer</span>
+          </motion.div>
+
+          <motion.div
+            className="absolute bottom-1/4 -right-10 lg:-right-24 bg-[#12141c] border border-accent/25 rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <span className="text-white text-[10px] font-bold whitespace-nowrap">Standardized Code</span>
+          </motion.div>          {/* XP badge */}
           <motion.div
             className="absolute -top-3 -right-1 bg-accent text-[#0b0c10] rounded-xl px-3 py-2 shadow-[0_0_18px_rgba(84,229,166,0.5)] z-20"
             animate={{ rotate: [0, 2, 0, -2, 0] }}
@@ -413,7 +416,76 @@ const HomeSection = ({ setActiveTab }) => {
 
       </motion.div>
 
-    </section>
+      </section>
+
+      {/* About Modal */}
+      <AnimatePresence>
+        {showAboutModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4 md:px-8 py-10 bg-[#0b0c10]/95"
+          >
+            {/* Modal Overlay / Click outside to close */}
+            <div className="absolute inset-0" onClick={() => setShowAboutModal(false)} />
+            
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-full max-w-2xl bg-[#0f1117] border border-white/10 rounded-2xl p-6 md:p-8 lg:p-10 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowAboutModal(false)}
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+              >
+                <FiX size={20} />
+              </button>
+
+              {/* Modal Content */}
+              <h2 className="font-display font-bold text-2xl mb-6 text-white">
+                Qualification <span className="text-accent">Profile</span>
+              </h2>
+              
+              <div className="space-y-4 text-sm leading-relaxed text-slate-400 text-justify mb-8">
+                <p>
+                  I'm a D-IV Business Information Systems student who focuses on developing web and
+                  mobile applications. Currently interning as a Back-end Developer at UPA TIK
+                  Politeknik Negeri Malang.
+                </p>
+                <p>
+                  I have experience building secure and efficient information systems using Laravel,
+                  PHP, JavaScript, and Flutter for mobile applications. I also master HTML, CSS,
+                  MySQL, and am familiar with MySQL Workbench.
+                </p>
+                <p>
+                  I am enthusiastic about developing technology solutions that support business
+                  processes and improve user experience. With a passion for innovation, I want to
+                  create a positive impact through the projects I work on.
+                </p>
+              </div>
+
+              {/* Stats Preview inside Modal */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+                {[
+                  { label: 'Projects Built', value: '5+' },
+                  { label: 'Technologies', value: '10+' },
+                  { label: 'Years Learning', value: '2+' }
+                ].map((stat) => (
+                  <div key={stat.label} className="bg-[#12141c] border border-white/5 rounded-xl p-4 text-center">
+                    <div className="font-display font-bold text-xl lg:text-2xl text-accent">{stat.value}</div>
+                    <div className="text-xs mt-1 text-slate-500">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
