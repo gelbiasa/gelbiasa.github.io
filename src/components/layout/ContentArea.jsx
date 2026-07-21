@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import HomeSection from '../sections/HomeSection';
-import About from '../sections/About';
-import Projects from '../sections/Projects';
-import Skills from '../sections/Skills';
-import Experience from '../sections/Experience';
+
+// Code splitting (Lazy Loading) to drastically reduce initial JavaScript payload
+const HomeSection = lazy(() => import('../sections/HomeSection'));
+const Projects = lazy(() => import('../sections/Projects'));
+const Skills = lazy(() => import('../sections/Skills'));
+const Experience = lazy(() => import('../sections/Experience'));
 
 const ContentArea = ({ activeTab, setActiveTab }) => {
   // Animation variants
@@ -26,16 +27,17 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
           transition={{ duration: 0.4, ease: "easeInOut" }}
           className="w-full h-full"
         >
-          {activeTab === 'home' && <HomeSection setActiveTab={setActiveTab} />}
-          {activeTab === 'about' && <About />}
-          {activeTab === 'projects' && <Projects />}
-          {activeTab === 'skills' && <Skills />}
-          {activeTab === 'experience' && <Experience />}
-          {activeTab === 'contact' && (
-            <div className="flex items-center justify-center h-full min-h-[400px]">
-              <h2 className="text-2xl text-slate-400">Contact Section Coming Soon</h2>
-            </div>
-          )}
+          <Suspense fallback={<div className="flex items-center justify-center h-[50vh] text-accent animate-pulse font-mono text-sm tracking-widest">Loading...</div>}>
+            {activeTab === 'home' && <HomeSection setActiveTab={setActiveTab} />}
+            {activeTab === 'projects' && <Projects />}
+            {activeTab === 'skills' && <Skills />}
+            {activeTab === 'experience' && <Experience />}
+            {activeTab === 'contact' && (
+              <div className="flex items-center justify-center h-full min-h-[400px]">
+                <h2 className="text-2xl text-slate-400">Contact Section Coming Soon</h2>
+              </div>
+            )}
+          </Suspense>
         </motion.div>
       </AnimatePresence>
     </div>
