@@ -67,6 +67,7 @@ body {
    ============================================================ */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: var(--bg-secondary);
@@ -74,6 +75,21 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--accent);
   border-radius: 3px;
+}
+
+/* Thin, subtle scrollbar for horizontal containers */
+.thin-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+.thin-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(84, 229, 166, 0.4);
 }
 
 /* ============================================================
@@ -98,7 +114,7 @@ body {
 
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+    background: linear-gradient(135deg, #3dbb84 0%, #54e5a6 50%, #86f0c3 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -136,9 +152,9 @@ body {
   /* Pill badge */
   .badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
-    background: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
-    border: 1px solid rgba(99, 102, 241, 0.25);
+    background: rgba(84, 229, 166, 0.1);
+    color: var(--accent);
+    border: 1px solid rgba(84, 229, 166, 0.2);
   }
 
   /* Active nav link */
@@ -191,7 +207,7 @@ body {
   left: -20%;
   width: 80%;
   height: 80%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(84, 229, 166, 0.08) 0%, transparent 60%);
   animation: meshFloat1 12s ease-in-out infinite;
 }
 
@@ -202,7 +218,7 @@ body {
   right: -20%;
   width: 70%;
   height: 70%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(61, 187, 132, 0.06) 0%, transparent 60%);
   animation: meshFloat2 15s ease-in-out infinite;
 }
 
