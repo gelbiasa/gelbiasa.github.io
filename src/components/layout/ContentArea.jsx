@@ -1,18 +1,17 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Code splitting (Lazy Loading) to drastically reduce initial JavaScript payload
-const HomeSection = lazy(() => import('../sections/HomeSection'));
-const Projects = lazy(() => import('../sections/Projects'));
-const Skills = lazy(() => import('../sections/Skills'));
-const Experience = lazy(() => import('../sections/Experience'));
+import HomeSection from '../sections/HomeSection';
+import Projects from '../sections/Projects';
+import Skills from '../sections/Skills';
+import Experience from '../sections/Experience';
 
 const ContentArea = ({ activeTab, setActiveTab }) => {
   // Animation variants
   const variants = {
-    initial: { opacity: 0, scale: 0.98, filter: 'blur(4px)' },
-    animate: { opacity: 1, scale: 1, filter: 'blur(0px)' },
-    exit: { opacity: 0, scale: 0.98, filter: 'blur(4px)' }
+    initial: { opacity: 0, scale: 0.98 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.98 }
   };
 
   return (
@@ -27,17 +26,15 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
           transition={{ duration: 0.4, ease: "easeInOut" }}
           className="w-full h-full"
         >
-          <Suspense fallback={<div className="flex items-center justify-center h-[50vh] text-accent animate-pulse font-mono text-sm tracking-widest">Loading...</div>}>
-            {activeTab === 'home' && <HomeSection setActiveTab={setActiveTab} />}
-            {activeTab === 'projects' && <Projects />}
-            {activeTab === 'skills' && <Skills />}
-            {activeTab === 'experience' && <Experience />}
-            {activeTab === 'contact' && (
-              <div className="flex items-center justify-center h-full min-h-[400px]">
-                <h2 className="text-2xl text-slate-400">Contact Section Coming Soon</h2>
-              </div>
-            )}
-          </Suspense>
+          {activeTab === 'home' && <HomeSection setActiveTab={setActiveTab} />}
+          {activeTab === 'projects' && <Projects />}
+          {activeTab === 'skills' && <Skills />}
+          {activeTab === 'experience' && <Experience />}
+          {activeTab === 'contact' && (
+            <div className="flex items-center justify-center h-full min-h-[400px]">
+              <h2 className="text-2xl text-slate-400">Contact Section Coming Soon</h2>
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
     </div>
