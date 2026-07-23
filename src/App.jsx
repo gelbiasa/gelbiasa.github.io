@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import TopNav from './components/layout/TopNav';
 import ContentArea from './components/layout/ContentArea';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('portfolioActiveTab') || 'home';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('portfolioActiveTab', activeTab);
+  }, [activeTab]);
 
   return (
     <ThemeProvider>
