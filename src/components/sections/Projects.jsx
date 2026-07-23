@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiGithub, FiFigma, FiExternalLink, FiDownload, FiClock, FiStar, FiFolder, FiMonitor, FiUser, FiX, FiArrowRight, FiChevronRight, FiChevronLeft } from 'react-icons/fi'
@@ -58,7 +58,7 @@ function DragScroll({ children, className }) {
   const handleMouseMove = (e) => {
     if (!isDragging) return
     e.preventDefault()
-    setDragged(true)
+    if (!dragged) setDragged(true)
     const x = e.pageX - scrollRef.current.offsetLeft
     const walk = (x - startX) * 1.5 // Scroll speed multiplier
     scrollRef.current.scrollLeft = scrollLeft - walk
@@ -136,7 +136,7 @@ function ProjectModal({ project, onClose }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md overflow-y-auto px-4 py-8 md:px-12 md:py-16 custom-scrollbar"
+      className="fixed inset-0 z-[9999] bg-black/95 overflow-y-auto px-4 py-8 md:px-12 md:py-16 custom-scrollbar"
       onClick={onClose}
     >
       <motion.div
@@ -239,22 +239,19 @@ function ProjectModal({ project, onClose }) {
   )
 }
 
-function ProjectCard({ project, index, onClick }) {
+const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 40, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.5, delay: index * 0.05 }}
-      layoutId={`project-${project.id}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
       onClick={(e) => {
         // Prevent modal if clicking links or buttons
         if (!e.target.closest('a') && !e.target.closest('button')) {
           onClick(project)
         }
       }}
-      className="project-card glass rounded-2xl overflow-hidden border border-white/5 hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:border-accent/40 transition-all duration-500 cursor-pointer flex flex-col h-full group"
+      className="project-card bg-[#12141c] rounded-2xl overflow-hidden border border-white/5 hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:border-accent/40 transition-all duration-500 cursor-pointer flex flex-col h-full group"
       style={{ borderColor: 'var(--border)' }}
     >
       {/* 100% Clean Image Container (No overlays blocking the content) */}
@@ -263,7 +260,8 @@ function ProjectCard({ project, index, onClick }) {
           src={project.image}
           alt={project.title}
           className="w-full h-full object-cover object-left-top transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
-          loading="lazy"
+          loading={index < 2 ? "eager" : "lazy"}
+          fetchpriority={index < 2 ? "high" : "auto"}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10] to-transparent opacity-40" />
       </div>
@@ -337,7 +335,7 @@ function ProjectCard({ project, index, onClick }) {
       </div>
     </motion.div>
   )
-}
+})
 
 function EmptyState() {
   return (
@@ -370,6 +368,7 @@ function EmptyState() {
 export default function Projects() {
   const [activeTab, setActiveTab] = useState('Intern')
   const [selectedProject, setSelectedProject] = useState(null)
+  const [isTabsExpanded, setIsTabsExpanded] = useState(false)
 
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => p.category === activeTab)
@@ -402,8 +401,11 @@ export default function Projects() {
       <div className="flex flex-col lg:flex-row gap-10 items-start">
         
         {/* Left Sidebar for Tabs */}
-        <aside className="w-full lg:w-64 shrink-0 lg:sticky lg:top-32 z-20">
-          <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 hide-scrollbar">
+        <aside className="w-fit max-w-full lg:w-64 shrink-0 sticky top-[88px] lg:top-32 z-40 mb-8 lg:mb-0">
+          <div className="flex items-stretch gap-2 lg:block w-full">
+            {/* Tabs Container (Red Box) */}
+            <div className="p-1.5 lg:p-0 bg-[#0b0c10]/95 backdrop-blur-md lg:bg-transparent border border-accent/30 lg:border-none rounded-2xl lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300 overflow-hidden flex-1 min-w-0">
+              <DragScroll className="flex lg:flex-col items-center lg:items-stretch gap-2">
             {CATEGORIES.map((cat) => {
               const isActive = activeTab === cat
               const Icon = categoryIcons[cat]
@@ -412,11 +414,14 @@ export default function Projects() {
                 <button
                   key={cat}
                   onClick={() => setActiveTab(cat)}
-                  className={`relative flex items-center gap-3 px-6 py-4 rounded-2xl text-left transition-all duration-300 whitespace-nowrap lg:whitespace-normal group border ${
+                  className={`relative flex items-center gap-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl text-left transition-all duration-300 whitespace-nowrap lg:whitespace-normal group border ${
+                    isTabsExpanded ? 'px-4 py-2' : 'p-2'
+                  } ${
                     isActive 
-                      ? 'bg-accent/10 border-accent/30 shadow-[0_0_20px_rgba(84,229,166,0.1)]' 
-                      : 'bg-white/5 border-transparent hover:bg-white/10 hover:border-white/10'
+                      ? 'bg-accent/15 border-accent/40 shadow-[0_0_20px_rgba(84,229,166,0.1)]' 
+                      : 'bg-transparent border-transparent hover:bg-white/10'
                   }`}
+                  title={cat}
                 >
                   {isActive && (
                     <motion.div
@@ -427,19 +432,19 @@ export default function Projects() {
                     />
                   )}
                   
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                     isActive ? 'bg-accent/20 text-accent' : 'bg-white/5 text-slate-400 group-hover:text-white'
                   }`}>
                     <Icon className="w-4 h-4" />
                   </div>
                   
-                  <div>
+                  <div className={`${isTabsExpanded ? 'block' : 'hidden lg:block'} transition-all`}>
                     <span className={`block font-bold tracking-wide transition-colors ${
                       isActive ? 'text-accent' : 'text-slate-400 group-hover:text-white'
                     }`}>
                       {cat}
                     </span>
-                    <span className={`text-[10px] uppercase tracking-wider hidden lg:block transition-colors ${
+                    <span className={`text-[10px] uppercase tracking-wider block mt-0.5 transition-colors ${
                       isActive ? 'text-accent/70' : 'text-slate-500'
                     }`}>
                       {projects.filter(p => p.category === cat).length} Projects
@@ -448,6 +453,18 @@ export default function Projects() {
                 </button>
               )
             })}
+
+              </DragScroll>
+            </div>
+
+            {/* Mobile Toggle Button (Yellow Box) */}
+            <button
+              onClick={() => setIsTabsExpanded(!isTabsExpanded)}
+              className="lg:hidden shrink-0 flex items-center justify-center w-11 rounded-2xl bg-[#0b0c10]/95 backdrop-blur-md border border-accent/30 shadow-2xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+              aria-label="Toggle Category Labels"
+            >
+              <FiChevronRight className={`w-5 h-5 transition-transform duration-300 ${isTabsExpanded ? 'rotate-180' : ''}`} />
+            </button>
           </div>
         </aside>
 
