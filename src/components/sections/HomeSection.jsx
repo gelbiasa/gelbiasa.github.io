@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMapPin, FiBriefcase, FiBook, FiExternalLink, FiX } from 'react-icons/fi';
+import { FiEye, FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMapPin, FiBriefcase, FiBook, FiExternalLink, FiX } from 'react-icons/fi';
 
 /* ─── Typewriter Hook ─── */
 const useTypewriter = (text, speed = 60, startDelay = 400) => {
@@ -171,15 +171,13 @@ const HomeSection = ({ setActiveTab }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.9 }}
         >
-          {/* 1. Download CV */}
-          <a
-            href="/cv.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* 1. Preview CV */}
+          <button
+            onClick={() => setActiveTab('cv')}
             className="flex items-center gap-2.5 px-6 py-3.5 bg-accent hover:bg-accent-light text-[#0b0c10] font-black text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_rgba(84,229,166,0.25)] hover:shadow-[0_0_30px_rgba(84,229,166,0.45)] flex-shrink-0"
           >
-            <FiDownload size={15} /> Download CV
-          </a>
+            <FiEye size={15} /> Preview My CV
+          </button>
 
           {/* Divider */}
           <div className="w-px bg-white/8 flex-shrink-0" />
