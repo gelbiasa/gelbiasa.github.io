@@ -5,6 +5,7 @@ import HomeSection from '../sections/HomeSection';
 import Projects from '../sections/Projects';
 import Skills from '../sections/Skills';
 import Experience from '../sections/Experience';
+import CV from '../sections/CV';
 
 const ContentArea = ({ activeTab, setActiveTab }) => {
   // Animation variants
@@ -30,6 +31,7 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
           {activeTab === 'projects' && <Projects />}
           {activeTab === 'skills' && <Skills />}
           {activeTab === 'experience' && <Experience />}
+          {activeTab === 'cv' && <CV />}
           {activeTab === 'contact' && (
             <div className="flex items-center justify-center h-full min-h-[400px]">
               <h2 className="text-2xl text-slate-400">Contact Section Coming Soon</h2>
