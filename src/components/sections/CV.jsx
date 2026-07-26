@@ -1,39 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiClock } from 'react-icons/fi';
+import { FiClock, FiExternalLink } from 'react-icons/fi';
 
 const CV = () => {
+  const [cvLang, setCvLang] = useState('en'); // 'en' or 'id'
   const [cvStatus, setCvStatus] = useState('checking');
 
+  const currentPath = cvLang === 'en' ? '/file/inggris/CV_Inggris.pdf' : '/file/indonesia/CV_Indonesia.pdf';
+  const currentFilename = cvLang === 'en' ? 'CV_Inggris.pdf' : 'CV_Indonesia.pdf';
+
   useEffect(() => {
+    let isMounted = true;
     const checkCVExists = async () => {
+      setCvStatus('checking'); // Reset status when language changes
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
         
-        const response = await fetch('/CV/CV.pdf', { 
+        const response = await fetch(currentPath, { 
           method: 'GET',
           signal: controller.signal
         });
         clearTimeout(timeoutId);
-        const contentType = response.headers.get('content-type');
         
-        // Ensure it's a PDF to avoid false positives from Vite SPA fallback
-        if (response.ok && contentType && contentType.includes('application/pdf')) {
+        if (!isMounted) return;
+
+        const contentType = response.headers.get('content-type') || '';
+        
+        // Ensure it's not a Vite SPA fallback (which returns text/html)
+        if (response.ok && !contentType.includes('text/html')) {
           setCvStatus('available');
         } else {
           setCvStatus('missing');
         }
       } catch (error) {
-        setCvStatus('missing');
+        if (isMounted) setCvStatus('missing');
       }
     };
 
     checkCVExists();
-  }, []);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [cvLang, currentPath]);
 
   return (
-    <section id="cv" className="relative pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto min-h-screen">
+    <section id="cv" className="relative pt-32 pb-8 px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -54,18 +67,53 @@ const CV = () => {
         </p>
       </motion.div>
 
-      <div className="w-full h-[600px] bg-[#12141c] border border-white/10 rounded-3xl flex flex-col overflow-hidden relative">
+      <div className="w-full h-[85vh] md:h-[1050px] bg-[#12141c] border border-white/10 rounded-3xl flex flex-col overflow-hidden relative">
         {/* Header Bar */}
-        <div className="h-14 bg-black/40 border-b border-white/5 flex items-center justify-between px-6 shrink-0 z-10">
-          <span className="text-xs font-mono text-slate-400 tracking-wider">CV_Isroqi_Gelby.pdf</span>
+        <div className="h-16 bg-black/40 border-b border-white/5 flex items-center justify-between px-4 md:px-6 shrink-0 z-10">
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:block text-xs font-medium text-slate-400">Select CV Language:</span>
+            <div className="flex items-center gap-1 bg-[#0b0c10] p-1 rounded-full border border-white/5">
+              <button
+                onClick={() => setCvLang('en')}
+                className={`px-3 md:px-4 py-1 text-[10px] md:text-xs font-bold rounded-full transition-all ${
+                  cvLang === 'en' ? 'bg-accent text-black shadow-[0_0_10px_rgba(84,229,166,0.3)]' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                English
+              </button>
+              <button
+                onClick={() => setCvLang('id')}
+                className={`px-3 md:px-4 py-1 text-[10px] md:text-xs font-bold rounded-full transition-all ${
+                  cvLang === 'id' ? 'bg-accent text-black shadow-[0_0_10px_rgba(84,229,166,0.3)]' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                Indonesia
+              </button>
+            </div>
+          </div>
           {cvStatus === 'available' && (
-            <a 
-              href="/CV/CV.pdf" 
-              download="CV_Isroqi_Gelby.pdf"
-              className="flex items-center gap-2 px-4 py-1.5 bg-accent/10 border border-accent/20 text-accent text-xs font-bold rounded-full hover:bg-accent hover:text-black transition-all"
-            >
-              Download PDF
-            </a>
+            <div className="flex items-center gap-2 md:gap-3">
+              <a 
+                href={currentPath} 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-white/5 border border-white/10 text-white text-[10px] md:text-xs font-bold rounded-full hover:bg-white/10 transition-all"
+              >
+                <FiExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                <span className="hidden sm:inline-block">View Full Size</span>
+                <span className="sm:hidden">Full</span>
+              </a>
+              <a 
+                href={currentPath} 
+                download={currentFilename}
+                className="flex items-center gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-accent/10 border border-accent/20 text-accent text-[10px] md:text-xs font-bold rounded-full hover:bg-accent hover:text-black transition-all group"
+              >
+                <span>Download CV</span>
+                <span className="hidden md:inline-block font-normal opacity-70 group-hover:opacity-90">
+                  ({cvLang === 'en' ? 'English' : 'Indonesia'})
+                </span>
+              </a>
+            </div>
           )}
         </div>
         
@@ -101,11 +149,46 @@ const CV = () => {
           )}
 
           {cvStatus === 'available' && (
-            <iframe
-              src="/CV/CV.pdf"
-              title="Curriculum Vitae"
-              className="w-full h-full border-none absolute inset-0 pt-14"
-            />
+            <>
+              {/* Desktop Preview */}
+              <iframe
+                src={currentPath}
+                title={`Curriculum Vitae - ${cvLang === 'en' ? 'English' : 'Indonesia'}`}
+                className="hidden lg:block w-full h-full border-none absolute inset-0"
+                loading="lazy"
+              />
+
+              {/* Mobile & Tablet Fallback */}
+              <div className="lg:hidden flex flex-col items-center justify-center w-full text-center py-10 px-4">
+                <div className="w-24 h-24 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mb-6 relative">
+                  <div className="absolute inset-0 bg-accent/20 rounded-full blur-xl animate-pulse" />
+                  <FiExternalLink className="w-10 h-10 text-accent relative z-10" />
+                </div>
+                <h3 className="font-display text-2xl md:text-3xl font-black text-white mb-3">
+                  Preview Not Supported
+                </h3>
+                <p className="text-slate-400 text-sm md:text-base max-w-sm mb-8">
+                  Mobile and tablet browsers often restrict embedded PDF viewing. Please open the CV in full size or download it directly to your device.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                  <a 
+                    href={currentPath} 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-8 py-3 bg-white/5 border border-white/10 text-white font-bold rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
+                  >
+                    View Full Size
+                  </a>
+                  <a 
+                    href={currentPath} 
+                    download={currentFilename}
+                    className="flex items-center justify-center gap-2 px-8 py-3 bg-accent border-2 border-accent text-black font-bold rounded-full hover:bg-transparent hover:text-accent transition-all w-full sm:w-auto"
+                  >
+                    Download CV
+                  </a>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
