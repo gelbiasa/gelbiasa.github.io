@@ -1,17 +1,33 @@
 import {
-  FaHtml5, FaCss3Alt, FaJs, FaPhp, FaLaravel, FaFigma, FaReact, FaGithub
+  FaHtml5, FaCss3Alt, FaJs, FaPhp, FaLaravel, FaFigma, FaReact, FaGithub, FaTools
 } from 'react-icons/fa'
-import { SiMysql, SiFlutter, SiTailwindcss } from 'react-icons/si'
-import { FiCpu } from 'react-icons/fi'
+import { SiMysql, SiFlutter, SiTailwindcss, SiNotion } from 'react-icons/si'
+import { FiCpu, FiCode, FiGrid } from 'react-icons/fi'
 
 export const skills = [
-  // Core Engineering
+  // Languages & Stack
   {
-    id: 'laravel',
-    name: 'Laravel',
-    Icon: FaLaravel,
-    color: '#FF2D20',
-    category: 'core',
+    id: 'html',
+    name: 'HTML5',
+    Icon: FaHtml5,
+    color: '#E34F26',
+    category: 'language-stack',
+    level: 'Advanced',
+  },
+  {
+    id: 'css',
+    name: 'CSS3',
+    Icon: FaCss3Alt,
+    color: '#1572B6',
+    category: 'language-stack',
+    level: 'Advanced',
+  },
+  {
+    id: 'js',
+    name: 'JavaScript',
+    Icon: FaJs,
+    color: '#F7DF1E',
+    category: 'language-stack',
     level: 'Advanced',
   },
   {
@@ -19,7 +35,15 @@ export const skills = [
     name: 'PHP',
     Icon: FaPhp,
     color: '#777BB4',
-    category: 'core',
+    category: 'language-stack',
+    level: 'Advanced',
+  },
+  {
+    id: 'laravel',
+    name: 'Laravel',
+    Icon: FaLaravel,
+    color: '#FF2D20',
+    category: 'language-stack',
     level: 'Advanced',
   },
   {
@@ -27,7 +51,7 @@ export const skills = [
     name: 'React.js',
     Icon: FaReact,
     color: '#61DAFB',
-    category: 'core',
+    category: 'language-stack',
     level: 'Intermediate',
   },
   {
@@ -35,17 +59,15 @@ export const skills = [
     name: 'MySQL',
     Icon: SiMysql,
     color: '#4479A1',
-    category: 'core',
+    category: 'language-stack',
     level: 'Advanced',
   },
-  
-  // UI/UX & Mobile
   {
-    id: 'figma',
-    name: 'Figma',
-    Icon: FaFigma,
-    color: '#F24E1E',
-    category: 'uiux',
+    id: 'tailwind',
+    name: 'Tailwind CSS',
+    Icon: SiTailwindcss,
+    color: '#06B6D4',
+    category: 'language-stack',
     level: 'Advanced',
   },
   {
@@ -53,25 +75,25 @@ export const skills = [
     name: 'Flutter',
     Icon: SiFlutter,
     color: '#02569B',
-    category: 'uiux',
+    category: 'language-stack',
     level: 'Intermediate',
   },
+
+  // Tools
   {
-    id: 'tailwind',
-    name: 'Tailwind CSS',
-    Icon: SiTailwindcss,
-    color: '#06B6D4',
-    category: 'uiux',
+    id: 'figma',
+    name: 'Figma',
+    Icon: FaFigma,
+    color: '#F24E1E',
+    category: 'tools',
     level: 'Advanced',
   },
-
-  // Modern Workflow
   {
-    id: 'ai-tools',
-    name: 'AI Coding (Cursor/Copilot)',
-    Icon: FiCpu,
-    color: '#A855F7',
-    category: 'workflow',
+    id: 'notion',
+    name: 'Notion',
+    Icon: SiNotion,
+    color: '#FFFFFF',
+    category: 'tools',
     level: 'Advanced',
   },
   {
@@ -79,14 +101,21 @@ export const skills = [
     name: 'GitHub / CI-CD',
     Icon: FaGithub,
     color: '#FFFFFF',
-    category: 'workflow',
+    category: 'tools',
     level: 'Intermediate',
+  },
+  {
+    id: 'ai-tools',
+    name: 'AI Coding',
+    Icon: FiCpu,
+    color: '#A855F7',
+    category: 'tools',
+    level: 'Advanced',
   },
 ]
 
 export const skillCategories = [
-  { key: 'all', label: 'All Skills' },
-  { key: 'core', label: 'Core Engineering' },
-  { key: 'uiux', label: 'UI/UX & Mobile' },
-  { key: 'workflow', label: 'Modern Workflow' },
+  { key: 'all', label: 'All Skills', icon: FiGrid },
+  { key: 'language-stack', label: 'Language & Stack', icon: FiCode },
+  { key: 'tools', label: 'Tools', icon: FaTools },
 ]
