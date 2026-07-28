@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiArrowUpRight } from 'react-icons/fi';
+import { FiX, FiArrowUpRight, FiSun, FiMoon } from 'react-icons/fi';
+import { useTheme } from '../../context/ThemeContext';
 
 const TopNav = ({ activeTab, setActiveTab }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isDark, toggleTheme, colorTheme, setColorTheme } = useTheme();
 
   const tabs = [
     { id: 'home', label: 'Home' },
@@ -34,7 +36,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
         transition={{ duration: 0.7, ease: 'easeOut' }}
         className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 transition-all duration-500 ${
           scrolled
-            ? 'h-16 bg-[#0b0c10]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl'
+            ? 'h-16 bg-[var(--glass)] backdrop-blur-xl border-b border-border shadow-2xl'
             : 'h-20 bg-transparent'
         }`}
       >
@@ -59,10 +61,10 @@ const TopNav = ({ activeTab, setActiveTab }) => {
           <div className="relative w-10 h-10 flex items-center justify-center">
             <div className="absolute inset-0 bg-accent rounded-lg rotate-6 group-hover:rotate-12 transition-transform duration-300 opacity-80" />
             <div className="absolute inset-0 bg-accent/30 rounded-lg -rotate-3 group-hover:rotate-0 transition-transform duration-300" />
-            <span className="relative text-[#0b0c10] font-black text-lg tracking-tighter z-10">G</span>
+            <span className="relative text-text-on-accent font-black text-lg tracking-tighter z-10">G</span>
           </div>
           <div className="flex flex-col items-start leading-none">
-            <span className="text-white font-bold text-sm tracking-widest uppercase">Gelby</span>
+            <span className="text-[var(--text-primary)] font-bold text-sm tracking-widest uppercase">Gelby</span>
             <span className="text-accent text-[9px] tracking-[0.3em] font-medium uppercase">Portfolio</span>
           </div>
         </button>
@@ -86,7 +88,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                       className="absolute -inset-[60%] pointer-events-none z-[-1]"
                       style={{
                         background:
-                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(84,229,166,0.7) 0%, rgba(84,229,166,0.3) 45%, transparent 75%)',
+                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(var(--accent-rgb),0.7) 0%, rgba(var(--accent-rgb),0.3) 45%, transparent 75%)',
                         filter: 'url(#spray-edge)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
@@ -97,7 +99,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                       className="absolute -inset-[25%] pointer-events-none z-[-1]"
                       style={{
                         background:
-                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(84,229,166,0.85) 0%, rgba(84,229,166,0.5) 55%, transparent 80%)',
+                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(var(--accent-rgb),0.85) 0%, rgba(var(--accent-rgb),0.5) 55%, transparent 80%)',
                         filter: 'url(#spray-edge)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
@@ -107,8 +109,8 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                       layoutId="navSprayCore"
                       className="absolute inset-[4px] pointer-events-none z-[1] rounded-full"
                       style={{
-                        background: '#0b0c10',
-                        boxShadow: 'inset 0 0 0 1.5px rgba(84,229,166,0.0)',
+                        background: 'var(--bg-primary)',
+                        boxShadow: 'inset 0 0 0 1.5px rgba(var(--accent-rgb),0.0)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                     />
@@ -118,7 +120,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                   className={`relative z-[2] transition-all duration-300 ${
                     isActive
                       ? 'text-accent font-black'
-                      : 'text-slate-400 group-hover:text-white'
+                      : 'text-slate-400 group-hover:text-[var(--text-primary)]'
                   }`}
                 >
                   {tab.label}
@@ -130,10 +132,33 @@ const TopNav = ({ activeTab, setActiveTab }) => {
 
         {/* === RIGHT CTA === */}
         <div className="flex items-center gap-3">
+          
+          {/* Theme & Color Toggles */}
+          <div className="hidden sm:flex items-center gap-2 mr-2 border border-[var(--border)] rounded-full p-1 bg-[var(--bg-secondary)] shadow-sm">
+            <button
+              onClick={toggleTheme}
+              className={`p-1.5 rounded-full transition-all duration-300 ${isDark ? 'text-accent bg-surface-2' : 'text-[var(--text-primary)] hover:bg-[var(--border)]'}`}
+              title="Toggle Dark/Light Mode"
+            >
+              {isDark ? <FiMoon size={14} /> : <FiSun size={14} />}
+            </button>
+            <div className="w-px h-4 bg-[var(--border)] mx-1"></div>
+            <button
+              onClick={() => setColorTheme('green')}
+              className={`w-5 h-5 rounded-full bg-[#10B981] transition-transform ${colorTheme === 'green' ? 'scale-110 ring-2 ring-accent ring-offset-2 ring-offset-[var(--bg-primary)]' : 'scale-90 opacity-70 hover:opacity-100'}`}
+              title="Green Theme"
+            />
+            <button
+              onClick={() => setColorTheme('blue')}
+              className={`w-5 h-5 rounded-full bg-[#3B82F6] transition-transform ${colorTheme === 'blue' ? 'scale-110 ring-2 ring-accent ring-offset-2 ring-offset-[var(--bg-primary)]' : 'scale-90 opacity-70 hover:opacity-100'}`}
+              title="Blue Theme"
+            />
+          </div>
+
           {/* Hire Me CTA */}
           <a
             href="mailto:isroqigelby@gmail.com"
-            className="hidden sm:flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent text-[#0b0c10] text-xs font-black tracking-wider uppercase hover:bg-accent-light transition-all duration-300 shadow-[0_0_20px_rgba(84,229,166,0.3)] hover:shadow-[0_0_30px_rgba(84,229,166,0.6)]"
+            className="hidden sm:flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent text-text-on-accent text-xs font-black tracking-wider uppercase hover:bg-accent-light transition-all duration-300 shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)]"
           >
             Hire Me <FiArrowUpRight size={14} />
           </a>
@@ -159,11 +184,11 @@ const TopNav = ({ activeTab, setActiveTab }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-y-0 right-0 z-40 w-72 bg-[#12141c]/95 backdrop-blur-2xl border-l border-white/5 flex flex-col pt-24 pb-10 px-8"
+            className="fixed inset-y-0 right-0 z-40 w-72 bg-[var(--glass)] backdrop-blur-2xl border-l border-[var(--border)] flex flex-col pt-24 pb-10 px-8"
           >
             <button
               onClick={() => setMobileOpen(false)}
-              className="absolute top-6 right-6 p-2 text-slate-400 hover:text-white"
+              className="absolute top-6 right-6 p-2 text-slate-400 hover:text-[var(--text-primary)]"
             >
               <FiX size={22} />
             </button>
@@ -179,7 +204,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                     onClick={() => handleTabClick(tab.id)}
                     className={`relative text-left py-3 px-4 rounded-xl text-sm font-bold tracking-widest uppercase transition-all duration-200 overflow-hidden group ${
                       isActive
-                        ? 'text-[#0b0c10]'
+                        ? 'text-text-on-accent'
                         : 'text-slate-400 hover:text-white border border-transparent'
                     }`}
                   >
@@ -209,10 +234,33 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                 );
               })}
             </nav>
-            <div className="mt-auto pt-8 border-t border-white/5">
+            <div className="mt-auto pt-8 border-t border-[var(--border)] flex flex-col gap-4">
+              
+              {/* Mobile Theme & Color Toggles */}
+              <div className="flex items-center justify-between px-2">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Theme</span>
+                <div className="flex items-center gap-3 border border-[var(--border)] rounded-full p-1 bg-[var(--bg-secondary)]">
+                  <button
+                    onClick={toggleTheme}
+                    className="p-2 rounded-full text-[var(--text-primary)] hover:bg-[var(--border)]"
+                  >
+                    {isDark ? <FiMoon size={16} /> : <FiSun size={16} />}
+                  </button>
+                  <div className="w-px h-5 bg-[var(--border)]"></div>
+                  <button
+                    onClick={() => setColorTheme('green')}
+                    className={`w-6 h-6 rounded-full bg-[#10B981] ${colorTheme === 'green' ? 'ring-2 ring-accent ring-offset-2 ring-offset-[var(--bg-primary)]' : 'opacity-70'}`}
+                  />
+                  <button
+                    onClick={() => setColorTheme('blue')}
+                    className={`w-6 h-6 rounded-full bg-[#3B82F6] ${colorTheme === 'blue' ? 'ring-2 ring-accent ring-offset-2 ring-offset-[var(--bg-primary)]' : 'opacity-70'}`}
+                  />
+                </div>
+              </div>
+
               <a
                 href="mailto:isroqigelby@gmail.com"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent text-[#0b0c10] text-sm font-black uppercase tracking-wider"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent text-text-on-accent text-sm font-black uppercase tracking-wider"
               >
                 Hire Me <FiArrowUpRight size={16} />
               </a>

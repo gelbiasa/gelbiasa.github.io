@@ -52,7 +52,7 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'glass shadow-lg shadow-black/20 border-b border-white/5'
+            ? 'glass shadow-lg shadow-black/20 border-b border-border'
             : 'bg-transparent'
         }`}
       >
@@ -66,7 +66,7 @@ export default function Navbar() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-accent/40">
+              <span className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-text-primary text-sm font-bold shadow-lg shadow-accent/40">
                 G
               </span>
               <span className="gradient-text">Gelby</span>
@@ -145,7 +145,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-16 left-0 right-0 z-40 glass border-b border-white/5 shadow-xl"
+            className="fixed top-16 left-0 right-0 z-40 glass border-b border-border shadow-xl"
           >
             <div className="section-container py-4 flex flex-col gap-1">
               {navLinks.map(({ label, href }) => (
@@ -155,7 +155,7 @@ export default function Navbar() {
                   className={`text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 ${
                     active === href
                       ? 'bg-accent/20 text-accent'
-                      : 'text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)]'
+                      : 'text-[var(--text-secondary)] hover:bg-surface-2 hover:text-[var(--text-primary)]'
                   }`}
                 >
                   {label}
@@ -165,7 +165,7 @@ export default function Navbar() {
                 href="https://github.com/gelbiasa"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:bg-white/5"
+                className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:bg-surface-2"
                 onClick={() => setMobileOpen(false)}
               >
                 <FiGithub className="w-4 h-4" />

@@ -69,7 +69,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         <div className="flex flex-wrap items-center gap-4">
           <button 
             onClick={() => setActiveTab('projects')}
-            className="px-6 py-3 bg-accent hover:bg-accent-light text-white font-medium rounded-xl transition-colors duration-300 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]"
+            className="px-6 py-3 bg-accent hover:bg-accent-light text-text-primary font-medium rounded-xl transition-colors duration-300 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]"
           >
             View Projects
           </button>

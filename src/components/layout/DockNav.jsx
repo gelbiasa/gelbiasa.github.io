@@ -59,9 +59,9 @@ const DockNav = ({ activeTab, setActiveTab }) => {
         {/* Hire Me Button */}
         <div className="pl-3 pr-1 lg:pl-4 lg:pr-2 border-l ml-1 lg:ml-2" style={{ borderColor: 'var(--border)' }}>
           <button 
-            className="flex items-center justify-center gap-1.5 lg:gap-2 whitespace-nowrap bg-accent text-white px-4 py-2 lg:py-2.5 rounded-full text-xs lg:text-sm font-semibold transition-all duration-300 hover:bg-accent-light shadow-lg hover:shadow-accent/40"
+            className="flex items-center justify-center gap-1.5 lg:gap-2 whitespace-nowrap bg-accent text-text-primary px-4 py-2 lg:py-2.5 rounded-full text-xs lg:text-sm font-semibold transition-all duration-300 hover:bg-accent-light shadow-lg hover:shadow-accent/40"
           >
-            Hire Me <span className="text-white">✨</span>
+            Hire Me <span className="text-text-primary">✨</span>
           </button>
         </div>
       </nav>
