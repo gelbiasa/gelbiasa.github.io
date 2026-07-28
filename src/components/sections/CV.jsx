@@ -59,7 +59,7 @@ const CV = () => {
           <p className="text-accent text-sm font-mono tracking-widest uppercase">My Resume</p>
         </div>
         <h2 className="font-display font-black text-4xl md:text-5xl tracking-tight mb-4">
-          <span className="text-white">Curriculum </span>
+          <span className="text-text-primary">Curriculum </span>
           <span className="text-accent">Vitae</span>
         </h2>
         <p className="mt-4 text-sm md:text-base max-w-2xl" style={{ color: 'var(--text-secondary)' }}>
@@ -67,16 +67,16 @@ const CV = () => {
         </p>
       </motion.div>
 
-      <div className="w-full h-[85vh] md:h-[1050px] bg-[#12141c] border border-white/10 rounded-3xl flex flex-col overflow-hidden relative">
+      <div className="w-full h-[85vh] md:h-[1050px] bg-surface border border-border rounded-3xl flex flex-col overflow-hidden relative">
         {/* Header Bar */}
-        <div className="h-16 bg-black/40 border-b border-white/5 flex items-center justify-between px-4 md:px-6 shrink-0 z-10">
+        <div className="h-16 bg-surface-2 border-b border-border flex items-center justify-between px-4 md:px-6 shrink-0 z-10">
           <div className="flex items-center gap-3">
-            <span className="hidden sm:block text-xs font-medium text-slate-400">Select CV Language:</span>
-            <div className="flex items-center gap-1 bg-[#0b0c10] p-1 rounded-full border border-white/5">
+            <span className="hidden sm:block text-xs font-medium text-text-secondary">Select CV Language:</span>
+            <div className="flex items-center gap-1 bg-background p-1 rounded-full border border-border">
               <button
                 onClick={() => setCvLang('en')}
                 className={`px-3 md:px-4 py-1 text-[10px] md:text-xs font-bold rounded-full transition-all ${
-                  cvLang === 'en' ? 'bg-accent text-black shadow-[0_0_10px_rgba(84,229,166,0.3)]' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  cvLang === 'en' ? 'bg-accent text-black shadow-[0_0_10px_rgba(var(--accent-rgb),0.3)]' : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
                 }`}
               >
                 English
@@ -84,7 +84,7 @@ const CV = () => {
               <button
                 onClick={() => setCvLang('id')}
                 className={`px-3 md:px-4 py-1 text-[10px] md:text-xs font-bold rounded-full transition-all ${
-                  cvLang === 'id' ? 'bg-accent text-black shadow-[0_0_10px_rgba(84,229,166,0.3)]' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  cvLang === 'id' ? 'bg-accent text-black shadow-[0_0_10px_rgba(var(--accent-rgb),0.3)]' : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
                 }`}
               >
                 Indonesia
@@ -97,7 +97,7 @@ const CV = () => {
                 href={currentPath} 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-white/5 border border-white/10 text-white text-[10px] md:text-xs font-bold rounded-full hover:bg-white/10 transition-all"
+                className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-surface-2 border border-border text-text-primary text-[10px] md:text-xs font-bold rounded-full hover:bg-white/10 transition-all"
               >
                 <FiExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5" />
                 <span className="hidden sm:inline-block">View Full Size</span>
@@ -106,7 +106,7 @@ const CV = () => {
               <a 
                 href={currentPath} 
                 download={currentFilename}
-                className="flex items-center gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-accent/10 border border-accent/20 text-accent text-[10px] md:text-xs font-bold rounded-full hover:bg-accent hover:text-black transition-all group"
+                className="flex items-center gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-accent border border-accent text-white text-[10px] md:text-xs font-bold rounded-full hover:bg-accent hover:text-black transition-all group"
               >
                 <span>Download CV</span>
                 <span className="hidden md:inline-block font-normal opacity-70 group-hover:opacity-90">
@@ -118,11 +118,11 @@ const CV = () => {
         </div>
         
         {/* Content Area */}
-        <div className="flex-1 bg-[#0b0c10] flex flex-col items-center justify-center p-6 relative">
+        <div className="flex-1 bg-background flex flex-col items-center justify-center p-6 relative">
           {cvStatus === 'checking' && (
             <div className="flex flex-col items-center gap-4">
-              <div className="w-8 h-8 rounded-full border-2 border-accent/20 border-t-accent animate-spin" />
-              <p className="text-slate-400 text-sm">Checking document...</p>
+              <div className="w-8 h-8 rounded-full border-2 border-border border-t-accent animate-spin" />
+              <p className="text-text-secondary text-sm">Checking document...</p>
             </div>
           )}
 
@@ -135,14 +135,14 @@ const CV = () => {
             >
               <div className="relative mb-8">
                 <div className="absolute inset-0 bg-accent/20 rounded-full blur-xl animate-pulse" />
-                <div className="w-24 h-24 shrink-0 rounded-full bg-[#0b0c10] border-2 border-accent/30 flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(84,229,166,0.2)]">
+                <div className="w-24 h-24 shrink-0 rounded-full bg-background border-2 border-border flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(var(--accent-rgb),0.2)]">
                   <FiClock className="w-10 h-10 text-accent" />
                 </div>
               </div>
-              <h3 className="font-display text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">
+              <h3 className="font-display text-3xl md:text-4xl font-black text-text-primary mb-4 tracking-tight">
                 CV <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-emerald-400">Coming Soon</span>
               </h3>
-              <p className="text-slate-400 text-sm md:text-base max-w-md leading-relaxed">
+              <p className="text-text-secondary text-sm md:text-base max-w-md leading-relaxed">
                 My detailed curriculum vitae is currently being updated. Please check back later or feel free to contact me directly for any inquiries!
               </p>
             </motion.div>
@@ -160,14 +160,14 @@ const CV = () => {
 
               {/* Mobile & Tablet Fallback */}
               <div className="lg:hidden flex flex-col items-center justify-center w-full text-center py-10 px-4">
-                <div className="w-24 h-24 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mb-6 relative">
+                <div className="w-24 h-24 rounded-full bg-accent/10 border border-border flex items-center justify-center mb-6 relative">
                   <div className="absolute inset-0 bg-accent/20 rounded-full blur-xl animate-pulse" />
                   <FiExternalLink className="w-10 h-10 text-accent relative z-10" />
                 </div>
-                <h3 className="font-display text-2xl md:text-3xl font-black text-white mb-3">
+                <h3 className="font-display text-2xl md:text-3xl font-black text-text-primary mb-3">
                   Preview Not Supported
                 </h3>
-                <p className="text-slate-400 text-sm md:text-base max-w-sm mb-8">
+                <p className="text-text-secondary text-sm md:text-base max-w-sm mb-8">
                   Mobile and tablet browsers often restrict embedded PDF viewing. Please open the CV in full size or download it directly to your device.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -175,7 +175,7 @@ const CV = () => {
                     href={currentPath} 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 px-8 py-3 bg-white/5 border border-white/10 text-white font-bold rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
+                    className="flex items-center justify-center gap-2 px-8 py-3 bg-surface-2 border border-border text-text-primary font-bold rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
                   >
                     View Full Size
                   </a>

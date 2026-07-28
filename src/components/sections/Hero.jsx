@@ -164,7 +164,7 @@ export default function Hero() {
             href="https://drive.google.com/file/d/1V4cyfrMNF_6Qn6DyePH1DuMv3qr_pcZD/view?usp=sharing"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 px-6 py-3 rounded-xl border font-semibold text-sm transition-all duration-300 hover:border-accent/60 hover:bg-accent/10"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl border font-semibold text-sm transition-all duration-300 hover:border-border hover:bg-accent/10"
             style={{ borderColor: 'var(--border)', color: 'var(--text-primary)' }}
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.97 }}

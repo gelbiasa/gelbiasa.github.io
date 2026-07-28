@@ -64,10 +64,10 @@ function DragScroll({ children, className }) {
   return (
     <div className="relative flex items-center w-full">
       {showLeft && (
-        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#12141c] via-[#12141c]/90 to-transparent flex justify-start items-center z-10 pointer-events-none">
+        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-surface via-surface/90 to-transparent flex justify-start items-center z-10 pointer-events-none">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); scrollBy(-150); }}
-            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-white/10 backdrop-blur-md shadow-lg"
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-border backdrop-blur-md shadow-lg"
           >
             <FiChevronLeft className="w-4 h-4" />
           </button>
@@ -88,10 +88,10 @@ function DragScroll({ children, className }) {
       </div>
 
       {showRight && (
-        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#12141c] via-[#12141c]/90 to-transparent flex justify-end items-center z-10 pointer-events-none">
+        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-surface via-surface/90 to-transparent flex justify-end items-center z-10 pointer-events-none">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); scrollBy(150); }}
-            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-white/10 backdrop-blur-md shadow-lg"
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-border backdrop-blur-md shadow-lg"
           >
             <FiChevronRight className="w-4 h-4" />
           </button>
@@ -106,7 +106,7 @@ function SkillCard({ skill, index }) {
 
   return (
     <motion.div
-      className="skill-card glass rounded-2xl p-5 flex flex-col items-center gap-3 border cursor-default hover:border-accent/30 transition-all duration-300 h-full justify-center"
+      className="skill-card glass rounded-2xl p-5 flex flex-col items-center gap-3 border cursor-default hover:border-border transition-all duration-300 h-full justify-center"
       style={{ borderColor: 'var(--border)' }}
       initial={{ opacity: 0, scale: 0.85 }}
       whileInView={{ opacity: 1, scale: 1 }}
@@ -181,7 +181,7 @@ export default function Skills() {
           <aside className="w-fit max-w-full lg:w-64 shrink-0 sticky top-[88px] lg:top-32 z-40 mb-8 lg:mb-0">
             <div className="flex items-stretch gap-2 lg:block w-full">
               {/* Tabs Container */}
-              <div className="p-1.5 lg:p-0 bg-[#0b0c10]/95 backdrop-blur-md lg:bg-transparent border border-accent/30 lg:border-none rounded-2xl lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300 overflow-hidden flex-1 min-w-0">
+              <div className="p-1.5 lg:p-0 bg-background/95 backdrop-blur-md lg:bg-transparent border border-border lg:border-none rounded-2xl lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300 overflow-hidden flex-1 min-w-0">
                 <DragScroll className="flex lg:flex-col items-center lg:items-stretch gap-2">
                   {skillCategories.map(({ key, label, icon: Icon }) => {
                     const isActive = activeCategory === key
@@ -194,7 +194,7 @@ export default function Skills() {
                           isTabsExpanded ? 'px-4 py-2' : 'p-2'
                         } ${
                           isActive 
-                            ? 'bg-accent/15 border-accent/40 shadow-[0_0_20px_rgba(84,229,166,0.1)]' 
+                            ? 'bg-accent/15 border-border shadow-[0_0_20px_rgba(var(--accent-rgb),0.1)]' 
                             : 'bg-transparent border-transparent hover:bg-white/10'
                         }`}
                         title={label}
@@ -202,21 +202,21 @@ export default function Skills() {
                         {isActive && (
                           <motion.div
                             layoutId="activeSkillIndicator"
-                            className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgba(84,229,166,0.5)] hidden lg:block"
+                            className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgba(var(--accent-rgb),0.5)] hidden lg:block"
                             initial={false}
                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                           />
                         )}
                         
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                          isActive ? 'bg-accent/20 text-accent' : 'bg-white/5 text-slate-400 group-hover:text-white'
+                          isActive ? 'bg-accent/20 text-accent' : 'bg-surface-2 text-text-primary group-hover:text-text-primary'
                         }`}>
                           {Icon && <Icon className="w-4 h-4" />}
                         </div>
                         
                         <div className={`${isTabsExpanded ? 'block' : 'hidden lg:block'} transition-all`}>
                           <span className={`block font-bold tracking-wide transition-colors ${
-                            isActive ? 'text-accent' : 'text-slate-400 group-hover:text-white'
+                            isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
                           }`}>
                             {label}
                           </span>
@@ -235,7 +235,7 @@ export default function Skills() {
               {/* Mobile Toggle Button */}
               <button
                 onClick={() => setIsTabsExpanded(!isTabsExpanded)}
-                className="lg:hidden shrink-0 flex items-center justify-center w-11 rounded-2xl bg-[#0b0c10]/95 backdrop-blur-md border border-accent/30 shadow-2xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                className="lg:hidden shrink-0 flex items-center justify-center w-11 rounded-2xl bg-background/95 backdrop-blur-md border border-border shadow-2xl text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all"
                 aria-label="Toggle Category Labels"
               >
                 <FiChevronRight className={`w-5 h-5 transition-transform duration-300 ${isTabsExpanded ? 'rotate-180' : ''}`} />
@@ -265,9 +265,9 @@ export default function Skills() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="py-24 flex flex-col items-center justify-center text-center px-4 glass rounded-3xl border border-dashed border-white/10"
+                  className="py-24 flex flex-col items-center justify-center text-center px-4 glass rounded-3xl border border-dashed border-border"
                 >
-                  <p className="text-slate-400">No skills in this category yet.</p>
+                  <p className="text-text-secondary">No skills in this category yet.</p>
                 </motion.div>
               )}
             </AnimatePresence>

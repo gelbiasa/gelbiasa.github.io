@@ -33,7 +33,7 @@ const TypewriterHeading = ({ text, speed = 65, startDelay = 600 }) => {
 
   return (
     <h1
-      className="font-display font-black leading-tight tracking-tight text-white"
+      className="font-display font-black leading-tight tracking-tight text-text-primary"
       style={{ fontSize: 'clamp(1.8rem, 4vw, 3.2rem)', whiteSpace: 'nowrap' }}
     >
       {displayed}
@@ -94,8 +94,8 @@ const HomeSection = ({ setActiveTab }) => {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="mb-8"
         >
-          <p className="text-slate-400 text-sm lg:text-base leading-relaxed text-justify w-full mb-4">
-            D-IV Business Information Systems student at <span className="text-white font-semibold">Politeknik Negeri Malang</span>. I specialize as a Laravel Expert and Database Engineer, focusing on writing standardized code and designing robust, scalable enterprise architectures.
+          <p className="text-text-secondary text-sm lg:text-base leading-relaxed text-justify w-full mb-4">
+            D-IV Business Information Systems student at <span className="text-text-primary font-semibold">Politeknik Negeri Malang</span>. I specialize as a Laravel Expert and Database Engineer, focusing on writing standardized code and designing robust, scalable enterprise architectures.
           </p>
           <button
             onClick={() => setShowAboutModal(true)}
@@ -112,14 +112,14 @@ const HomeSection = ({ setActiveTab }) => {
 
         {/* Experience Timeline Preview */}
         <motion.div
-          className="bg-[#0f1117] border border-white/6 rounded-2xl overflow-hidden"
+          className="bg-surface border border-border rounded-2xl overflow-hidden"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 1.15 }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/5">
-            <span className="text-xs font-bold tracking-widest uppercase text-slate-400">Experience</span>
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+            <span className="text-xs font-bold tracking-widest uppercase text-text-secondary">Experience</span>
             <button
               onClick={() => setActiveTab('experience')}
               className="flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent-light transition-colors group"
@@ -144,19 +144,19 @@ const HomeSection = ({ setActiveTab }) => {
             <div
               key={exp.company}
               className={`flex items-center gap-4 px-5 py-4 ${
-                i === 0 ? 'border-b border-white/4' : ''
-              } hover:bg-white/2 transition-colors`}
+                i === 0 ? 'border-b border-border' : ''
+              } hover:bg-surface-2 transition-colors`}
             >
               <div className="flex-shrink-0 relative">
                 <div className="w-2 h-2 rounded-full bg-slate-600" />
               </div>
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <p className="text-white font-semibold text-sm truncate">{exp.company}</p>
+                <p className="text-text-primary font-semibold text-sm truncate">{exp.company}</p>
                 <p className="text-slate-500 text-xs">{exp.role}</p>
               </div>
               {/* Period */}
-              <span className="flex-shrink-0 text-[11px] font-mono text-slate-500 bg-white/4 px-2.5 py-1 rounded-full">
+              <span className="flex-shrink-0 text-[11px] font-mono text-text-primary bg-surface-2 px-2.5 py-1 rounded-full">
                 {exp.period}
               </span>
             </div>
@@ -165,7 +165,7 @@ const HomeSection = ({ setActiveTab }) => {
 
         {/* Action Bar — segmented, no radius */}
         <motion.div
-          className="flex flex-wrap items-stretch border border-white/10 bg-[#0f1117] overflow-hidden mt-8 shadow-2xl"
+          className="flex flex-wrap items-stretch border border-border bg-surface overflow-hidden mt-8 shadow-2xl"
           style={{ borderRadius: '4px' }}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -174,44 +174,44 @@ const HomeSection = ({ setActiveTab }) => {
           {/* 1. Preview CV */}
           <button
             onClick={() => setActiveTab('cv')}
-            className="flex items-center gap-2.5 px-6 py-3.5 bg-accent hover:bg-accent-light text-[#0b0c10] font-black text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_rgba(84,229,166,0.25)] hover:shadow-[0_0_30px_rgba(84,229,166,0.45)] flex-shrink-0"
+            className="flex items-center gap-2.5 px-6 py-3.5 bg-accent hover:bg-accent-light text-text-on-accent font-black text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_rgba(var(--accent-rgb),0.25)] hover:shadow-[0_0_30px_rgba(var(--accent-rgb),0.45)] flex-shrink-0"
           >
             <FiEye size={15} /> Preview My CV
           </button>
 
           {/* Divider */}
-          <div className="w-px bg-white/8 flex-shrink-0" />
+          <div className="w-px bg-border flex-shrink-0" />
 
           {/* 2. View GitHub */}
           <a
             href="https://github.com/gelbiasa"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3.5 text-slate-400 hover:text-white hover:bg-white/4 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0"
+            className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0"
           >
             <FiGithub size={16} /> View GitHub
           </a>
 
           {/* Divider */}
-          <div className="w-px bg-white/8 flex-shrink-0" />
+          <div className="w-px bg-border flex-shrink-0" />
 
           {/* 3. View LinkedIn */}
           <a
             href="https://www.linkedin.com/in/gelbifirmansyah/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3.5 text-slate-400 hover:text-white hover:bg-white/4 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0"
+            className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0"
           >
             <FiLinkedin size={16} /> View LinkedIn
           </a>
 
           {/* Divider */}
-          <div className="w-px bg-white/8 flex-shrink-0" />
+          <div className="w-px bg-border flex-shrink-0" />
 
           {/* 4. View Projects */}
           <button
             onClick={() => setActiveTab('projects')}
-            className="flex items-center gap-2 px-6 py-3.5 text-slate-400 hover:text-accent hover:bg-accent/6 text-sm font-semibold tracking-wide transition-all duration-200 group flex-shrink-0"
+            className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-accent hover:bg-accent/6 text-sm font-semibold tracking-wide transition-all duration-200 group flex-shrink-0"
           >
             View Projects <FiArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </button>
@@ -223,7 +223,7 @@ const HomeSection = ({ setActiveTab }) => {
       <div className="hidden lg:flex flex-col items-center justify-center py-4 flex-shrink-0 w-[60px] mx-0 h-[75vh] self-center relative overflow-hidden group">
         
         {/* Core Beam */}
-        <div className="absolute w-[2px] h-full bg-gradient-to-b from-transparent via-accent to-transparent shadow-[0_0_12px_rgba(84,229,166,0.9)] opacity-90" />
+        <div className="absolute w-[2px] h-full bg-gradient-to-b from-transparent via-accent to-transparent shadow-[0_0_12px_rgba(var(--accent-rgb),0.9)] opacity-90" />
         
         {/* Glowing Aura */}
         <div className="absolute w-[10px] h-3/4 bg-accent/20 blur-[8px] rounded-full" />
@@ -301,7 +301,7 @@ const HomeSection = ({ setActiveTab }) => {
           <div
             className="absolute inset-0 pointer-events-none rounded-full"
             style={{
-              background: 'radial-gradient(ellipse at center, rgba(84,229,166,0.12) 0%, transparent 65%)',
+              background: 'radial-gradient(ellipse at center, rgba(var(--accent-rgb),0.12) 0%, transparent 65%)',
               transform: 'scale(1.4)'
             }}
           />
@@ -310,7 +310,7 @@ const HomeSection = ({ setActiveTab }) => {
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'radial-gradient(ellipse 65% 75% at 50% 52%, rgba(84,229,166,0.16) 0%, transparent 70%)',
+              background: 'radial-gradient(ellipse 65% 75% at 50% 52%, rgba(var(--accent-rgb),0.16) 0%, transparent 70%)',
               filter: 'blur(22px)',
             }}
           />
@@ -334,11 +334,11 @@ const HomeSection = ({ setActiveTab }) => {
 
           {/* Photo blob */}
           <div
-            className="relative z-10 w-full h-full overflow-hidden bg-[#0b0c10]"
+            className="relative z-10 w-full h-full overflow-hidden bg-background"
             style={{
               borderRadius: '42% 58% 55% 45% / 46% 42% 58% 54%',
-              border: '2px solid rgba(84,229,166,0.4)',
-              boxShadow: '0 0 0 5px rgba(84,229,166,0.06), 0 0 50px rgba(84,229,166,0.16)',
+              border: '2px solid rgba(var(--accent-rgb),0.4)',
+              boxShadow: '0 0 0 5px rgba(var(--accent-rgb),0.06), 0 0 50px rgba(var(--accent-rgb),0.16)',
             }}
           >
             <img
@@ -350,62 +350,62 @@ const HomeSection = ({ setActiveTab }) => {
 
           {/* Open to Hire badge */}
           <motion.div
-            className="absolute -bottom-5 left-0 flex items-center gap-2 bg-[#12141c] border border-accent/25 rounded-xl px-3 py-2 shadow-xl z-20"
+            className="absolute -bottom-5 left-0 flex items-center gap-2 bg-surface border border-border rounded-xl px-3 py-2 shadow-xl z-20"
             animate={{ y: [0, -6, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
             <div>
               <p className="text-accent text-[9px] font-black tracking-widest uppercase leading-none">Status</p>
-              <p className="text-white text-[11px] font-semibold leading-none mt-0.5">Open to Hire</p>
+              <p className="text-text-primary text-[11px] font-semibold leading-none mt-0.5">Open to Hire</p>
             </div>
           </motion.div>
 
           {/* Floating Skill Badges (Optimized without blur) */}
           <motion.div
-            className="absolute top-1/4 -left-12 lg:-left-24 bg-[#12141c] border border-accent/25 rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            className="absolute top-1/4 -left-12 lg:-left-24 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span className="text-white text-[10px] font-bold whitespace-nowrap">Laravel Expert</span>
+            <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">Laravel Expert</span>
           </motion.div>
 
           <motion.div
-            className="absolute top-1/2 -right-14 lg:-right-28 bg-[#12141c] border border-accent/25 rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            className="absolute top-1/2 -right-14 lg:-right-28 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
             animate={{ y: [0, -6, 0] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span className="text-white text-[10px] font-bold whitespace-nowrap">Database Engineer</span>
+            <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">Database Engineer</span>
           </motion.div>
 
           <motion.div
-            className="absolute bottom-1/4 -right-10 lg:-right-24 bg-[#12141c] border border-accent/25 rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            className="absolute bottom-1/4 -right-10 lg:-right-24 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
             animate={{ y: [0, 6, 0] }}
             transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span className="text-white text-[10px] font-bold whitespace-nowrap">Standardized Code</span>
+            <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">Standardized Code</span>
           </motion.div>          {/* XP badge */}
           <motion.div
-            className="absolute -top-3 -right-1 bg-accent text-[#0b0c10] rounded-xl px-3 py-2 shadow-[0_0_18px_rgba(84,229,166,0.5)] z-20"
+            className="absolute -top-3 -right-1 bg-accent text-text-on-accent rounded-xl px-3 py-2 shadow-[0_0_18px_rgba(var(--accent-rgb),0.5)] z-20"
             animate={{ rotate: [0, 2, 0, -2, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >
             <p className="text-[9px] font-black tracking-widest uppercase leading-none">Exp.</p>
-            <p className="text-[#0b0c10] text-xs font-black leading-none mt-0.5">2+ Years</p>
+            <p className="text-text-on-accent text-xs font-black leading-none mt-0.5">2+ Years</p>
           </motion.div>
         </div>
 
         {/* Location row */}
         <motion.div
-          className="flex items-center gap-4 px-4 py-3.5 bg-[#0f1117] border border-white/10 rounded-2xl text-slate-400 w-full max-w-[290px] mt-6"
+          className="flex items-center gap-4 px-4 py-3.5 bg-surface border border-border rounded-2xl text-text-secondary w-full max-w-[290px] mt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.9 }}
         >
-          <span className="flex-shrink-0 w-9 h-9 rounded-xl bg-accent/10 border border-accent/15 flex items-center justify-center">
+          <span className="flex-shrink-0 w-9 h-9 rounded-xl bg-accent/10 border border-border flex items-center justify-center">
             <FiMapPin size={16} className="text-accent" />
           </span>
           <span className="text-sm font-medium tracking-wide">Malang, East Java, Indonesia</span>
@@ -423,7 +423,7 @@ const HomeSection = ({ setActiveTab }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center px-4 md:px-8 py-10 bg-[#0b0c10]/95"
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4 md:px-8 py-10 bg-background/95"
           >
             {/* Modal Overlay / Click outside to close */}
             <div className="absolute inset-0" onClick={() => setShowAboutModal(false)} />
@@ -433,22 +433,22 @@ const HomeSection = ({ setActiveTab }) => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="relative w-full max-w-2xl bg-[#0f1117] border border-white/10 rounded-2xl p-6 md:p-8 lg:p-10 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+              className="relative w-full max-w-2xl bg-surface border border-border rounded-2xl p-6 md:p-8 lg:p-10 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
             >
               {/* Close Button */}
               <button
                 onClick={() => setShowAboutModal(false)}
-                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                className="absolute top-4 right-4 p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-full transition-colors"
               >
                 <FiX size={20} />
               </button>
 
               {/* Modal Content */}
-              <h2 className="font-display font-bold text-2xl mb-6 text-white">
+              <h2 className="font-display font-bold text-2xl mb-6 text-text-primary">
                 Qualification <span className="text-accent">Profile</span>
               </h2>
               
-              <div className="space-y-4 text-sm leading-relaxed text-slate-400 text-justify mb-8">
+              <div className="space-y-4 text-sm leading-relaxed text-text-secondary text-justify mb-8">
                 <p>
                   I'm a D-IV Business Information Systems student who focuses on developing web and
                   mobile applications. Currently interning as a Back-end Developer at UPA TIK
@@ -473,7 +473,7 @@ const HomeSection = ({ setActiveTab }) => {
                   { label: 'Technologies', value: '10+' },
                   { label: 'Years Learning', value: '2+' }
                 ].map((stat) => (
-                  <div key={stat.label} className="bg-[#12141c] border border-white/5 rounded-xl p-4 text-center">
+                  <div key={stat.label} className="bg-surface border border-border rounded-xl p-4 text-center">
                     <div className="font-display font-bold text-xl lg:text-2xl text-accent">{stat.value}</div>
                     <div className="text-xs mt-1 text-slate-500">{stat.label}</div>
                   </div>

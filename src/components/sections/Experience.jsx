@@ -59,7 +59,7 @@ export default function Experience() {
           My Professional{' '}
           <span className="gradient-text">Journey</span>
         </h2>
-        <p className="text-slate-400 mt-3 text-sm md:text-base max-w-xl mx-auto">
+        <p className="text-text-secondary mt-3 text-sm md:text-base max-w-xl mx-auto">
           Hands-on experience building real-world systems in fast-paced industry environments.
         </p>
       </motion.div>
@@ -82,23 +82,23 @@ export default function Experience() {
             >
               {/* Timeline dot */}
               <div className="absolute left-[18px] md:left-[26px] top-2 flex items-center justify-center">
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${exp.current ? 'border-accent bg-accent/20 shadow-[0_0_12px_rgba(84,229,166,0.5)]' : 'border-slate-600 bg-[#0f1117]'}`}>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${exp.current ? 'border-accent bg-accent/20 shadow-[0_0_12px_rgba(var(--accent-rgb),0.5)]' : 'border-slate-600 bg-surface'}`}>
                   <div className={`w-2 h-2 rounded-full ${exp.current ? 'bg-accent animate-pulse' : 'bg-slate-600'}`} />
                 </div>
               </div>
 
               {/* Card */}
-              <div className="glass border border-white/5 hover:border-accent/20 transition-all duration-300 p-6 md:p-8 rounded-2xl shadow-xl group">
+              <div className="glass border border-border hover:border-border transition-all duration-300 p-6 md:p-8 rounded-2xl shadow-xl group">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
                   <div>
                     {exp.current && (
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-accent bg-accent/10 border border-accent/20 px-2.5 py-1 rounded-full mb-2">
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-accent bg-accent/10 border border-border px-2.5 py-1 rounded-full mb-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                         Current
                       </span>
                     )}
-                    <h3 className="font-display font-bold text-xl md:text-2xl text-white">
+                    <h3 className="font-display font-bold text-xl md:text-2xl text-text-primary">
                       {exp.company}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
@@ -106,7 +106,7 @@ export default function Experience() {
                       <span className="text-accent font-semibold text-sm">{exp.role}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-slate-400 text-xs font-mono bg-white/4 border border-white/8 px-3 py-1.5 rounded-full flex-shrink-0">
+                  <div className="flex items-center gap-1.5 text-text-secondary text-xs font-mono bg-white/4 border border-border px-3 py-1.5 rounded-full flex-shrink-0">
                     <FiCalendar size={12} />
                     {exp.period}
                   </div>
@@ -115,7 +115,7 @@ export default function Experience() {
                 {/* Bullet points */}
                 <ul className="space-y-2.5 mb-5">
                   {exp.points.map((point, j) => (
-                    <li key={j} className="flex gap-3 text-slate-400 text-sm leading-relaxed">
+                    <li key={j} className="flex gap-3 text-text-secondary text-sm leading-relaxed">
                       <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-slate-600 flex-shrink-0" />
                       {point}
                     </li>
@@ -131,7 +131,7 @@ export default function Experience() {
                   {exp.tools.map((tool) => (
                     <span
                       key={tool}
-                      className="px-2.5 py-1 text-[11px] font-medium bg-accent/8 border border-accent/15 text-accent/80 rounded-full"
+                      className="px-2.5 py-1 text-[11px] font-medium bg-accent/8 border border-border text-accent/80 rounded-full"
                     >
                       {tool}
                     </span>

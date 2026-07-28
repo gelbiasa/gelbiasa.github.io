@@ -82,10 +82,10 @@ function DragScroll({ children, className }) {
     <div className="relative flex items-center w-full">
       {/* Left Arrow */}
       {showLeft && (
-        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#12141c] via-[#12141c]/90 to-transparent flex justify-start items-center z-10 pointer-events-none">
+        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-surface via-surface/90 to-transparent flex justify-start items-center z-10 pointer-events-none">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); scrollBy(-150); }}
-            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-white/10 backdrop-blur-md shadow-lg"
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-border backdrop-blur-md shadow-lg"
           >
             <FiChevronLeft className="w-4 h-4" />
           </button>
@@ -107,10 +107,10 @@ function DragScroll({ children, className }) {
 
       {/* Right Arrow */}
       {showRight && (
-        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#12141c] via-[#12141c]/90 to-transparent flex justify-end items-center z-10 pointer-events-none">
+        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-surface via-surface/90 to-transparent flex justify-end items-center z-10 pointer-events-none">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); scrollBy(150); }}
-            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-white/10 backdrop-blur-md shadow-lg"
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-border backdrop-blur-md shadow-lg"
           >
             <FiChevronRight className="w-4 h-4" />
           </button>
@@ -145,25 +145,25 @@ function ProjectModal({ project, onClose }) {
         exit={{ y: 20, opacity: 0, scale: 0.95 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative mx-auto w-full max-w-6xl bg-[#12141c] rounded-2xl md:rounded-3xl border border-white/10 shadow-2xl flex flex-col lg:flex-row overflow-hidden"
+        className="relative mx-auto w-full max-w-6xl bg-surface rounded-2xl md:rounded-3xl border border-border shadow-2xl flex flex-col lg:flex-row overflow-hidden"
       >
         {/* Close Button - Always visible at top right of the modal */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-accent hover:text-black transition-colors shadow-lg"
+          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-border flex items-center justify-center text-text-primary hover:bg-accent hover:text-black transition-colors shadow-lg"
         >
           <FiX className="w-5 h-5" />
         </button>
 
         {/* Left/Top: Image Gallery/Banner */}
-        <div className="w-full lg:w-2/5 h-64 lg:h-auto bg-[#0b0c10] relative flex-shrink-0">
+        <div className="w-full lg:w-2/5 h-64 lg:h-auto bg-background relative flex-shrink-0">
           <img
             src={project.image}
             alt={project.title}
             className="w-full h-full object-contain p-4 md:p-8"
           />
           {/* Subtle gradient overlay to blend with content */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#12141c] via-transparent to-transparent lg:bg-gradient-to-r" />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent lg:bg-gradient-to-r" />
         </div>
 
         {/* Right/Bottom: Content Details */}
@@ -179,7 +179,7 @@ function ProjectModal({ project, onClose }) {
                 </div>
               )}
               {project.tags.map((tag) => (
-                <span key={tag} className="badge bg-white/5 border-white/10 text-slate-300 px-2.5 py-1 text-[10px]">
+                <span key={tag} className="badge bg-surface-2 border-border text-text-primary px-2.5 py-1 text-[10px]">
                   {tag}
                 </span>
               ))}
@@ -190,7 +190,7 @@ function ProjectModal({ project, onClose }) {
               <p className="text-accent text-sm font-mono tracking-widest uppercase mb-2">
                 {project.subtitle}
               </p>
-              <h2 className="font-display font-bold text-3xl md:text-4xl leading-tight text-white">
+              <h2 className="font-display font-bold text-3xl md:text-4xl leading-tight text-text-primary">
                 {project.title}
               </h2>
             </div>
@@ -198,10 +198,10 @@ function ProjectModal({ project, onClose }) {
             <div className="w-16 h-1 bg-accent/30 rounded-full" />
 
             {/* Full Description */}
-            <div className="space-y-4 text-slate-300 leading-relaxed text-base md:text-lg">
+            <div className="space-y-4 text-text-secondary leading-relaxed text-base md:text-lg">
               <p>{project.description}</p>
               {project.detail && (
-                <div className="p-5 mt-4 rounded-2xl bg-white/5 border border-white/5 text-slate-400 text-sm md:text-base">
+                <div className="p-5 mt-4 rounded-2xl bg-surface-2 border border-border text-text-secondary text-sm md:text-base">
                   {project.detail}
                 </div>
               )}
@@ -209,8 +209,8 @@ function ProjectModal({ project, onClose }) {
 
             {/* Links / Call to Actions */}
             {project.links && project.links.length > 0 && (
-              <div className="mt-8 pt-8 border-t border-white/10">
-                <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Project Links</h4>
+              <div className="mt-8 pt-8 border-t border-border">
+                <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider mb-4">Project Links</h4>
                 <div className="flex flex-wrap gap-4">
                   {project.links.map(({ label, url, icon }) => {
                     const Icon = iconMap[icon] || FiExternalLink
@@ -220,7 +220,7 @@ function ProjectModal({ project, onClose }) {
                         href={url}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-accent hover:border-accent/40 hover:bg-accent/10 transition-all duration-300"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-2 border border-border text-text-secondary hover:text-accent hover:border-border hover:bg-accent/10 transition-all duration-300"
                       >
                         <Icon className="w-4 h-4" />
                         <span className="text-sm font-medium">{label}</span>
@@ -251,11 +251,11 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
           onClick(project)
         }
       }}
-      className="project-card bg-[#12141c] rounded-2xl overflow-hidden border border-white/5 hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:border-accent/40 transition-all duration-500 cursor-pointer flex flex-col h-full group"
+      className="project-card bg-surface rounded-2xl overflow-hidden border border-border hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:border-border transition-all duration-500 cursor-pointer flex flex-col h-full group"
       style={{ borderColor: 'var(--border)' }}
     >
       {/* 100% Clean Image Container (No overlays blocking the content) */}
-      <div className="project-img-wrapper relative overflow-hidden aspect-video bg-[#0b0c10]">
+      <div className="project-img-wrapper relative overflow-hidden aspect-video bg-background">
         <img
           src={project.image}
           alt={project.title}
@@ -263,7 +263,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
           loading={index < 2 ? "eager" : "lazy"}
           fetchpriority={index < 2 ? "high" : "auto"}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10] to-transparent opacity-40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-40" />
       </div>
 
       {/* Content Section */}
@@ -279,7 +279,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
               </div>
             )}
             {project.tags.map((tag) => (
-              <span key={tag} className="flex-shrink-0 badge bg-white/5 border-white/10 text-slate-300 px-2 py-0.5 text-[10px]">
+              <span key={tag} className="flex-shrink-0 badge bg-surface-2 border-border text-text-primary px-2 py-0.5 text-[10px]">
                 {tag}
               </span>
             ))}
@@ -291,13 +291,13 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
           <p className="text-accent text-[10px] md:text-xs font-mono tracking-widest uppercase mb-1.5 line-clamp-1">
             {project.subtitle}
           </p>
-          <h3 className="font-display font-bold text-lg md:text-xl leading-snug text-white group-hover:text-accent transition-colors duration-300 line-clamp-2">
+          <h3 className="font-display font-bold text-lg md:text-xl leading-snug text-text-primary group-hover:text-accent transition-colors duration-300 line-clamp-2">
             {project.title}
           </h3>
         </div>
 
         {/* Short Description */}
-        <p className="text-sm md:text-base text-slate-400 leading-relaxed line-clamp-3">
+        <p className="text-sm md:text-base text-text-secondary leading-relaxed line-clamp-3">
           {project.description}
         </p>
 
@@ -312,7 +312,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
                   href={url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-accent hover:border-accent/40 hover:bg-accent/10 transition-all duration-300 shadow-sm"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 border border-border text-text-primary hover:text-accent hover:border-border hover:bg-accent/10 transition-all duration-300 shadow-sm"
                   title={label}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -324,11 +324,11 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
         )}
 
         {/* Action / Footer */}
-        <div className="mt-auto pt-5 border-t border-white/5 flex items-center justify-between group-hover:border-white/10 transition-colors">
-          <span className="text-xs font-semibold text-slate-400 group-hover:text-white transition-colors">
+        <div className="mt-auto pt-5 border-t border-border flex items-center justify-between group-hover:border-border transition-colors">
+          <span className="text-xs font-semibold text-text-secondary group-hover:text-text-primary transition-colors">
             Read Full Case Study
           </span>
-          <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-all duration-300 text-slate-400 group-hover:text-black">
+          <div className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-all duration-300 text-text-secondary group-hover:text-black">
             <FiArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
           </div>
         </div>
@@ -343,21 +343,21 @@ function EmptyState() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="col-span-full py-24 flex flex-col items-center justify-center text-center px-4 glass rounded-3xl border border-dashed border-white/10"
+      className="col-span-full py-24 flex flex-col items-center justify-center text-center px-4 glass rounded-3xl border border-dashed border-border"
     >
       <div className="relative w-32 h-32 mb-8 flex items-center justify-center">
         {/* Glowing rings */}
-        <div className="absolute inset-0 rounded-full border-2 border-accent/20 animate-[spin_8s_linear_infinite]" />
-        <div className="absolute inset-2 rounded-full border-2 border-dashed border-accent/40 animate-[spin_12s_linear_infinite_reverse]" />
-        <div className="absolute inset-4 rounded-full border border-accent/10 bg-accent/5 backdrop-blur-sm" />
+        <div className="absolute inset-0 rounded-full border-2 border-border animate-[spin_8s_linear_infinite]" />
+        <div className="absolute inset-2 rounded-full border-2 border-dashed border-border animate-[spin_12s_linear_infinite_reverse]" />
+        <div className="absolute inset-4 rounded-full border border-border bg-accent/5 backdrop-blur-sm" />
         
         <FiClock className="w-10 h-10 text-accent relative z-10" />
       </div>
       
-      <h3 className="font-display text-2xl font-bold text-white mb-3">
+      <h3 className="font-display text-2xl font-bold text-text-primary mb-3">
         Something Awesome is Brewing
       </h3>
-      <p className="text-slate-400 max-w-md mx-auto text-sm leading-relaxed">
+      <p className="text-text-secondary max-w-md mx-auto text-sm leading-relaxed">
         I am currently working on some exciting personal projects behind the scenes. 
         They'll be showcased here soon. Stay tuned!
       </p>
@@ -404,7 +404,7 @@ export default function Projects() {
         <aside className="w-fit max-w-full lg:w-64 shrink-0 sticky top-[88px] lg:top-32 z-40 mb-8 lg:mb-0">
           <div className="flex items-stretch gap-2 lg:block w-full">
             {/* Tabs Container (Red Box) */}
-            <div className="p-1.5 lg:p-0 bg-[#0b0c10]/95 backdrop-blur-md lg:bg-transparent border border-accent/30 lg:border-none rounded-2xl lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300 overflow-hidden flex-1 min-w-0">
+            <div className="p-1.5 lg:p-0 bg-background/95 backdrop-blur-md lg:bg-transparent border border-border lg:border-none rounded-2xl lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300 overflow-hidden flex-1 min-w-0">
               <DragScroll className="flex lg:flex-col items-center lg:items-stretch gap-2">
             {CATEGORIES.map((cat) => {
               const isActive = activeTab === cat
@@ -418,7 +418,7 @@ export default function Projects() {
                     isTabsExpanded ? 'px-4 py-2' : 'p-2'
                   } ${
                     isActive 
-                      ? 'bg-accent/15 border-accent/40 shadow-[0_0_20px_rgba(84,229,166,0.1)]' 
+                      ? 'bg-accent/15 border-border shadow-[0_0_20px_rgba(var(--accent-rgb),0.1)]' 
                       : 'bg-transparent border-transparent hover:bg-white/10'
                   }`}
                   title={cat}
@@ -426,21 +426,21 @@ export default function Projects() {
                   {isActive && (
                     <motion.div
                       layoutId="activeSidebarIndicator"
-                      className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgba(84,229,166,0.5)] hidden lg:block"
+                      className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgba(var(--accent-rgb),0.5)] hidden lg:block"
                       initial={false}
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
                   
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                    isActive ? 'bg-accent/20 text-accent' : 'bg-white/5 text-slate-400 group-hover:text-white'
+                    isActive ? 'bg-accent/20 text-accent' : 'bg-surface-2 text-text-secondary group-hover:text-text-primary'
                   }`}>
                     <Icon className="w-4 h-4" />
                   </div>
                   
                   <div className={`${isTabsExpanded ? 'block' : 'hidden lg:block'} transition-all`}>
                     <span className={`block font-bold tracking-wide transition-colors ${
-                      isActive ? 'text-accent' : 'text-slate-400 group-hover:text-white'
+                      isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
                     }`}>
                       {cat}
                     </span>
@@ -460,7 +460,7 @@ export default function Projects() {
             {/* Mobile Toggle Button (Yellow Box) */}
             <button
               onClick={() => setIsTabsExpanded(!isTabsExpanded)}
-              className="lg:hidden shrink-0 flex items-center justify-center w-11 rounded-2xl bg-[#0b0c10]/95 backdrop-blur-md border border-accent/30 shadow-2xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+              className="lg:hidden shrink-0 flex items-center justify-center w-11 rounded-2xl bg-background/95 backdrop-blur-md border border-border shadow-2xl text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all"
               aria-label="Toggle Category Labels"
             >
               <FiChevronRight className={`w-5 h-5 transition-transform duration-300 ${isTabsExpanded ? 'rotate-180' : ''}`} />

@@ -59,11 +59,11 @@ export default function About() {
               {/* Glow ring */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 blur-2xl opacity-30 scale-110 animate-float" />
               {/* Decorative ring */}
-              <div className="absolute -inset-3 rounded-full border-2 border-dashed border-accent/30 animate-spin" style={{ animationDuration: '20s' }} />
+              <div className="absolute -inset-3 rounded-full border-2 border-dashed border-border animate-spin" style={{ animationDuration: '20s' }} />
               <img
                 src="/images/foto_gelby.png"
                 alt="M. Isroqi Gelby Firmansyah"
-                className="relative w-52 h-52 md:w-64 md:h-64 rounded-full object-cover border-4 border-accent/40 shadow-2xl shadow-accent/20"
+                className="relative w-52 h-52 md:w-64 md:h-64 rounded-full object-cover border-4 border-border shadow-2xl shadow-accent/20"
               />
             </div>
 

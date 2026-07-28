@@ -104,7 +104,7 @@ export default function Contact() {
               <img
                 src="/images/foto_gelby.png"
                 alt="Gelby"
-                className="relative w-24 h-24 rounded-full object-cover border-2 border-accent/40"
+                className="relative w-24 h-24 rounded-full object-cover border-2 border-border"
               />
               <span className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-[var(--bg-secondary)] flex items-center justify-center text-[10px]">
                 ✓
@@ -131,7 +131,7 @@ export default function Contact() {
             <div className="flex flex-col gap-3 w-full">
               <motion.a
                 href="mailto:gelbifirmansyah12@gmail.com"
-                className="w-full py-3 rounded-xl bg-accent text-white text-sm font-semibold text-center shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow duration-300"
+                className="w-full py-3 rounded-xl bg-accent text-text-primary text-sm font-semibold text-center shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow duration-300"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
@@ -141,7 +141,7 @@ export default function Contact() {
                 href="https://drive.google.com/file/d/1V4cyfrMNF_6Qn6DyePH1DuMv3qr_pcZD/view?usp=sharing"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3 rounded-xl border text-sm font-semibold text-center transition-all duration-300 hover:border-accent/50 hover:bg-accent/10 hover:text-accent"
+                className="w-full py-3 rounded-xl border text-sm font-semibold text-center transition-all duration-300 hover:border-border hover:bg-accent/10 hover:text-accent"
                 style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
