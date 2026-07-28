@@ -6,37 +6,79 @@
    CSS CUSTOM PROPERTIES – DESIGN TOKENS
    ============================================================ */
 :root {
-  /* Default mode is now Dark Mode */
-  --bg-primary: #0b0c10;
-  --bg-secondary: #12141c;
-  --bg-tertiary: #191c26;
-  --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
+  /* Default mode: Dark Green (Mint Revisi) */
+  --bg-primary: #111111;
+  --bg-secondary: #062c22;
+  --bg-tertiary: #0a4032;
+  --text-primary: #F8FAFC;
+  --text-secondary: #A1A1AA;
   --text-muted: #64748b;
-  --border: rgba(255, 255, 255, 0.05);
-  --glass: rgba(18, 20, 28, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.05);
+  --text-on-accent: #0b0c10;
+  --border: rgba(16, 185, 129, 0.4);
+  --glass: rgba(6, 44, 34, 0.7);
+  --glass-border: rgba(16, 185, 129, 0.4);
   --shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
-  --accent: #54e5a6;
-  --accent-glow: rgba(84, 229, 166, 0.2);
+  --accent: #10B981;
+  --accent-rgb: 16, 185, 129;
+  --accent-light: #34D399;
+  --accent-dark: #059669;
+  --accent-secondary: #0D9488;
+  --accent-glow: rgba(16, 185, 129, 0.2);
   --noise-opacity: 0.02;
 }
 
-.light {
-  /* Optional light mode */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+html.light {
+  /* Light Green (Emerald Revisi) */
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #ecfdf5;
+  --bg-tertiary: #d1fae5;
+  --text-primary: #1E293B;
+  --text-secondary: #71717A;
   --text-muted: #94a3b8;
-  --border: rgba(15, 23, 42, 0.1);
-  --glass: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.9);
+  --text-on-accent: #FFFFFF;
+  --border: rgba(5, 150, 105, 0.3);
+  --glass: rgba(236, 253, 245, 0.7);
+  --glass-border: rgba(5, 150, 105, 0.3);
   --shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
-  --accent: #3dbb84;
-  --accent-glow: rgba(84, 229, 166, 0.25);
+  --accent: #059669;
+  --accent-rgb: 5, 150, 105;
+  --accent-light: #10B981;
+  --accent-dark: #047857; /* Updated secondary */
+  --accent-secondary: #047857; /* Updated */
+  --accent-glow: rgba(5, 150, 105, 0.25);
   --noise-opacity: 0.03;
+}
+
+html.theme-blue {
+  /* Dark Blue (Azure Revisi) */
+  --bg-secondary: #0f172a;
+  --bg-tertiary: #1e293b;
+  --border: rgba(59, 130, 246, 0.4);
+  --glass: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(59, 130, 246, 0.4);
+  --accent: #3B82F6;
+  --accent-rgb: 59, 130, 246;
+  --accent-light: #60A5FA;
+  --accent-dark: #2563EB;
+  --accent-secondary: #1D4ED8;
+  --accent-glow: rgba(59, 130, 246, 0.2);
+  --text-on-accent: #0b0c10;
+}
+
+html.light.theme-blue {
+  /* Light Blue (Royal Revisi) */
+  --bg-secondary: #eff6ff;
+  --bg-tertiary: #dbeafe;
+  --border: rgba(37, 99, 235, 0.3);
+  --glass: rgba(239, 246, 255, 0.7);
+  --glass-border: rgba(37, 99, 235, 0.3);
+  --accent: #2563EB;
+  --accent-rgb: 37, 99, 235;
+  --accent-light: #3B82F6;
+  --accent-dark: #1E3A8A; /* Updated secondary */
+  --accent-secondary: #1E3A8A; /* Updated */
+  --accent-glow: rgba(37, 99, 235, 0.25);
+  --text-on-accent: #FFFFFF;
 }
 
 /* ============================================================
@@ -89,7 +131,7 @@ body {
   border-radius: 4px;
 }
 .thin-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: rgba(84, 229, 166, 0.4);
+  background: rgba(var(--accent-rgb), 0.4);
 }
 
 /* ============================================================
@@ -114,7 +156,7 @@ body {
 
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, #3dbb84 0%, #54e5a6 50%, #86f0c3 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, rgba(var(--accent-rgb), 0.8) 50%, rgba(var(--accent-rgb), 0.4) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -152,9 +194,9 @@ body {
   /* Pill badge */
   .badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
-    background: rgba(84, 229, 166, 0.1);
+    background: rgba(var(--accent-rgb), 0.1);
     color: var(--accent);
-    border: 1px solid rgba(84, 229, 166, 0.2);
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
   }
 
   /* Active nav link */
@@ -207,7 +249,7 @@ body {
   left: -20%;
   width: 80%;
   height: 80%;
-  background: radial-gradient(circle, rgba(84, 229, 166, 0.08) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.08) 0%, transparent 60%);
   animation: meshFloat1 12s ease-in-out infinite;
 }
 
