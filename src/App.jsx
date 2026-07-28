@@ -18,7 +18,7 @@ function App() {
         Solid dark background based on index.css variables 
         No mesh-bg or noise applied as per the new clean design requirement
       */}
-      <div className="relative min-h-screen w-full flex flex-col selection:bg-accent-glow selection:text-white bg-[var(--bg-primary)]">
+      <div className="relative min-h-screen w-full flex flex-col selection:bg-accent-glow selection:text-text-primary bg-[var(--bg-primary)]">
         
         {/* Top Navigation Bar */}
         <TopNav activeTab={activeTab} setActiveTab={setActiveTab} />
