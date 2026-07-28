@@ -88,7 +88,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                       className="absolute -inset-[60%] pointer-events-none z-[-1]"
                       style={{
                         background:
-                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(var(--accent-rgb),0.7) 0%, rgba(var(--accent-rgb),0.3) 45%, transparent 75%)',
+                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgb(var(--accent-rgb)/0.5) 0%, rgb(var(--accent-rgb)/0.5) 45%, transparent 75%)',
                         filter: 'url(#spray-edge)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
@@ -99,7 +99,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                       className="absolute -inset-[25%] pointer-events-none z-[-1]"
                       style={{
                         background:
-                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(var(--accent-rgb),0.85) 0%, rgba(var(--accent-rgb),0.5) 55%, transparent 80%)',
+                          'radial-gradient(ellipse 60% 55% at 50% 50%, rgb(var(--accent-rgb)/0.5) 0%, rgb(var(--accent-rgb)/0.5) 55%, transparent 80%)',
                         filter: 'url(#spray-edge)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
@@ -110,7 +110,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                       className="absolute inset-[4px] pointer-events-none z-[1] rounded-full"
                       style={{
                         background: 'var(--bg-primary)',
-                        boxShadow: 'inset 0 0 0 1.5px rgba(var(--accent-rgb),0.0)',
+                        boxShadow: 'inset 0 0 0 1.5px rgb(var(--accent-rgb)/0.5)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                     />
@@ -169,9 +169,9 @@ const TopNav = ({ activeTab, setActiveTab }) => {
             className="lg:hidden flex flex-col gap-1.5 w-8 h-8 items-center justify-center"
             aria-label="Toggle menu"
           >
-            <span className={`block h-0.5 bg-white transition-all duration-300 ${mobileOpen ? 'w-5 rotate-45 translate-y-2' : 'w-5'}`} />
+            <span className={`block h-0.5 bg-[var(--text-primary)] transition-all duration-300 ${mobileOpen ? 'w-5 rotate-45 translate-y-2' : 'w-5'}`} />
             <span className={`block h-0.5 bg-accent transition-all duration-300 ${mobileOpen ? 'opacity-0 w-0' : 'w-4'}`} />
-            <span className={`block h-0.5 bg-white transition-all duration-300 ${mobileOpen ? 'w-5 -rotate-45 -translate-y-2' : 'w-6'}`} />
+            <span className={`block h-0.5 bg-[var(--text-primary)] transition-all duration-300 ${mobileOpen ? 'w-5 -rotate-45 -translate-y-2' : 'w-6'}`} />
           </button>
         </div>
       </motion.header>
@@ -188,7 +188,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
           >
             <button
               onClick={() => setMobileOpen(false)}
-              className="absolute top-6 right-6 p-2 text-slate-400 hover:text-[var(--text-primary)]"
+              className="absolute top-6 right-6 p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               <FiX size={22} />
             </button>
@@ -205,7 +205,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                     className={`relative text-left py-3 px-4 rounded-xl text-sm font-bold tracking-widest uppercase transition-all duration-200 overflow-hidden group ${
                       isActive
                         ? 'text-text-on-accent'
-                        : 'text-slate-400 hover:text-white border border-transparent'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-transparent'
                     }`}
                   >
                     {isActive && (

@@ -174,7 +174,7 @@ const HomeSection = ({ setActiveTab }) => {
           {/* 1. Preview CV */}
           <button
             onClick={() => setActiveTab('cv')}
-            className="flex items-center gap-2.5 px-6 py-3.5 bg-accent hover:bg-accent-light text-text-on-accent font-black text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_rgba(var(--accent-rgb),0.25)] hover:shadow-[0_0_30px_rgba(var(--accent-rgb),0.45)] flex-shrink-0"
+            className="flex items-center gap-2.5 px-6 py-3.5 bg-accent hover:bg-accent-light text-text-on-accent font-black text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_rgb(var(--accent-rgb)/0.5)] hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] flex-shrink-0"
           >
             <FiEye size={15} /> Preview My CV
           </button>
@@ -223,7 +223,7 @@ const HomeSection = ({ setActiveTab }) => {
       <div className="hidden lg:flex flex-col items-center justify-center py-4 flex-shrink-0 w-[60px] mx-0 h-[75vh] self-center relative overflow-hidden group">
         
         {/* Core Beam */}
-        <div className="absolute w-[2px] h-full bg-gradient-to-b from-transparent via-accent to-transparent shadow-[0_0_12px_rgba(var(--accent-rgb),0.9)] opacity-90" />
+        <div className="absolute w-[2px] h-full bg-gradient-to-b from-transparent via-accent to-transparent shadow-[0_0_12px_rgb(var(--accent-rgb)/0.5)] opacity-90" />
         
         {/* Glowing Aura */}
         <div className="absolute w-[10px] h-3/4 bg-accent/20 blur-[8px] rounded-full" />
@@ -301,7 +301,7 @@ const HomeSection = ({ setActiveTab }) => {
           <div
             className="absolute inset-0 pointer-events-none rounded-full"
             style={{
-              background: 'radial-gradient(ellipse at center, rgba(var(--accent-rgb),0.12) 0%, transparent 65%)',
+              background: 'radial-gradient(ellipse at center, rgb(var(--accent-rgb)/0.5) 0%, transparent 65%)',
               transform: 'scale(1.4)'
             }}
           />
@@ -310,7 +310,7 @@ const HomeSection = ({ setActiveTab }) => {
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'radial-gradient(ellipse 65% 75% at 50% 52%, rgba(var(--accent-rgb),0.16) 0%, transparent 70%)',
+              background: 'radial-gradient(ellipse 65% 75% at 50% 52%, rgb(var(--accent-rgb)/0.5) 0%, transparent 70%)',
               filter: 'blur(22px)',
             }}
           />
@@ -337,8 +337,8 @@ const HomeSection = ({ setActiveTab }) => {
             className="relative z-10 w-full h-full overflow-hidden bg-background"
             style={{
               borderRadius: '42% 58% 55% 45% / 46% 42% 58% 54%',
-              border: '2px solid rgba(var(--accent-rgb),0.4)',
-              boxShadow: '0 0 0 5px rgba(var(--accent-rgb),0.06), 0 0 50px rgba(var(--accent-rgb),0.16)',
+              border: '1px solid rgb(var(--accent-rgb)/0.5)',
+              boxShadow: '0 0 0 2px rgb(var(--accent-rgb)/0.2), 0 0 40px rgb(var(--accent-rgb)/0.4)',
             }}
           >
             <img
@@ -389,7 +389,7 @@ const HomeSection = ({ setActiveTab }) => {
             <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">Standardized Code</span>
           </motion.div>          {/* XP badge */}
           <motion.div
-            className="absolute -top-3 -right-1 bg-accent text-text-on-accent rounded-xl px-3 py-2 shadow-[0_0_18px_rgba(var(--accent-rgb),0.5)] z-20"
+            className="absolute -top-3 -right-1 bg-accent text-text-on-accent rounded-xl px-3 py-2 shadow-[0_0_18px_rgb(var(--accent-rgb)/0.5)] z-20"
             animate={{ rotate: [0, 2, 0, -2, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >

@@ -194,7 +194,7 @@ export default function Skills() {
                           isTabsExpanded ? 'px-4 py-2' : 'p-2'
                         } ${
                           isActive 
-                            ? 'bg-accent/15 border-border shadow-[0_0_20px_rgba(var(--accent-rgb),0.1)]' 
+                            ? 'bg-accent/15 border-border shadow-[0_0_20px_rgb(var(--accent-rgb)/0.5)]' 
                             : 'bg-transparent border-transparent hover:bg-white/10'
                         }`}
                         title={label}
@@ -202,7 +202,7 @@ export default function Skills() {
                         {isActive && (
                           <motion.div
                             layoutId="activeSkillIndicator"
-                            className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgba(var(--accent-rgb),0.5)] hidden lg:block"
+                            className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)] hidden lg:block"
                             initial={false}
                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                           />

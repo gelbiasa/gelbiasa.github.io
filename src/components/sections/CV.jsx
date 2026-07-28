@@ -76,7 +76,7 @@ const CV = () => {
               <button
                 onClick={() => setCvLang('en')}
                 className={`px-3 md:px-4 py-1 text-[10px] md:text-xs font-bold rounded-full transition-all ${
-                  cvLang === 'en' ? 'bg-accent text-black shadow-[0_0_10px_rgba(var(--accent-rgb),0.3)]' : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
+                  cvLang === 'en' ? 'bg-accent text-black shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)]' : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
                 }`}
               >
                 English
@@ -84,7 +84,7 @@ const CV = () => {
               <button
                 onClick={() => setCvLang('id')}
                 className={`px-3 md:px-4 py-1 text-[10px] md:text-xs font-bold rounded-full transition-all ${
-                  cvLang === 'id' ? 'bg-accent text-black shadow-[0_0_10px_rgba(var(--accent-rgb),0.3)]' : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
+                  cvLang === 'id' ? 'bg-accent text-black shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)]' : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
                 }`}
               >
                 Indonesia
@@ -135,7 +135,7 @@ const CV = () => {
             >
               <div className="relative mb-8">
                 <div className="absolute inset-0 bg-accent/20 rounded-full blur-xl animate-pulse" />
-                <div className="w-24 h-24 shrink-0 rounded-full bg-background border-2 border-border flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(var(--accent-rgb),0.2)]">
+                <div className="w-24 h-24 shrink-0 rounded-full bg-background border-2 border-border flex items-center justify-center relative z-10 shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)]">
                   <FiClock className="w-10 h-10 text-accent" />
                 </div>
               </div>

@@ -15,7 +15,7 @@ const experiences = [
     company: 'PT Multi Spunindo Jaya Tbk',
     role: 'Intern — Full Stack Developer',
     period: 'July 2025 – December 2025',
-    current: true,
+    current: false,
     points: [
       'Designed and developed a Bill of Materials (BOM) data integration system to optimize production efficiency across Jumbo, Slitter, and Meltblown lines.',
       'Implemented business logic using Laravel and MSJ Framework (the company\'s proprietary in-house framework) to standardize application modules.',
@@ -82,7 +82,7 @@ export default function Experience() {
             >
               {/* Timeline dot */}
               <div className="absolute left-[18px] md:left-[26px] top-2 flex items-center justify-center">
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${exp.current ? 'border-accent bg-accent/20 shadow-[0_0_12px_rgba(var(--accent-rgb),0.5)]' : 'border-slate-600 bg-surface'}`}>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${exp.current ? 'border-accent bg-accent/20 shadow-[0_0_12px_rgb(var(--accent-rgb)/0.5)]' : 'border-slate-600 bg-surface'}`}>
                   <div className={`w-2 h-2 rounded-full ${exp.current ? 'bg-accent animate-pulse' : 'bg-slate-600'}`} />
                 </div>
               </div>
