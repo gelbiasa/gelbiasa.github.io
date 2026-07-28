@@ -14,19 +14,29 @@ export default {
       },
       colors: {
         accent: {
-          DEFAULT: '#54e5a6', // Mint green
-          light: '#7affc7',
-          dark: '#3dbb84',
+          DEFAULT: 'rgb(var(--accent-rgb) / <alpha-value>)', 
+          light: 'var(--accent-light)',
+          dark: 'var(--accent-dark)',
         },
         surface: {
-          DEFAULT: '#0f111a',
-          2: '#161925',
-          3: '#1e2233',
+          DEFAULT: 'var(--bg-secondary)',
+          2: 'var(--bg-tertiary)',
+          3: 'var(--border)',
+        },
+        border: 'var(--border)',
+        background: {
+          DEFAULT: 'var(--bg-primary)'
+        },
+        text: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+          'on-accent': 'var(--text-on-accent)'
         }
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-mesh': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'gradient-mesh': 'linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%)',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
@@ -54,3 +64,4 @@ export default {
   },
   plugins: [],
 }
+ 
