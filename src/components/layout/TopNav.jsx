@@ -153,6 +153,11 @@ const TopNav = ({ activeTab, setActiveTab }) => {
               className={`w-5 h-5 rounded-full bg-[#3B82F6] transition-transform ${colorTheme === 'blue' ? 'scale-110 ring-2 ring-accent ring-offset-2 ring-offset-[var(--bg-primary)]' : 'scale-90 opacity-70 hover:opacity-100'}`}
               title="Blue Theme"
             />
+            <button
+              onClick={() => setColorTheme('amber')}
+              className={`w-5 h-5 rounded-full bg-[#F59E0B] transition-transform ${colorTheme === 'amber' ? 'scale-110 ring-2 ring-accent ring-offset-2 ring-offset-[var(--bg-primary)]' : 'scale-90 opacity-70 hover:opacity-100'}`}
+              title="Amber Theme"
+            />
           </div>
 
           {/* Hire Me CTA */}
@@ -254,6 +259,10 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                   <button
                     onClick={() => setColorTheme('blue')}
                     className={`w-6 h-6 rounded-full bg-[#3B82F6] ${colorTheme === 'blue' ? 'ring-2 ring-accent ring-offset-2 ring-offset-[var(--bg-primary)]' : 'opacity-70'}`}
+                  />
+                  <button
+                    onClick={() => setColorTheme('amber')}
+                    className={`w-6 h-6 rounded-full bg-[#F59E0B] ${colorTheme === 'amber' ? 'ring-2 ring-accent ring-offset-2 ring-offset-[var(--bg-primary)]' : 'opacity-70'}`}
                   />
                 </div>
               </div>
