@@ -28,9 +28,11 @@ export function ThemeProvider({ children }) {
     }
     
     // Handle color theme
-    root.classList.remove('theme-green', 'theme-blue')
+    root.classList.remove('theme-green', 'theme-blue', 'theme-amber')
     if (colorTheme === 'blue') {
       root.classList.add('theme-blue')
+    } else if (colorTheme === 'amber') {
+      root.classList.add('theme-amber')
     } else {
       root.classList.add('theme-green')
     }
