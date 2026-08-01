@@ -81,6 +81,38 @@ html.light.theme-blue {
   --text-on-accent: #FFFFFF;
 }
 
+html.theme-amber {
+  /* Dark Amber (Gold Revisi) */
+  --bg-secondary: #1e1b15;
+  --bg-tertiary: #29251c;
+  --border: rgba(245, 158, 11, 0.4);
+  --glass: rgba(30, 27, 21, 0.7);
+  --glass-border: rgba(245, 158, 11, 0.4);
+  --accent: #F59E0B;
+  --accent-rgb: 245 158 11;
+  --accent-light: #FBBF24;
+  --accent-dark: #D97706;
+  --accent-secondary: #B45309;
+  --accent-glow: rgba(245, 158, 11, 0.2);
+  --text-on-accent: #0b0c10;
+}
+
+html.light.theme-amber {
+  /* Light Amber (Gold Revisi) */
+  --bg-secondary: #fffbeb;
+  --bg-tertiary: #fef3c7;
+  --border: rgba(217, 119, 6, 0.3);
+  --glass: rgba(255, 251, 235, 0.7);
+  --glass-border: rgba(217, 119, 6, 0.3);
+  --accent: #D97706;
+  --accent-rgb: 217 119 6;
+  --accent-light: #F59E0B;
+  --accent-dark: #92400E;
+  --accent-secondary: #92400E;
+  --accent-glow: rgba(217, 119, 6, 0.25);
+  --text-on-accent: #FFFFFF;
+}
+
 /* ============================================================
    BASE STYLES
    ============================================================ */
