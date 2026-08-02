@@ -31,6 +31,11 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
           {activeTab === 'projects' && <Projects />}
           {activeTab === 'skills' && <Skills />}
           {activeTab === 'experience' && <Experience />}
+          {activeTab === 'education' && (
+            <div className="flex items-center justify-center h-full min-h-[400px] pt-24">
+              <h2 className="text-2xl font-bold text-text-secondary">Education Section Coming Soon</h2>
+            </div>
+          )}
           {activeTab === 'cv' && <CV />}
           {activeTab === 'contact' && (
             <div className="flex items-center justify-center h-full min-h-[400px]">
