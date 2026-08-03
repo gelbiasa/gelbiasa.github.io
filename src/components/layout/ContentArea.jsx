@@ -6,8 +6,11 @@ import Projects from '../sections/Projects';
 import Skills from '../sections/Skills';
 import Experience from '../sections/Experience';
 import CV from '../sections/CV';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ContentArea = ({ activeTab, setActiveTab }) => {
+  const { t } = useLanguage();
+
   // Animation variants
   const variants = {
     initial: { opacity: 0, scale: 0.98 },
@@ -33,13 +36,13 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
           {activeTab === 'experience' && <Experience />}
           {activeTab === 'education' && (
             <div className="flex items-center justify-center h-full min-h-[400px] pt-24">
-              <h2 className="text-2xl font-bold text-text-secondary">Education Section Coming Soon</h2>
+              <h2 className="text-2xl font-bold text-slate-400">{t('contentArea.educationSoon')}</h2>
             </div>
           )}
           {activeTab === 'cv' && <CV />}
           {activeTab === 'contact' && (
-            <div className="flex items-center justify-center h-full min-h-[400px]">
-              <h2 className="text-2xl text-slate-400">Contact Section Coming Soon</h2>
+            <div className="flex items-center justify-center h-full min-h-[400px] pt-24">
+              <h2 className="text-2xl font-bold text-slate-400">{t('contentArea.contactSoon')}</h2>
             </div>
           )}
         </motion.div>

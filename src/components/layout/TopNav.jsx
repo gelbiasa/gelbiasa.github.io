@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiArrowUpRight, FiSun, FiMoon } from 'react-icons/fi';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const TopNav = ({ activeTab, setActiveTab }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isDark, toggleTheme, colorTheme, setColorTheme } = useTheme();
+  const { language, toggleLanguage, t } = useLanguage();
 
   const tabs = [
     { id: 'home', label: 'Home' },
@@ -124,7 +126,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                       : 'text-slate-400 group-hover:text-[var(--text-primary)]'
                   }`}
                 >
-                  {tab.label}
+                  {t(`nav.${tab.id}`)}
                 </span>
               </button>
             );
@@ -134,8 +136,26 @@ const TopNav = ({ activeTab, setActiveTab }) => {
         {/* === RIGHT CTA === */}
         <div className="flex items-center gap-3">
           
-          {/* Theme & Color Toggles */}
+          {/* Language, Theme & Color Toggles */}
           <div className="hidden sm:flex items-center gap-2 mr-2 border border-[var(--border)] rounded-full p-1 bg-[var(--bg-secondary)] shadow-sm">
+            
+            {/* Language Toggle */}
+            <div className="flex items-center mx-1 bg-[var(--bg-primary)] rounded-full border border-[var(--border)] overflow-hidden">
+              <button
+                onClick={() => toggleLanguage('en')}
+                className={`px-2 py-1 text-[10px] font-bold transition-colors ${language === 'en' ? 'bg-accent text-text-on-accent' : 'text-slate-500 hover:text-text-primary'}`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => toggleLanguage('id')}
+                className={`px-2 py-1 text-[10px] font-bold transition-colors ${language === 'id' ? 'bg-accent text-text-on-accent' : 'text-slate-500 hover:text-text-primary'}`}
+              >
+                ID
+              </button>
+            </div>
+            <div className="w-px h-4 bg-[var(--border)] mr-1"></div>
+
             <button
               onClick={toggleTheme}
               className={`p-1.5 rounded-full transition-all duration-300 ${isDark ? 'text-accent bg-surface-2' : 'text-[var(--text-primary)] hover:bg-[var(--border)]'}`}
@@ -166,7 +186,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
             href="mailto:isroqigelby@gmail.com"
             className="hidden sm:flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent text-text-on-accent text-xs font-black tracking-wider uppercase hover:bg-accent-light transition-all duration-300 shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)]"
           >
-            Hire Me <FiArrowUpRight size={14} />
+            {t('nav.hireMe')} <FiArrowUpRight size={14} />
           </a>
 
           {/* Mobile Hamburger */}
@@ -235,16 +255,35 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                         />
                       </>
                     )}
-                    <span className="relative z-10">{tab.label}</span>
+                    <span className="relative z-10">{t(`nav.${tab.id}`)}</span>
                   </motion.button>
                 );
               })}
             </nav>
             <div className="mt-auto pt-8 border-t border-[var(--border)] flex flex-col gap-4">
               
+              {/* Mobile Language Toggle */}
+              <div className="flex items-center justify-between px-2 mb-2">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Language</span>
+                <div className="flex items-center bg-[var(--bg-secondary)] rounded-full border border-[var(--border)] overflow-hidden">
+                  <button
+                    onClick={() => toggleLanguage('en')}
+                    className={`px-4 py-1.5 text-xs font-bold transition-colors ${language === 'en' ? 'bg-accent text-text-on-accent' : 'text-slate-500 hover:text-text-primary'}`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    onClick={() => toggleLanguage('id')}
+                    className={`px-4 py-1.5 text-xs font-bold transition-colors ${language === 'id' ? 'bg-accent text-text-on-accent' : 'text-slate-500 hover:text-text-primary'}`}
+                  >
+                    ID
+                  </button>
+                </div>
+              </div>
+
               {/* Mobile Theme & Color Toggles */}
               <div className="flex items-center justify-between px-2">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Theme</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('nav.theme')}</span>
                 <div className="flex items-center gap-3 border border-[var(--border)] rounded-full p-1 bg-[var(--bg-secondary)]">
                   <button
                     onClick={toggleTheme}
@@ -272,7 +311,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                 href="mailto:isroqigelby@gmail.com"
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent text-text-on-accent text-sm font-black uppercase tracking-wider"
               >
-                Hire Me <FiArrowUpRight size={16} />
+                {t('nav.hireMe')} <FiArrowUpRight size={16} />
               </a>
             </div>
           </motion.div>
