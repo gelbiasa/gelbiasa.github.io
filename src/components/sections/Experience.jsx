@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiBriefcase, FiCalendar, FiTool, FiAward } from 'react-icons/fi';
+import { useLanguage } from '../../context/LanguageContext';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -11,40 +12,30 @@ const fadeUp = {
   }),
 };
 
-const experiences = [
-  {
-    company: 'PT Multi Spunindo Jaya Tbk',
-    role: 'Intern — Full Stack Developer',
-    period: 'July 2025 – December 2025',
-    current: false,
-    certificate: { label: 'Certificate Letter' },
-    points: [
-      'Designed and developed a Bill of Materials (BOM) data integration system to optimize production efficiency across Jumbo, Slitter, and Meltblown lines.',
-      'Implemented business logic using Laravel and MSJ Framework (the company\'s proprietary in-house framework) to standardize application modules.',
-      'Integrated SAP APIs to perform real-time automated validation on resource and material data, ensuring all selected data is registered in SAP and minimizing manual data entry risks.',
-      'Authored system user manuals and other technical documentation to facilitate smooth deployment and end-user operations.',
-    ],
-    tools: ['Laravel', 'MSJ Framework', 'SAP API', 'MySQL', 'VsCode'],
-  },
-  {
-    company: 'UPA TIK Politeknik Negeri Malang',
-    role: 'Intern — Back-end Developer',
-    period: 'February 2025 – June 2025',
-    current: false,
-    certificate: { label: 'Internship Certificate' },
-    points: [
-      'Designed the Physical Database Model (PDM) using MySQL Workbench for Information Systems, User Access Management, and Log Tables.',
-      'Successfully implemented system database structures and schemas using MySQL.',
-      'Created modular JavaScript templates for Summernote Editor integration, including secure image upload and deletion features.',
-      'Developed reusable code components utilizing Laravel Traits to streamline common functions across models and controllers, such as soft deletes, user action logging, file handling, and response formatting.',
-      'Designed and architected the official PPID (Information and Documentation Management Officer) Website.',
-    ],
-    tools: ['VsCode', 'MySQL Workbench', 'Summernote Editor', 'Bootstrap', 'Postman', 'Laravel'],
-  },
-];
-
 export default function Experience() {
+  const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
+
+  const experiences = [
+    {
+      company: 'PT Multi Spunindo Jaya Tbk',
+      role: 'Intern — Full Stack Developer',
+      period: 'July 2025 – December 2025',
+      current: false,
+      certificate: { label: t('experience.certLetter') },
+      points: t('experience.points.spunindo'),
+      tools: ['Laravel', 'MSJ Framework', 'SAP API', 'MySQL', 'VsCode'],
+    },
+    {
+      company: 'UPA TIK Politeknik Negeri Malang',
+      role: 'Intern — Back-end Developer',
+      period: 'February 2025 – June 2025',
+      current: false,
+      certificate: { label: t('experience.internCert') },
+      points: t('experience.points.upatik'),
+      tools: ['VsCode', 'MySQL Workbench', 'Summernote Editor', 'Bootstrap', 'Postman', 'Laravel'],
+    },
+  ];
 
   return (
     <section className="relative pt-28 lg:pt-36 px-6 md:px-12 lg:px-20 xl:px-28 pb-20">
@@ -60,11 +51,11 @@ export default function Experience() {
           className="font-display font-bold text-3xl md:text-4xl"
           style={{ color: 'var(--text-primary)' }}
         >
-          My Professional{' '}
-          <span className="gradient-text">Journey</span>
+          {t('experience.title1')}{' '}
+          <span className="gradient-text">{t('experience.title2')}</span>
         </h2>
         <p className="text-text-secondary mt-3 text-sm md:text-base max-w-xl mx-auto">
-          Hands-on experience building real-world systems in fast-paced industry environments.
+          {t('experience.subtitle')}
         </p>
       </motion.div>
 
@@ -99,7 +90,7 @@ export default function Experience() {
                     {exp.current && (
                       <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-accent bg-accent/10 border border-border px-2.5 py-1 rounded-full mb-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                        Current
+                        {t('experience.current')}
                       </span>
                     )}
                     <h3 className="font-display font-bold text-xl md:text-2xl text-text-primary">
@@ -132,7 +123,7 @@ export default function Experience() {
                   <div className="flex flex-wrap items-center gap-2 flex-1">
                     <div className="flex items-center gap-1.5 text-slate-500 text-xs mr-1">
                       <FiTool size={12} />
-                      <span className="font-semibold">Tools:</span>
+                      <span className="font-semibold">{t('experience.tools')}</span>
                     </div>
                     {exp.tools.map((tool) => (
                       <span
@@ -184,15 +175,15 @@ export default function Experience() {
               <div className="w-16 h-16 mx-auto bg-accent/10 text-accent rounded-full flex items-center justify-center mb-4">
                 <FiAward size={32} />
               </div>
-              <h3 className="text-xl font-display font-bold text-text-primary mb-2">Coming Soon</h3>
+              <h3 className="text-xl font-display font-bold text-text-primary mb-2">{t('experience.comingSoon')}</h3>
               <p className="text-sm text-text-secondary mb-6">
-                The certificate document is currently being prepared and will be available to view shortly.
+                {t('experience.comingSoonDesc')}
               </p>
               <button
                 onClick={() => setShowModal(false)}
                 className="w-full py-2.5 rounded-xl bg-accent text-text-on-accent font-bold text-sm uppercase tracking-wider hover:bg-accent-light transition-colors"
               >
-                Close
+                {t('experience.close')}
               </button>
             </motion.div>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiEye, FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMapPin, FiBriefcase, FiBook, FiExternalLink, FiX } from 'react-icons/fi';
+import { useLanguage } from '../../context/LanguageContext';
 
 /* ─── Typewriter Hook ─── */
 const useTypewriter = (text, speed = 60, startDelay = 400) => {
@@ -54,6 +55,7 @@ const TypewriterHeading = ({ text, speed = 65, startDelay = 600 }) => {
 /* ─── Main Component ─── */
 const HomeSection = ({ setActiveTab }) => {
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const { t, language } = useLanguage();
 
   return (
     <>
@@ -83,7 +85,7 @@ const HomeSection = ({ setActiveTab }) => {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="text-slate-500 font-mono text-sm mt-2 tracking-widest"
           >
-            Laravel Expert &amp; Database Engineer
+            {t('home.subtitle')}
           </motion.p>
         </div>
 
@@ -95,13 +97,17 @@ const HomeSection = ({ setActiveTab }) => {
           className="mb-8"
         >
           <p className="text-text-secondary text-sm lg:text-base leading-relaxed text-justify w-full mb-4">
-            D-IV Business Information Systems student at <span className="text-text-primary font-semibold">Politeknik Negeri Malang</span>. I specialize as a Laravel Expert and Database Engineer, focusing on writing standardized code and designing robust, scalable enterprise architectures.
+            {language === 'en' ? (
+              <>D-IV Business Information Systems student at <span className="text-text-primary font-semibold">Politeknik Negeri Malang</span>. I specialize as a Laravel Expert and Database Engineer, focusing on writing standardized code and designing robust, scalable enterprise architectures.</>
+            ) : (
+              <>Mahasiswa D-IV Sistem Informasi Bisnis di <span className="text-text-primary font-semibold">Politeknik Negeri Malang</span>. Saya berfokus sebagai Laravel Expert dan Database Engineer, dengan spesialisasi dalam menulis kode terstandardisasi dan merancang arsitektur sistem tingkat <em className="text-text-primary font-semibold">enterprise</em> yang tangguh dan terukur.</>
+            )}
           </p>
           <button
             onClick={() => setShowAboutModal(true)}
             className="flex items-center gap-2 text-accent text-sm font-semibold hover:text-accent-light transition-colors group"
           >
-            Read More <FiArrowRight className="group-hover:translate-x-1 transition-transform" size={14} />
+            {t('home.readMore')} <FiArrowRight className="group-hover:translate-x-1 transition-transform" size={14} />
           </button>
         </motion.div>
 
@@ -119,12 +125,12 @@ const HomeSection = ({ setActiveTab }) => {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-            <span className="text-xs font-bold tracking-widest uppercase text-text-secondary">Experience</span>
+            <span className="text-xs font-bold tracking-widest uppercase text-text-secondary">{t('nav.experience')}</span>
             <button
               onClick={() => setActiveTab('experience')}
               className="flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent-light transition-colors group"
             >
-              See Detail <FiExternalLink size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              {t('home.seeDetail')} <FiExternalLink size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
           </div>
 
@@ -176,7 +182,7 @@ const HomeSection = ({ setActiveTab }) => {
             onClick={() => setActiveTab('cv')}
             className="flex items-center gap-2.5 px-6 py-3.5 bg-accent hover:bg-accent-light text-text-on-accent font-black text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_rgb(var(--accent-rgb)/0.5)] hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] flex-shrink-0"
           >
-            <FiEye size={15} /> Preview My CV
+            <FiEye size={15} /> {t('home.previewCv')}
           </button>
 
           {/* Divider */}
@@ -189,7 +195,7 @@ const HomeSection = ({ setActiveTab }) => {
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0"
           >
-            <FiGithub size={16} /> View GitHub
+            <FiGithub size={16} /> {t('home.viewGithub')}
           </a>
 
           {/* Divider */}
@@ -202,7 +208,7 @@ const HomeSection = ({ setActiveTab }) => {
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0"
           >
-            <FiLinkedin size={16} /> View LinkedIn
+            <FiLinkedin size={16} /> {t('home.viewLinkedin')}
           </a>
 
           {/* Divider */}
@@ -213,7 +219,7 @@ const HomeSection = ({ setActiveTab }) => {
             onClick={() => setActiveTab('projects')}
             className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-accent hover:bg-accent/6 text-sm font-semibold tracking-wide transition-all duration-200 group flex-shrink-0"
           >
-            View Projects <FiArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            {t('home.viewProjects')} <FiArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </motion.div>
 
@@ -356,8 +362,8 @@ const HomeSection = ({ setActiveTab }) => {
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
             <div>
-              <p className="text-accent text-[9px] font-black tracking-widest uppercase leading-none">Status</p>
-              <p className="text-text-primary text-[11px] font-semibold leading-none mt-0.5">Open to Hire</p>
+              <p className="text-accent text-[9px] font-black tracking-widest uppercase leading-none">{t('home.status')}</p>
+              <p className="text-text-primary text-[11px] font-semibold leading-none mt-0.5">{t('home.openToHire')}</p>
             </div>
           </motion.div>
 
@@ -393,8 +399,8 @@ const HomeSection = ({ setActiveTab }) => {
             animate={{ rotate: [0, 2, 0, -2, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <p className="text-[9px] font-black tracking-widest uppercase leading-none">Exp.</p>
-            <p className="text-text-on-accent text-xs font-black leading-none mt-0.5">2+ Years</p>
+            <p className="text-[9px] font-black tracking-widest uppercase leading-none">{t('home.exp')}</p>
+            <p className="text-text-on-accent text-xs font-black leading-none mt-0.5">{t('home.years')}</p>
           </motion.div>
         </div>
 
@@ -408,7 +414,7 @@ const HomeSection = ({ setActiveTab }) => {
           <span className="flex-shrink-0 w-9 h-9 rounded-xl bg-accent/10 border border-border flex items-center justify-center">
             <FiMapPin size={16} className="text-accent" />
           </span>
-          <span className="text-sm font-medium tracking-wide">Malang, East Java, Indonesia</span>
+          <span className="text-sm font-medium tracking-wide">{t('home.location')}</span>
         </motion.div>
 
 
@@ -445,33 +451,21 @@ const HomeSection = ({ setActiveTab }) => {
 
               {/* Modal Content */}
               <h2 className="font-display font-bold text-2xl mb-6 text-text-primary">
-                Qualification <span className="text-accent">Profile</span>
+                {t('home.modalTitle')} <span className="text-accent">{t('home.modalHighlight')}</span>
               </h2>
               
               <div className="space-y-4 text-sm leading-relaxed text-text-secondary text-justify mb-8">
-                <p>
-                  I'm a D-IV Business Information Systems student who focuses on developing web and
-                  mobile applications. Currently interning as a Back-end Developer at UPA TIK
-                  Politeknik Negeri Malang.
-                </p>
-                <p>
-                  I have experience building secure and efficient information systems using Laravel,
-                  PHP, JavaScript, and Flutter for mobile applications. I also master HTML, CSS,
-                  MySQL, and am familiar with MySQL Workbench.
-                </p>
-                <p>
-                  I am enthusiastic about developing technology solutions that support business
-                  processes and improve user experience. With a passion for innovation, I want to
-                  create a positive impact through the projects I work on.
-                </p>
+                <p>{t('home.modalP1')}</p>
+                <p>{t('home.modalP2')}</p>
+                <p>{t('home.modalP3')}</p>
               </div>
 
               {/* Stats Preview inside Modal */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
                 {[
-                  { label: 'Projects Built', value: '5+' },
-                  { label: 'Technologies', value: '10+' },
-                  { label: 'Years Learning', value: '2+' }
+                  { label: t('home.statProjects'), value: '5+' },
+                  { label: t('home.statTech'), value: '10+' },
+                  { label: t('home.statYears'), value: '2+' }
                 ].map((stat) => (
                   <div key={stat.label} className="bg-surface border border-border rounded-xl p-4 text-center">
                     <div className="font-display font-bold text-xl lg:text-2xl text-accent">{stat.value}</div>

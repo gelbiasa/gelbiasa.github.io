@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiClock, FiExternalLink } from 'react-icons/fi';
+import { useLanguage } from '../../context/LanguageContext';
 
 const CV = () => {
+  const { t } = useLanguage();
   const [cvLang, setCvLang] = useState('en'); // 'en' or 'id'
   const [cvStatus, setCvStatus] = useState('checking');
 
@@ -56,14 +58,14 @@ const CV = () => {
       >
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-1 bg-accent rounded-full" />
-          <p className="text-accent text-sm font-mono tracking-widest uppercase">My Resume</p>
+          <p className="text-accent text-sm font-mono tracking-widest uppercase">{t('cv.kicker')}</p>
         </div>
         <h2 className="font-display font-black text-4xl md:text-5xl tracking-tight mb-4">
-          <span className="text-text-primary">Curriculum </span>
-          <span className="text-accent">Vitae</span>
+          <span className="text-text-primary">{t('cv.title1')} </span>
+          <span className="text-accent">{t('cv.title2')}</span>
         </h2>
         <p className="mt-4 text-sm md:text-base max-w-2xl" style={{ color: 'var(--text-secondary)' }}>
-          Here is a detailed overview of my professional experience, skills, and education. You can read it directly here or download it as a PDF for offline viewing.
+          {t('cv.subtitle')}
         </p>
       </motion.div>
 
@@ -71,7 +73,7 @@ const CV = () => {
         {/* Header Bar */}
         <div className="h-16 bg-surface-2 border-b border-border flex items-center justify-between px-4 md:px-6 shrink-0 z-10">
           <div className="flex items-center gap-3">
-            <span className="hidden sm:block text-xs font-medium text-text-secondary">Select CV Language:</span>
+            <span className="hidden sm:block text-xs font-medium text-text-secondary">{t('cv.selectLang')}</span>
             <div className="flex items-center gap-1 bg-background p-1 rounded-full border border-border">
               <button
                 onClick={() => setCvLang('en')}
@@ -79,7 +81,7 @@ const CV = () => {
                   cvLang === 'en' ? 'bg-accent text-black shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)]' : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
                 }`}
               >
-                English
+                {t('cv.english')}
               </button>
               <button
                 onClick={() => setCvLang('id')}
@@ -87,7 +89,7 @@ const CV = () => {
                   cvLang === 'id' ? 'bg-accent text-black shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)]' : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
                 }`}
               >
-                Indonesia
+                {t('cv.indonesia')}
               </button>
             </div>
           </div>
@@ -100,17 +102,17 @@ const CV = () => {
                 className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-surface-2 border border-border text-text-primary text-[10px] md:text-xs font-bold rounded-full hover:bg-white/10 transition-all"
               >
                 <FiExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                <span className="hidden sm:inline-block">View Full Size</span>
-                <span className="sm:hidden">Full</span>
+                <span className="hidden sm:inline-block">{t('cv.viewFull')}</span>
+                <span className="sm:hidden">{t('cv.full')}</span>
               </a>
               <a 
                 href={currentPath} 
                 download={currentFilename}
                 className="flex items-center gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-accent border border-accent text-white text-[10px] md:text-xs font-bold rounded-full hover:bg-accent hover:text-black transition-all group"
               >
-                <span>Download CV</span>
+                <span>{t('cv.download')}</span>
                 <span className="hidden md:inline-block font-normal opacity-70 group-hover:opacity-90">
-                  ({cvLang === 'en' ? 'English' : 'Indonesia'})
+                  ({cvLang === 'en' ? t('cv.english') : t('cv.indonesia')})
                 </span>
               </a>
             </div>
@@ -122,7 +124,7 @@ const CV = () => {
           {cvStatus === 'checking' && (
             <div className="flex flex-col items-center gap-4">
               <div className="w-8 h-8 rounded-full border-2 border-border border-t-accent animate-spin" />
-              <p className="text-text-secondary text-sm">Checking document...</p>
+              <p className="text-text-secondary text-sm">{t('cv.checking')}</p>
             </div>
           )}
 
@@ -140,10 +142,10 @@ const CV = () => {
                 </div>
               </div>
               <h3 className="font-display text-3xl md:text-4xl font-black text-text-primary mb-4 tracking-tight">
-                CV <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-emerald-400">Coming Soon</span>
+                CV <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-emerald-400">{t('cv.comingSoon')}</span>
               </h3>
               <p className="text-text-secondary text-sm md:text-base max-w-md leading-relaxed">
-                My detailed curriculum vitae is currently being updated. Please check back later or feel free to contact me directly for any inquiries!
+                {t('cv.missingDesc')}
               </p>
             </motion.div>
           )}
@@ -165,10 +167,10 @@ const CV = () => {
                   <FiExternalLink className="w-10 h-10 text-accent relative z-10" />
                 </div>
                 <h3 className="font-display text-2xl md:text-3xl font-black text-text-primary mb-3">
-                  Preview Not Supported
+                  {t('cv.previewNotSupported')}
                 </h3>
                 <p className="text-text-secondary text-sm md:text-base max-w-sm mb-8">
-                  Mobile and tablet browsers often restrict embedded PDF viewing. Please open the CV in full size or download it directly to your device.
+                  {t('cv.previewDesc')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <a 
@@ -177,14 +179,14 @@ const CV = () => {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 px-8 py-3 bg-surface-2 border border-border text-text-primary font-bold rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
                   >
-                    View Full Size
+                    {t('cv.viewFull')}
                   </a>
                   <a 
                     href={currentPath} 
                     download={currentFilename}
                     className="flex items-center justify-center gap-2 px-8 py-3 bg-accent border-2 border-accent text-black font-bold rounded-full hover:bg-transparent hover:text-accent transition-all w-full sm:w-auto"
                   >
-                    Download CV
+                    {t('cv.download')}
                   </a>
                 </div>
               </div>

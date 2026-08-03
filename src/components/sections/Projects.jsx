@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiGithub, FiFigma, FiExternalLink, FiDownload, FiClock, FiStar, FiFolder, FiMonitor, FiUser, FiX, FiArrowRight, FiChevronRight, FiChevronLeft } from 'react-icons/fi'
 import { projects } from '../../data/projects'
+import { useLanguage } from '../../context/LanguageContext'
 
 const iconMap = {
   github: FiGithub,
@@ -121,6 +122,8 @@ function DragScroll({ children, className }) {
 }
 
 function ProjectModal({ project, onClose }) {
+  const { t } = useLanguage()
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -199,10 +202,10 @@ function ProjectModal({ project, onClose }) {
 
             {/* Full Description */}
             <div className="space-y-4 text-text-secondary leading-relaxed text-base md:text-lg">
-              <p>{project.description}</p>
-              {project.detail && (
+              <p>{t(`projectData.${project.id}.description`) || project.description}</p>
+              {(t(`projectData.${project.id}.detail`) || project.detail) && (
                 <div className="p-5 mt-4 rounded-2xl bg-surface-2 border border-border text-text-secondary text-sm md:text-base">
-                  {project.detail}
+                  {t(`projectData.${project.id}.detail`) || project.detail}
                 </div>
               )}
             </div>
@@ -240,6 +243,8 @@ function ProjectModal({ project, onClose }) {
 }
 
 const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
+  const { t } = useLanguage()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -298,7 +303,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
 
         {/* Short Description */}
         <p className="text-sm md:text-base text-text-secondary leading-relaxed line-clamp-3">
-          {project.description}
+          {t(`projectData.${project.id}.description`) || project.description}
         </p>
 
         {/* Project Links (Direct Access) */}
@@ -366,6 +371,7 @@ function EmptyState() {
 }
 
 export default function Projects() {
+  const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState('Intern')
   const [selectedProject, setSelectedProject] = useState(null)
   const [isTabsExpanded, setIsTabsExpanded] = useState(false)
@@ -389,11 +395,11 @@ export default function Projects() {
           className="font-display font-black text-4xl md:text-5xl tracking-tight mb-4"
           style={{ color: 'var(--text-primary)' }}
         >
-          Featured{' '}
-          <span className="gradient-text">Projects</span>
+          {t('projects.title1')}{' '}
+          <span className="gradient-text">{t('projects.title2')}</span>
         </h2>
         <p className="mt-4 text-sm md:text-base max-w-2xl" style={{ color: 'var(--text-secondary)' }}>
-          A curated selection of my work spanning across industrial systems, academic research, and personal experiments.
+          {t('projects.subtitle')}
         </p>
       </motion.div>
 

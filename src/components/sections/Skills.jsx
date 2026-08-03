@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { skills, skillCategories } from '../../data/skills'
+import { useLanguage } from '../../context/LanguageContext'
 
 // We need DragScroll for the sidebar in mobile view
 function DragScroll({ children, className }) {
@@ -143,6 +144,7 @@ function SkillCard({ skill, index }) {
 }
 
 export default function Skills() {
+  const { t } = useLanguage()
   const [activeCategory, setActiveCategory] = useState('all')
   const [isTabsExpanded, setIsTabsExpanded] = useState(false)
 
@@ -166,11 +168,10 @@ export default function Skills() {
             className="font-display font-black text-4xl md:text-5xl tracking-tight mb-4"
             style={{ color: 'var(--text-primary)' }}
           >
-            Skills &{' '}
-            <span className="gradient-text">Technologies</span>
+            {t('skills.title1')} <span className="gradient-text">{t('skills.title2')}</span>
           </h2>
           <p className="mt-4 text-sm md:text-base max-w-2xl" style={{ color: 'var(--text-secondary)' }}>
-            Tools, languages, and technologies I work with to build products.
+            {t('skills.subtitle')}
           </p>
         </motion.div>
 
@@ -183,8 +184,10 @@ export default function Skills() {
               {/* Tabs Container */}
               <div className="p-1.5 lg:p-0 bg-background/95 backdrop-blur-md lg:bg-transparent border border-border lg:border-none rounded-2xl lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300 overflow-hidden flex-1 min-w-0">
                 <DragScroll className="flex lg:flex-col items-center lg:items-stretch gap-2">
-                  {skillCategories.map(({ key, label, icon: Icon }) => {
+                  {skillCategories.map(({ key, label: defaultLabel, icon: Icon }) => {
                     const isActive = activeCategory === key
+                    const labelKey = key === 'all' ? 'allSkills' : key === 'language-stack' ? 'langStack' : 'tools'
+                    const label = t(`skills.${labelKey}`) || defaultLabel
                     
                     return (
                       <button
