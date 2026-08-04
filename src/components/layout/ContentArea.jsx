@@ -6,6 +6,7 @@ import Projects from '../sections/Projects';
 import Skills from '../sections/Skills';
 import Experience from '../sections/Experience';
 import CV from '../sections/CV';
+import Contact from '../sections/Contact';
 import { useLanguage } from '../../context/LanguageContext';
 
 const ContentArea = ({ activeTab, setActiveTab }) => {
@@ -40,11 +41,7 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
             </div>
           )}
           {activeTab === 'cv' && <CV />}
-          {activeTab === 'contact' && (
-            <div className="flex items-center justify-center h-full min-h-[400px] pt-24">
-              <h2 className="text-2xl font-bold text-slate-400">{t('contentArea.contactSoon')}</h2>
-            </div>
-          )}
+          {activeTab === 'contact' && <Contact />}
         </motion.div>
       </AnimatePresence>
     </div>
