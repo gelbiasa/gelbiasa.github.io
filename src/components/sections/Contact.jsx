@@ -1,64 +1,57 @@
-import { motion } from 'framer-motion'
-import { FiArrowUpRight } from 'react-icons/fi'
-import { contacts } from '../../data/contacts'
-
-function ContactCard({ contact, index }) {
-  const { label, handle, url, Icon, color, bg, border } = contact
-
-  return (
-    <motion.a
-      href={url}
-      target={url.startsWith('mailto') ? undefined : '_blank'}
-      rel="noreferrer"
-      className={`contact-card glass rounded-2xl p-5 flex items-center gap-4 border transition-all duration-300 group ${border}`}
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.08 }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-    >
-      {/* Icon bg */}
-      <div
-        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${bg} flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110`}
-      >
-        <Icon className="w-6 h-6" style={{ color }} />
-      </div>
-
-      {/* Text */}
-      <div className="flex-1 min-w-0">
-        <p
-          className="text-xs font-medium mb-0.5"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          {label}
-        </p>
-        <p
-          className="text-sm font-semibold truncate"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          {handle}
-        </p>
-      </div>
-
-      {/* Arrow */}
-      <FiArrowUpRight
-        className="w-4 h-4 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-        style={{ color: 'var(--text-muted)' }}
-      />
-    </motion.a>
-  )
-}
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FiArrowUpRight, FiSend, FiCheckCircle, FiAlertCircle } from 'react-icons/fi'
+import { useLanguage } from '../../context/LanguageContext'
 
 export default function Contact() {
+  const { t } = useLanguage()
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+  const [status, setStatus] = useState('idle') // idle, submitting, success, error
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setStatus('submitting')
+
+    const object = {
+      access_key: "31f87b85-90db-461d-bcf5-97270d4e759a",
+      subject: "New Contact Message from Portfolio",
+      from_name: formData.name,
+      ...formData
+    }
+    const json = JSON.stringify(object)
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: json
+      })
+      const result = await res.json()
+      
+      if (result.success) {
+        setStatus('success')
+        setFormData({ name: '', email: '', message: '' })
+        setTimeout(() => setStatus('idle'), 5000)
+      } else {
+        setStatus('error')
+        setTimeout(() => setStatus('idle'), 5000)
+      }
+    } catch (error) {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 5000)
+    }
+  }
+
   return (
     <section id="contact" className="py-24 relative">
-      {/* Background accent */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'var(--bg-secondary)' }}
-      />
-
-      <div className="section-container relative">
+      <div className="section-container relative px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto">
         {/* Header */}
         <motion.div
           className="text-center mb-14"
@@ -67,31 +60,127 @@ export default function Contact() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <span className="badge mb-4">Contact</span>
+          <span className="badge mb-4">{t('contact.kicker')}</span>
           <h2
             className="font-display font-bold text-3xl md:text-4xl"
             style={{ color: 'var(--text-primary)' }}
           >
-            Let's{' '}
-            <span className="gradient-text">Connect</span>
+            {t('contact.title1')}{' '}
+            <span className="gradient-text">{t('contact.title2')}</span>
           </h2>
           <p className="mt-4 text-sm max-w-md mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            Feel free to reach out for collaborations, opportunities, or just to say hi!
+            {t('contact.subtitle')}
           </p>
         </motion.div>
 
-        {/* Two-column layout: cards + CTA */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center max-w-4xl mx-auto">
-          {/* Contact cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-            {contacts.map((contact, i) => (
-              <ContactCard key={contact.id} contact={contact} index={i} />
-            ))}
-          </div>
+        {/* Two-column layout: Form + CTA */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start max-w-5xl mx-auto">
+          
+          {/* Left side: Contact Form */}
+          <motion.div
+            className="lg:col-span-3 glass rounded-2xl p-6 md:p-8 border w-full relative overflow-hidden"
+            style={{ borderColor: 'var(--border)' }}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5 relative z-10">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  {t('contact.name')}
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder={t('contact.placeholderName')}
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none"
+                  style={{ color: 'var(--text-primary)' }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  {t('contact.email')}
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder={t('contact.placeholderEmail')}
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none"
+                  style={{ color: 'var(--text-primary)' }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  {t('contact.message')}
+                </label>
+                <textarea
+                  name="message"
+                  required
+                  rows="5"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder={t('contact.placeholderMessage')}
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none resize-none custom-scrollbar"
+                  style={{ color: 'var(--text-primary)' }}
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                disabled={status === 'submitting'}
+                className="group w-full py-3.5 rounded-xl bg-accent text-text-on-accent font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:bg-accent-light transition-all shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)] disabled:opacity-70 disabled:cursor-not-allowed mt-2 border border-accent/20"
+              >
+                {status === 'submitting' ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-text-on-accent/20 border-t-text-on-accent rounded-full animate-spin" />
+                    {t('contact.sending')}
+                  </>
+                ) : (
+                  <>
+                    {t('contact.send')} <FiSend className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {status === 'success' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-2 text-emerald-500 bg-emerald-500/10 px-4 py-3 rounded-xl border border-emerald-500/20 text-sm font-medium mt-2"
+                  >
+                    <FiCheckCircle className="w-5 h-5" />
+                    {t('contact.success')}
+                  </motion.div>
+                )}
+                {status === 'error' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-2 text-red-500 bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/20 text-sm font-medium mt-2"
+                  >
+                    <FiAlertCircle className="w-5 h-5" />
+                    {t('contact.error')}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </form>
+          </motion.div>
 
           {/* Right side: big CTA card */}
           <motion.div
-            className="glass rounded-2xl p-8 border flex flex-col items-center text-center gap-6"
+            className="lg:col-span-2 glass rounded-2xl p-8 border flex flex-col items-center text-center gap-6"
             style={{ borderColor: 'var(--border)' }}
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -113,16 +202,16 @@ export default function Contact() {
 
             <div>
               <h3
-                className="font-display font-bold text-xl mb-2"
+                className="font-display font-bold text-xl mb-1"
                 style={{ color: 'var(--text-primary)' }}
               >
-                M. Isroqi Gelby Firmansyah
+                {t('contact.profileTitle')}
               </h3>
-              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Business Information Systems Student
+              <p className="text-sm font-bold text-accent mb-1 tracking-wide">
+                {t('contact.profileRole')}
               </p>
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                Politeknik Negeri Malang
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                {t('contact.profileUni')}
               </p>
             </div>
 
@@ -131,22 +220,22 @@ export default function Contact() {
             <div className="flex flex-col gap-3 w-full">
               <motion.a
                 href="mailto:gelbifirmansyah12@gmail.com"
-                className="w-full py-3 rounded-xl bg-accent text-text-primary text-sm font-semibold text-center shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow duration-300"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+                className="w-full py-3 rounded-xl border-2 border-accent text-accent hover:bg-accent hover:text-text-on-accent text-sm font-bold text-center transition-all duration-300"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Send Email
+                {t('contact.sendEmailBtn')}
               </motion.a>
               <motion.a
                 href="https://drive.google.com/file/d/1V4cyfrMNF_6Qn6DyePH1DuMv3qr_pcZD/view?usp=sharing"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3 rounded-xl border text-sm font-semibold text-center transition-all duration-300 hover:border-border hover:bg-accent/10 hover:text-accent"
-                style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+                className="w-full py-3 rounded-xl border text-sm font-bold text-center transition-all duration-300 hover:border-border hover:bg-[var(--bg-secondary)] text-text-secondary hover:text-text-primary"
+                style={{ borderColor: 'var(--border)' }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Download CV
+                {t('contact.downloadCvBtn')}
               </motion.a>
             </div>
           </motion.div>
