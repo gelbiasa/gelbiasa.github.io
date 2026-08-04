@@ -182,12 +182,12 @@ const TopNav = ({ activeTab, setActiveTab }) => {
           </div>
 
           {/* Hire Me CTA */}
-          <a
-            href="mailto:isroqigelby@gmail.com"
+          <button
+            onClick={() => handleTabClick('contact')}
             className="hidden sm:flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent text-text-on-accent text-xs font-black tracking-wider uppercase hover:bg-accent-light transition-all duration-300 shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)]"
           >
             {t('nav.hireMe')} <FiArrowUpRight size={14} />
-          </a>
+          </button>
 
           {/* Mobile Hamburger */}
           <button
@@ -307,12 +307,12 @@ const TopNav = ({ activeTab, setActiveTab }) => {
                 </div>
               </div>
 
-              <a
-                href="mailto:isroqigelby@gmail.com"
+              <button
+                onClick={() => handleTabClick('contact')}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent text-text-on-accent text-sm font-black uppercase tracking-wider"
               >
                 {t('nav.hireMe')} <FiArrowUpRight size={16} />
-              </a>
+              </button>
             </div>
           </motion.div>
         )}
