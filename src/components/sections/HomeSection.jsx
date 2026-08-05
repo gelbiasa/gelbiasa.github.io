@@ -399,8 +399,18 @@ const HomeSection = ({ setActiveTab }) => {
             animate={{ rotate: [0, 2, 0, -2, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <p className="text-[9px] font-black tracking-widest uppercase leading-none">{t('home.exp')}</p>
-            <p className="text-text-on-accent text-xs font-black leading-none mt-0.5">{t('home.years')}</p>
+            <p className="text-[9px] font-black tracking-widest uppercase leading-none text-center">{t('home.exp')}</p>
+            <p className="text-text-on-accent text-xs font-black leading-none mt-0.5 text-center">{t('home.years')}</p>
+          </motion.div>
+
+          {/* GPA badge */}
+          <motion.div
+            className="absolute top-8 -right-1 bg-accent text-text-on-accent rounded-xl px-3 py-2 shadow-[0_0_18px_rgb(var(--accent-rgb)/0.5)] z-20"
+            animate={{ rotate: [0, -2, 0, 2, 0], y: [0, 4, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+          >
+            <p className="text-[9px] font-black tracking-widest uppercase leading-none text-center">{t('home.gpa')}</p>
+            <p className="text-text-on-accent text-xs font-black leading-none mt-0.5 text-center">{t('home.gpaValue')}</p>
           </motion.div>
         </div>
 
