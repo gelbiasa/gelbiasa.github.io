@@ -4,7 +4,7 @@ import { FiX, FiArrowUpRight, FiSun, FiMoon } from 'react-icons/fi';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
-const TopNav = ({ activeTab, setActiveTab }) => {
+const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isDark, toggleTheme, colorTheme, setColorTheme } = useTheme();
@@ -183,7 +183,7 @@ const TopNav = ({ activeTab, setActiveTab }) => {
 
           {/* Hire Me CTA */}
           <button
-            onClick={() => handleTabClick('contact')}
+            onClick={onHireMeClick}
             className="hidden sm:flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent text-text-on-accent text-xs font-black tracking-wider uppercase hover:bg-accent-light transition-all duration-300 shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)]"
           >
             {t('nav.hireMe')} <FiArrowUpRight size={14} />
@@ -308,7 +308,10 @@ const TopNav = ({ activeTab, setActiveTab }) => {
               </div>
 
               <button
-                onClick={() => handleTabClick('contact')}
+                onClick={() => {
+                  onHireMeClick();
+                  setMobileOpen(false);
+                }}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent text-text-on-accent text-sm font-black uppercase tracking-wider"
               >
                 {t('nav.hireMe')} <FiArrowUpRight size={16} />
