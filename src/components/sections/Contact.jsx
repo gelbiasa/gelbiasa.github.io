@@ -1,12 +1,21 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiSend, FiCheckCircle, FiAlertCircle, FiMapPin, FiCode, FiDatabase } from 'react-icons/fi'
+import { FiSend, FiCheckCircle, FiAlertCircle, FiMapPin, FiCode, FiDatabase, FiMail, FiGithub, FiLinkedin, FiExternalLink } from 'react-icons/fi'
+import { FaWhatsapp } from 'react-icons/fa'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function Contact() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
+  const [activeContactTab, setActiveContactTab] = useState('email')
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
   const [status, setStatus] = useState('idle') // idle, submitting, success, error
+
+  const contactTabs = [
+    { id: 'email', label: 'gelbifirmansyah12@gmail.com', icon: FiMail },
+    { id: 'whatsapp', label: '085804049240', icon: FaWhatsapp },
+    { id: 'linkedin', label: 'gelbifirmansyah', icon: FiLinkedin },
+    { id: 'github', label: 'gelbiasa', icon: FiGithub },
+  ]
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -55,7 +64,7 @@ export default function Contact() {
         
         {/* Header — no badge */}
         <motion.div
-          className="text-center mb-14"
+          className="text-center mb-10"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -71,6 +80,49 @@ export default function Contact() {
           <p className="mt-4 text-sm max-w-md mx-auto" style={{ color: 'var(--text-secondary)' }}>
             {t('contact.subtitle')}
           </p>
+        </motion.div>
+
+        {/* Contact Tabs */}
+        <motion.div 
+          className="flex flex-wrap items-center justify-center gap-3 md:gap-4 mb-12 max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          {contactTabs.map((tab) => {
+            const isActive = activeContactTab === tab.id
+            const Icon = tab.icon
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveContactTab(tab.id)}
+                className={`relative group flex items-center gap-2.5 px-4 md:px-5 py-2.5 rounded-xl border transition-all duration-300 font-bold text-[13px] md:text-sm overflow-hidden ${
+                  isActive
+                    ? 'border-accent/80 shadow-[0_0_20px_var(--accent-glow)] scale-[1.02] bg-[var(--bg-secondary)]'
+                    : 'border-border hover:border-accent/50 bg-surface shadow-md hover:shadow-lg'
+                }`}
+              >
+                {/* Active Glow Sweep */}
+                <div
+                  className={`absolute inset-0 bg-accent transition-transform duration-500 ease-out origin-left z-0 ${
+                    isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-hover:opacity-10'
+                  }`}
+                />
+                
+                {/* Hover effect for inactive tabs */}
+                {!isActive && (
+                  <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-10 bg-accent transition-opacity duration-300" />
+                )}
+
+                <Icon className={`relative z-10 w-4 h-4 transition-colors duration-300 ${isActive ? 'text-text-on-accent' : 'text-accent group-hover:scale-110'}`} />
+                
+                <span className={`relative z-10 tracking-wider transition-colors duration-300 ${isActive ? 'text-text-on-accent' : 'text-text-secondary group-hover:text-text-primary'}`}>
+                  {tab.label}
+                </span>
+              </button>
+            )
+          })}
         </motion.div>
 
         {/* Two-column layout: Profile + Form */}
@@ -136,7 +188,7 @@ export default function Contact() {
                     className="w-full h-full object-cover object-top"
                   />
                 </div>
-                </div>
+              </div>
             </div>
 
             {/* Bottom info area */}
@@ -181,107 +233,213 @@ export default function Contact() {
             </div>
           </motion.div>
 
-          {/* ──────── RIGHT: Contact Form ──────── */}
+          {/* ──────── RIGHT: Dynamic Content Panel ──────── */}
           <motion.div
-            className="lg:col-span-3 glass rounded-2xl p-6 md:p-8 border w-full relative overflow-hidden"
+            className="lg:col-span-3 glass rounded-2xl p-6 md:p-8 border w-full relative overflow-hidden flex flex-col"
             style={{ borderColor: 'var(--border)' }}
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5 relative z-10">
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                  {t('contact.name')}
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder={t('contact.placeholderName')}
-                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none"
-                  style={{ color: 'var(--text-primary)' }}
-                />
-              </div>
+            <AnimatePresence mode="wait">
+              {activeContactTab === 'email' && (
+                <motion.form 
+                  key="email-form"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  onSubmit={handleSubmit} 
+                  className="flex flex-col gap-5 relative z-10 flex-1 justify-center"
+                >
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                      {t('contact.name')}
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder={t('contact.placeholderName')}
+                      className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none"
+                      style={{ color: 'var(--text-primary)' }}
+                    />
+                  </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                  {t('contact.email')}
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder={t('contact.placeholderEmail')}
-                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none"
-                  style={{ color: 'var(--text-primary)' }}
-                />
-              </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                      {t('contact.email')}
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder={t('contact.placeholderEmail')}
+                      className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none"
+                      style={{ color: 'var(--text-primary)' }}
+                    />
+                  </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                  {t('contact.message')}
-                </label>
-                <textarea
-                  name="message"
-                  required
-                  rows="6"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder={t('contact.placeholderMessage')}
-                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none resize-none custom-scrollbar"
-                  style={{ color: 'var(--text-primary)' }}
-                ></textarea>
-              </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                      {t('contact.message')}
+                    </label>
+                    <textarea
+                      name="message"
+                      required
+                      rows="6"
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder={t('contact.placeholderMessage')}
+                      className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-border focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none resize-none custom-scrollbar"
+                      style={{ color: 'var(--text-primary)' }}
+                    ></textarea>
+                  </div>
 
-              <button
-                type="submit"
-                disabled={status === 'submitting'}
-                className="group w-full py-3.5 rounded-xl bg-accent text-text-on-accent font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:bg-accent-light transition-all shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)] disabled:opacity-70 disabled:cursor-not-allowed mt-2 border border-accent/20"
-              >
-                {status === 'submitting' ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-text-on-accent/20 border-t-text-on-accent rounded-full animate-spin" />
-                    {t('contact.sending')}
-                  </>
-                ) : (
-                  <>
-                    {t('contact.send')} <FiSend className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  </>
-                )}
-              </button>
-
-              <AnimatePresence>
-                {status === 'success' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center gap-2 text-emerald-500 bg-emerald-500/10 px-4 py-3 rounded-xl border border-emerald-500/20 text-sm font-medium"
+                  <button
+                    type="submit"
+                    disabled={status === 'submitting'}
+                    className="group w-full py-3.5 rounded-xl bg-accent text-text-on-accent font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:bg-accent-light transition-all shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)] disabled:opacity-70 disabled:cursor-not-allowed mt-2 border border-accent/20"
                   >
-                    <FiCheckCircle className="w-5 h-5" />
-                    {t('contact.success')}
-                  </motion.div>
-                )}
-                {status === 'error' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center gap-2 text-red-500 bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/20 text-sm font-medium"
-                  >
-                    <FiAlertCircle className="w-5 h-5" />
-                    {t('contact.error')}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </form>
+                    {status === 'submitting' ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-text-on-accent/20 border-t-text-on-accent rounded-full animate-spin" />
+                        {t('contact.sending')}
+                      </>
+                    ) : (
+                      <>
+                        {t('contact.send')} <FiSend className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      </>
+                    )}
+                  </button>
+
+                  <AnimatePresence>
+                    {status === 'success' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center gap-2 text-emerald-500 bg-emerald-500/10 px-4 py-3 rounded-xl border border-emerald-500/20 text-sm font-medium"
+                      >
+                        <FiCheckCircle className="w-5 h-5" />
+                        {t('contact.success')}
+                      </motion.div>
+                    )}
+                    {status === 'error' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center gap-2 text-red-500 bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/20 text-sm font-medium"
+                      >
+                        <FiAlertCircle className="w-5 h-5" />
+                        {t('contact.error')}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.form>
+              )}
+
+              {activeContactTab === 'whatsapp' && (
+                <motion.div 
+                  key="whatsapp-info"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center justify-center h-full min-h-[350px] gap-6 text-center py-10"
+                >
+                  <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center border border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.15)]">
+                    <FaWhatsapp className="w-10 h-10 text-green-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Chat via WhatsApp</h4>
+                    <p className="mb-8 max-w-xs mx-auto text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      {language === 'en' 
+                        ? "Have a question or an interesting project? Let's discuss it directly via WhatsApp." 
+                        : "Punya pertanyaan atau proyek menarik? Mari berdiskusi langsung melalui WhatsApp."}
+                    </p>
+                    <a 
+                      href="https://wa.me/6285804049240" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-green-500 text-white font-bold tracking-wide hover:bg-green-600 transition-colors shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"
+                    >
+                      {language === 'en' ? "Start Chat" : "Mulai Chat"} <FiExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeContactTab === 'linkedin' && (
+                <motion.div 
+                  key="linkedin-info"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center justify-center h-full min-h-[350px] gap-6 text-center py-10"
+                >
+                  <div className="w-20 h-20 rounded-full bg-[#0A66C2]/10 flex items-center justify-center border border-[#0A66C2]/30 shadow-[0_0_20px_rgba(10,102,194,0.15)]">
+                    <FiLinkedin className="w-10 h-10 text-[#0A66C2]" />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Connect on LinkedIn</h4>
+                    <p className="mb-8 max-w-xs mx-auto text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      {language === 'en'
+                        ? "View my professional experience and let's connect on LinkedIn."
+                        : "Lihat pengalaman profesional saya dan mari terhubung di jaringan LinkedIn."}
+                    </p>
+                    <a 
+                      href="https://www.linkedin.com/in/gelbifirmansyah" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#0A66C2] text-white font-bold tracking-wide hover:bg-[#004182] transition-colors shadow-[0_0_20px_rgba(10,102,194,0.3)] hover:shadow-[0_0_30px_rgba(10,102,194,0.5)]"
+                    >
+                      {language === 'en' ? "Visit Profile" : "Kunjungi Profil"} <FiExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeContactTab === 'github' && (
+                <motion.div 
+                  key="github-info"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center justify-center h-full min-h-[350px] gap-6 text-center py-10"
+                >
+                  <div className="w-20 h-20 rounded-full bg-slate-500/10 flex items-center justify-center border border-slate-500/30 shadow-[0_0_20px_rgba(100,116,139,0.15)]">
+                    <FiGithub className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Explore GitHub</h4>
+                    <p className="mb-8 max-w-xs mx-auto text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      {language === 'en'
+                        ? "Explore my source code, open source projects, and contributions on GitHub."
+                        : "Jelajahi kode sumber, proyek open source, dan kontribusi saya di GitHub."}
+                    </p>
+                    <a 
+                      href="https://github.com/gelbiasa" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-slate-800 text-white font-bold tracking-wide hover:bg-slate-900 border border-slate-700 transition-colors shadow-[0_0_20px_rgba(30,41,59,0.3)] hover:shadow-[0_0_30px_rgba(30,41,59,0.5)]"
+                    >
+                      {language === 'en' ? "View Repositories" : "Lihat Repositori"} <FiExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
+
         </div>
       </div>
     </section>
