@@ -106,6 +106,16 @@ export const translations = {
       educationSoon: 'Education Section Coming Soon',
       contactSoon: 'Contact Section Coming Soon'
     },
+    education: {
+      title1: 'Academic',
+      title2: 'Background',
+      subtitle: 'My educational journey, academic achievements, and continuous growth during my studies.',
+      summary: 'I am a student at Politeknik Negeri Malang. During my time here, I have developed a strong foundation in software engineering and worked on various real-world projects such as E-Kompen, Point of Sale, and Customer Satisfaction Survey applications. These hands-on experiences have sharpened my technical and problem-solving skills.',
+      conclusion: 'The consistent upward trend in my Semester GPA (SGPA) demonstrates my strong adaptability, rapid learning capabilities, and dedication to continuous improvement in mastering complex concepts.',
+      sgpa: 'SGPA (Semester GPA)',
+      cgpa: 'CGPA (Cumulative GPA)',
+      takeaway: 'Conclusion'
+    },
     skills: {
       title1: 'Technical',
       title2: 'Skills',
@@ -257,6 +267,16 @@ export const translations = {
     contentArea: {
       educationSoon: 'Bagian Pendidikan Segera Hadir',
       contactSoon: 'Bagian Kontak Segera Hadir'
+    },
+    education: {
+      title1: 'Latar Belakang',
+      title2: 'Pendidikan',
+      subtitle: 'Perjalanan pendidikan, pencapaian akademis, dan perkembangan berkelanjutan selama masa studi saya.',
+      summary: 'Saya berkuliah di Politeknik Negeri Malang. Selama di Polinema, saya telah membangun fondasi yang kuat dalam rekayasa perangkat lunak dan banyak mengerjakan berbagai proyek nyata seperti E-Kompen, Point of Sale (POS), dan aplikasi Survei Kepuasan. Pengalaman praktis ini sangat mengasah kemampuan teknis dan pemecahan masalah saya.',
+      conclusion: 'Grafik peningkatan IPS (Indeks Prestasi Semester) saya yang terus naik menandakan bahwa saya dapat dengan mudah dan cepat beradaptasi, memahami materi atau teknologi baru, serta memiliki dedikasi tinggi untuk terus berkembang.',
+      sgpa: 'IPS (Indeks Prestasi Semester)',
+      cgpa: 'IPK (Indeks Prestasi Kumulatif)',
+      takeaway: 'Kesimpulan'
     },
     skills: {
       title1: 'Keahlian',
