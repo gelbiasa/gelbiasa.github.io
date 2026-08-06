@@ -5,6 +5,7 @@ import HomeSection from '../sections/HomeSection';
 import Projects from '../sections/Projects';
 import Skills from '../sections/Skills';
 import Experience from '../sections/Experience';
+import Education from '../sections/Education';
 import CV from '../sections/CV';
 import Contact from '../sections/Contact';
 import { useLanguage } from '../../context/LanguageContext';
@@ -35,11 +36,7 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
           {activeTab === 'projects' && <Projects />}
           {activeTab === 'skills' && <Skills />}
           {activeTab === 'experience' && <Experience />}
-          {activeTab === 'education' && (
-            <div className="flex items-center justify-center h-full min-h-[400px] pt-24">
-              <h2 className="text-2xl font-bold text-slate-400">{t('contentArea.educationSoon')}</h2>
-            </div>
-          )}
+          {activeTab === 'education' && <Education />}
           {activeTab === 'cv' && <CV />}
           {activeTab === 'contact' && <Contact />}
         </motion.div>
