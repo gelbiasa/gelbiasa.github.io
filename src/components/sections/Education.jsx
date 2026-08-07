@@ -1,21 +1,23 @@
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { FiTrendingUp, FiBookOpen, FiAward, FiStar } from 'react-icons/fi'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FiTrendingUp, FiBookOpen, FiAward, FiStar, FiFileText, FiX, FiClock } from 'react-icons/fi'
 import { useLanguage } from '../../context/LanguageContext'
+import CustomPdfViewer from '../ui/CustomPdfViewer'
 
 export default function Education() {
   const { t } = useLanguage()
   const [hoveredPoint, setHoveredPoint] = useState(null)
+  const [selectedKhs, setSelectedKhs] = useState(null)
 
   const semesters = [
-    { term: '1', gpa: 3.55 },
-    { term: '2', gpa: 3.53 },
-    { term: '3', gpa: 3.67 },
-    { term: '4', gpa: 3.68 },
-    { term: '5', gpa: 3.92 },
-    { term: '6', gpa: 4.00 },
-    { term: '7', gpa: 4.00 },
-    { term: '8', gpa: 4.00 },
+    { term: '1', gpa: 3.55, file: '/file/khs/KHS_1.pdf' },
+    { term: '2', gpa: 3.53, file: null },
+    { term: '3', gpa: 3.67, file: null },
+    { term: '4', gpa: 3.68, file: null },
+    { term: '5', gpa: 3.92, file: null },
+    { term: '6', gpa: 4.00, file: null },
+    { term: '7', gpa: 4.00, file: null },
+    { term: '8', gpa: 4.00, file: null },
   ]
 
   // Chart Dimensions
@@ -204,6 +206,22 @@ export default function Education() {
                 </svg>
               </div>
             </div>
+
+            {/* KHS Buttons */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mt-8">
+              {semesters.map((s) => (
+                <button
+                  key={s.term}
+                  onClick={() => setSelectedKhs(s)}
+                  className="flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border transition-all duration-300 hover:scale-[1.03] border-[var(--border)] hover:border-accent bg-[var(--bg-primary)] hover:bg-accent/10 shadow-sm group"
+                >
+                  <FiFileText className={`w-4 h-4 transition-colors ${s.file ? 'text-accent' : 'text-slate-500 group-hover:text-accent-light'}`} />
+                  <span className={`text-[11px] font-bold whitespace-nowrap transition-colors ${s.file ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>
+                    S{s.term} KHS
+                  </span>
+                </button>
+              ))}
+            </div>
           </motion.div>
 
           {/* Right Side Info */}
@@ -248,6 +266,55 @@ export default function Education() {
         </motion.div>
 
       </div>
+
+      {/* KHS Modal */}
+      <AnimatePresence>
+        {selectedKhs && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4 pb-4 pt-24 md:px-8 md:pb-8 md:pt-28 bg-background/95"
+          >
+            <div className="absolute inset-0" onClick={() => setSelectedKhs(null)} />
+            
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-full max-w-4xl bg-surface border border-border rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col h-full max-h-[90vh] pointer-events-auto"
+            >
+              <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
+                <h3 className="text-xl font-bold text-text-primary flex items-center gap-2">
+                  <FiFileText className="text-accent" />
+                  {t('education.khsDetail')}{selectedKhs.term}
+                </h3>
+                <button
+                  onClick={() => setSelectedKhs(null)}
+                  className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-full transition-colors"
+                >
+                  <FiX size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 bg-background rounded-xl overflow-hidden border border-border flex relative">
+                {selectedKhs.file ? (
+                  <CustomPdfViewer fileUrl={selectedKhs.file} />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-center px-6">
+                    <FiClock className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+                    <h4 className="text-lg font-bold text-text-primary mb-2">Coming Soon</h4>
+                    <p className="text-sm text-text-secondary max-w-md mx-auto">
+                      {t('education.khsComingSoon')}
+                    </p>
+                  </div>
+                )}
+              </div>
+              </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
