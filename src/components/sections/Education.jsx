@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, Suspense, lazy } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiTrendingUp, FiBookOpen, FiAward, FiStar, FiFileText, FiX, FiClock } from 'react-icons/fi'
 import { useLanguage } from '../../context/LanguageContext'
-import CustomPdfViewer from '../ui/CustomPdfViewer'
+
+const CustomPdfViewer = lazy(() => import('../ui/CustomPdfViewer'));
 
 export default function Education() {
   const { t } = useLanguage()
@@ -300,7 +301,14 @@ export default function Education() {
 
               <div className="flex-1 bg-background rounded-xl overflow-hidden border border-border flex relative">
                 {selectedKhs.file ? (
-                  <CustomPdfViewer fileUrl={selectedKhs.file} />
+                  <Suspense fallback={
+                    <div className="flex flex-col items-center justify-center w-full h-full gap-3">
+                      <div className="animate-spin w-8 h-8 border-4 border-accent border-t-transparent rounded-full" />
+                      <span className="text-text-muted text-sm animate-pulse">Loading PDF Engine...</span>
+                    </div>
+                  }>
+                    <CustomPdfViewer fileUrl={selectedKhs.file} />
+                  </Suspense>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-center px-6">
                     <FiClock className="w-12 h-12 text-slate-500 mx-auto mb-4" />
