@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiGithub, FiFigma, FiExternalLink, FiDownload, FiClock, FiStar, FiFolder, FiMonitor, FiUser, FiX, FiArrowRight, FiChevronRight, FiChevronLeft } from 'react-icons/fi'
+import { FiGithub, FiFigma, FiExternalLink, FiDownload, FiClock, FiStar, FiFolder, FiMonitor, FiUser, FiX, FiArrowRight, FiChevronRight, FiChevronLeft, FiGrid } from 'react-icons/fi'
 import { projects } from '../../data/projects'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -13,12 +13,13 @@ const iconMap = {
 }
 
 const categoryIcons = {
+  All: FiGrid,
   Intern: FiMonitor,
   Academic: FiFolder,
   Personal: FiUser,
 }
 
-const CATEGORIES = ['Intern', 'Academic', 'Personal']
+const CATEGORIES = ['All', 'Intern', 'Academic', 'Personal']
 
 // Custom Hook/Component for click-and-drag to scroll with smart arrows
 function DragScroll({ children, className }) {
@@ -372,11 +373,12 @@ function EmptyState() {
 
 export default function Projects() {
   const { t } = useLanguage()
-  const [activeTab, setActiveTab] = useState('Intern')
+  const [activeTab, setActiveTab] = useState('All')
   const [selectedProject, setSelectedProject] = useState(null)
   const [isTabsExpanded, setIsTabsExpanded] = useState(false)
 
   const filteredProjects = useMemo(() => {
+    if (activeTab === 'All') return projects;
     return projects.filter((p) => p.category === activeTab)
   }, [activeTab])
 
@@ -448,12 +450,12 @@ export default function Projects() {
                     <span className={`block font-bold tracking-wide transition-colors ${
                       isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
                     }`}>
-                      {cat}
+                      {cat === 'All' ? (t('projects.allTab') || 'All') : cat}
                     </span>
                     <span className={`text-[10px] uppercase tracking-wider block mt-0.5 transition-colors ${
                       isActive ? 'text-accent/70' : 'text-slate-500'
                     }`}>
-                      {projects.filter(p => p.category === cat).length} Projects
+                      {cat === 'All' ? projects.length : projects.filter(p => p.category === cat).length} Projects
                     </span>
                   </div>
                 </button>
@@ -477,7 +479,48 @@ export default function Projects() {
         {/* Right Content Area: Project Grid */}
         <div className="flex-1 w-full min-h-[500px]">
           <AnimatePresence mode="wait">
-            {filteredProjects.length > 0 ? (
+            {activeTab === 'All' ? (
+              <motion.div
+                key="all"
+                className="flex flex-col gap-12 pb-12"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.4 }}
+              >
+                {['Intern', 'Academic', 'Personal'].map((category) => {
+                  const catProjects = projects.filter(p => p.category === category);
+                  return (
+                    <div key={category} className="flex flex-col gap-6">
+                      {/* Divider */}
+                      <div className="flex items-center gap-4">
+                        <div className="h-[1px] flex-1 bg-border"></div>
+                        <span className="text-xs font-bold uppercase tracking-widest text-text-muted">{category}</span>
+                        <div className="h-[1px] flex-1 bg-border"></div>
+                      </div>
+                      
+                      {/* Projects Grid or Coming Soon */}
+                      {catProjects.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {catProjects.map((project, i) => (
+                            <ProjectCard 
+                              key={project.id} 
+                              project={project} 
+                              index={i} 
+                              onClick={setSelectedProject}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="w-full py-12 flex flex-col items-center justify-center border border-dashed border-border rounded-2xl bg-surface-2/30">
+                          <span className="text-sm font-medium text-text-muted tracking-widest uppercase">{t('projects.comingSoon') || 'Coming Soon'}</span>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </motion.div>
+            ) : filteredProjects.length > 0 ? (
               <motion.div
                 key={activeTab}
                 className="grid grid-cols-1 md:grid-cols-2 gap-8"
