@@ -241,7 +241,7 @@ export default function Education() {
               </div>
               <h4 className="text-sm font-bold uppercase tracking-widest text-text-secondary mb-2">{t('education.cgpa')}</h4>
               <div className="text-5xl font-black text-text-primary tracking-tighter mb-2" style={{ textShadow: '0 4px 20px rgb(var(--accent-rgb)/0.3)' }}>
-                3.80
+                3.78
               </div>
               <div className="flex items-center gap-1 text-accent text-sm font-semibold">
                 <FiStar className="fill-accent" /> Outstanding
