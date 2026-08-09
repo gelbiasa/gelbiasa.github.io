@@ -12,12 +12,12 @@ export default function Education() {
 
   const semesters = [
     { term: '1', gpa: 3.55, file: '/file/khs/KHS_1.pdf' },
-    { term: '2', gpa: 3.53, file: null },
-    { term: '3', gpa: 3.67, file: null },
-    { term: '4', gpa: 3.68, file: null },
-    { term: '5', gpa: 3.92, file: null },
-    { term: '6', gpa: 4.00, file: null },
-    { term: '7', gpa: 4.00, file: null },
+    { term: '2', gpa: 3.53, file: '/file/khs/KHS_2.pdf' },
+    { term: '3', gpa: 3.67, file: '/file/khs/KHS_3.pdf' },
+    { term: '4', gpa: 3.68, file: '/file/khs/KHS_4.pdf' },
+    { term: '5', gpa: 3.92, file: '/file/khs/KHS_5.pdf' },
+    { term: '6', gpa: 4.00, file: '/file/khs/KHS_6.pdf' },
+    { term: '7', gpa: 4.00, file: '/file/khs/KHS_7.pdf' },
     { term: '8', gpa: 4.00, file: null },
   ]
 
