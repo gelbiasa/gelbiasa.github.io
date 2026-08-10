@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { FiZoomIn, FiZoomOut, FiDownload } from 'react-icons/fi';
+import { FiZoomIn, FiZoomOut, FiDownload, FiMaximize, FiMinimize, FiX } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
 
 // Set PDF.js worker from CDN to avoid build configuration issues in Vite
@@ -9,6 +10,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 export default function CustomPdfViewer({ fileUrl }) {
   const { t } = useLanguage();
   const [numPages, setNumPages] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   // Default to a slightly smaller scale on mobile so it's not too huge, but still readable
   const [scale, setScale] = useState(typeof window !== 'undefined' && window.innerWidth < 768 ? 0.8 : 1.0);
 
@@ -19,8 +21,8 @@ export default function CustomPdfViewer({ fileUrl }) {
   const zoomIn = () => setScale(prev => Math.min(prev + 0.3, 3.0));
   const zoomOut = () => setScale(prev => Math.max(prev - 0.3, 0.4));
 
-  return (
-    <div className="w-full h-full flex flex-col bg-surface relative rounded-xl overflow-hidden">
+  const viewerContent = (
+    <div className={`w-full h-full flex flex-col bg-surface relative overflow-hidden ${isFullscreen ? 'z-[9999] h-screen w-screen rounded-none' : 'rounded-xl'}`}>
       {/* Toolbar */}
       <div className="flex items-center justify-between p-3 border-b border-border bg-surface-2 shrink-0">
         <div className="flex items-center gap-1 md:gap-2">
@@ -41,15 +43,37 @@ export default function CustomPdfViewer({ fileUrl }) {
           </div>
         )}
 
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
+          {/* Full Screen Toggle Button */}
+          <button 
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 rounded-lg bg-surface hover:bg-surface-2 border border-border text-text-primary transition-all font-bold text-[10px] md:text-sm"
+          >
+            {isFullscreen ? <FiMinimize size={16} /> : <FiMaximize size={16} />}
+            <span className="hidden sm:inline">
+              {isFullscreen ? (t('education.exitFullscreen') || 'Exit Full Screen') : (t('education.fullscreen') || 'Full Screen')}
+            </span>
+          </button>
+
+          {/* Download Button */}
           <a 
             href={fileUrl} 
             download 
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-background hover:brightness-110 shadow-lg shadow-accent/20 transition-all font-bold text-xs md:text-sm"
+            className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 rounded-lg bg-accent text-background hover:brightness-110 shadow-lg shadow-accent/20 transition-all font-bold text-[10px] md:text-sm"
           >
             <FiDownload size={16} />
             <span className="hidden sm:inline">{t('education.savePdf')}</span>
           </a>
+          
+          {/* Mobile Close Fullscreen (X Button) when fullscreen to make it super obvious */}
+          {isFullscreen && (
+            <button 
+              onClick={() => setIsFullscreen(false)}
+              className="sm:hidden flex items-center justify-center p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors"
+            >
+              <FiX size={18} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -88,4 +112,16 @@ export default function CustomPdfViewer({ fileUrl }) {
       </div>
     </div>
   );
+
+  // If fullscreen is active, render directly into document.body to break out of any parent modals/transforms
+  if (isFullscreen && typeof document !== 'undefined') {
+    return createPortal(
+      <div className="fixed inset-0 z-[99999] bg-surface flex flex-col animate-in fade-in duration-200">
+        {viewerContent}
+      </div>,
+      document.body
+    );
+  }
+
+  return viewerContent;
 }
