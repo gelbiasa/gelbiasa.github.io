@@ -2,57 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiEye, FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMapPin, FiBriefcase, FiBook, FiExternalLink, FiX } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
+import TerminalHero from '../ui/TerminalHero';
 
-/* ─── Typewriter Hook ─── */
-const useTypewriter = (text, speed = 60, startDelay = 400) => {
-  const [displayed, setDisplayed] = useState('');
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    setDisplayed('');
-    setDone(false);
-    let i = 0;
-    const timeout = setTimeout(() => {
-      const interval = setInterval(() => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) {
-          clearInterval(interval);
-          setDone(true);
-        }
-      }, speed);
-      return () => clearInterval(interval);
-    }, startDelay);
-    return () => clearTimeout(timeout);
-  }, [text, speed, startDelay]);
-
-  return { displayed, done };
-};
-
-const TypewriterHeading = ({ text, speed = 65, startDelay = 600 }) => {
-  const { displayed, done } = useTypewriter(text, speed, startDelay);
-
-  return (
-    <h1
-      className="font-display font-black leading-tight tracking-tight text-text-primary"
-      style={{ fontSize: 'clamp(1.8rem, 4vw, 3.2rem)', whiteSpace: 'nowrap' }}
-    >
-      {displayed}
-      {!done && (
-        <span className="inline-block w-[3px] h-[0.85em] bg-accent ml-1 align-middle animate-pulse rounded-sm" />
-      )}
-      {done && (
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-accent"
-        />
-      )}
-    </h1>
-  );
-};
-
-/* ─── Main Component ─── */
 const HomeSection = ({ setActiveTab }) => {
   const [showAboutModal, setShowAboutModal] = useState(false);
   const { t, language } = useLanguage();
@@ -74,20 +25,8 @@ const HomeSection = ({ setActiveTab }) => {
       >
 
 
-        {/* Name — SINGLE LINE typewriter */}
-        <div className="mb-7">
-          <TypewriterHeading text="M. Isroqi Gelby Firmansyah." />
-
-          {/* Subtitle line */}
-          <motion.p
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="text-slate-500 font-mono text-sm mt-2 tracking-widest"
-          >
-            {t('home.subtitle')}
-          </motion.p>
-        </div>
+        {/* Terminal Animation Name & Subtitle */}
+        <TerminalHero />
 
         {/* Bio */}
         <motion.div
