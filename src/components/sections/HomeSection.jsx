@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiEye, FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMapPin, FiBriefcase, FiBook, FiExternalLink, FiX } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
-import TerminalHero from '../ui/TerminalHero';
+import ScrambleName from '../ui/ScrambleName';
 
 const HomeSection = ({ setActiveTab }) => {
   const [showAboutModal, setShowAboutModal] = useState(false);
@@ -25,8 +25,8 @@ const HomeSection = ({ setActiveTab }) => {
       >
 
 
-        {/* Terminal Animation Name & Subtitle */}
-        <TerminalHero />
+        {/* Scramble/Cipher decode name animation */}
+        <ScrambleName />
 
         {/* Bio */}
         <motion.div
