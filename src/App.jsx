@@ -5,12 +5,27 @@ import { LanguageProvider } from './context/LanguageContext';
 import TopNav from './components/layout/TopNav';
 import ContentArea from './components/layout/ContentArea';
 import HireMeOverlay from './components/ui/HireMeOverlay';
+import TerminalIntro from './components/ui/TerminalIntro';
 
 function App() {
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('portfolioActiveTab') || 'home';
   });
   const [showOverlay, setShowOverlay] = useState(false);
+  // Show terminal intro once per browser session, or on page reload (for testing)
+  const [showIntro, setShowIntro] = useState(() => {
+    try {
+      const navEntries = window.performance?.getEntriesByType('navigation');
+      const isReload = navEntries?.length > 0 && navEntries[0].type === 'reload';
+      
+      if (isReload) {
+        sessionStorage.removeItem('gelby_intro_shown');
+      }
+    } catch (e) {
+      // Ignore
+    }
+    return !sessionStorage.getItem('gelby_intro_shown');
+  });
 
   const handleTabChange = (tabId) => {
     if (tabId === 'contact') {
@@ -37,6 +52,9 @@ function App() {
         */}
         <div className="relative min-h-screen w-full flex flex-col selection:bg-accent-glow selection:text-text-primary bg-[var(--bg-primary)]">
           
+          {/* Full-screen terminal intro (once per session) */}
+          {showIntro && <TerminalIntro onDone={() => setShowIntro(false)} />}
+
           {/* Top Navigation Bar */}
           <TopNav activeTab={activeTab} setActiveTab={handleTabChange} onHireMeClick={handleHireMeClick} />
 
