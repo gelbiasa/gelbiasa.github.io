@@ -7,12 +7,18 @@ import { FiRefreshCw } from 'react-icons/fi';
 // Each character goes through random chars before settling on the real one
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&';
 
-function useCipherDecode(target, delay = 0) {
+function useCipherDecode(target, startTrigger, delay = 0, replayKey = 0) {
   const [displayed, setDisplayed] = useState(() => ' '.repeat(target.length));
   const [done, setDone] = useState(false);
   const raf = useRef(null);
 
   useEffect(() => {
+    if (!startTrigger) return;
+    
+    // Reset state on replay
+    setDisplayed(' '.repeat(target.length));
+    setDone(false);
+
     let started = false;
     const timeout = setTimeout(() => {
       started = true;
@@ -58,15 +64,29 @@ function useCipherDecode(target, delay = 0) {
       clearTimeout(timeout);
       if (raf.current) cancelAnimationFrame(raf.current);
     };
-  }, [target, delay]);
+  }, [target, startTrigger, delay, replayKey]);
 
   return { displayed, done };
 }
 
-export default function ScrambleName({ onReplay }) {
+export default function ScrambleName() {
   const { language } = useLanguage();
+  const [replayKey, setReplayKey] = useState(0);
+  
+  // Only wait if sessionStorage doesn't have the key (meaning intro is playing)
+  const [startTrigger, setStartTrigger] = useState(() => {
+    return !!sessionStorage.getItem('gelby_intro_shown');
+  });
+
+  useEffect(() => {
+    if (startTrigger) return;
+    const handleFinished = () => setStartTrigger(true);
+    window.addEventListener('introFinished', handleFinished);
+    return () => window.removeEventListener('introFinished', handleFinished);
+  }, [startTrigger]);
+
   const name = 'M. Isroqi Gelby Firmansyah.';
-  const { displayed, done } = useCipherDecode(name, 200);
+  const { displayed, done } = useCipherDecode(name, startTrigger, 200, replayKey);
 
   const subtitle = language === 'en'
     ? { accent: 'Laravel Expert', rest: ' & Database Engineer' }
@@ -118,14 +138,12 @@ export default function ScrambleName({ onReplay }) {
           {subtitle.rest}
         </p>
 
-        {onReplay && (
-          <button
-            onClick={onReplay}
-            className="flex items-center gap-1.5 text-[10px] md:text-xs font-mono text-gray-400 hover:text-emerald-400 transition-colors opacity-80 hover:opacity-100"
-          >
-            <FiRefreshCw size={11} /> Ulangi Animasi
-          </button>
-        )}
+        <button
+          onClick={() => setReplayKey(prev => prev + 1)}
+          className="flex items-center gap-1.5 text-[10px] md:text-xs font-mono text-gray-400 hover:text-emerald-400 transition-colors opacity-80 hover:opacity-100"
+        >
+          <FiRefreshCw size={11} /> Ulangi Animasi
+        </button>
       </motion.div>
     </div>
   );
