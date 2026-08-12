@@ -12,18 +12,8 @@ function App() {
     return localStorage.getItem('portfolioActiveTab') || 'home';
   });
   const [showOverlay, setShowOverlay] = useState(false);
-  // Show terminal intro once per browser session, or on page reload (for testing)
+  // Show terminal intro once per browser session
   const [showIntro, setShowIntro] = useState(() => {
-    try {
-      const navEntries = window.performance?.getEntriesByType('navigation');
-      const isReload = navEntries?.length > 0 && navEntries[0].type === 'reload';
-      
-      if (isReload) {
-        sessionStorage.removeItem('gelby_intro_shown');
-      }
-    } catch (e) {
-      // Ignore
-    }
     return !sessionStorage.getItem('gelby_intro_shown');
   });
 
