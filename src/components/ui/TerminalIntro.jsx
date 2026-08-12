@@ -68,6 +68,7 @@ export default function TerminalIntro({ onDone }) {
       if (!isActive) return;
 
       sessionStorage.setItem(SESSION_KEY, '1');
+      window.dispatchEvent(new Event('introFinished'));
       onDone();
     };
 
