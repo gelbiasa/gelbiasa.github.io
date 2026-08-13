@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiBriefcase, FiCalendar, FiTool, FiAward } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
+import ImageModal from '../ui/ImageModal';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -14,24 +15,37 @@ const fadeUp = {
 
 export default function Experience() {
   const { t } = useLanguage();
-  const [showModal, setShowModal] = useState(false);
+  const [selectedCertId, setSelectedCertId] = useState(null);
 
   const experiences = [
     {
+      id: 'spunindo',
       company: 'PT Multi Spunindo Jaya Tbk',
       role: 'Intern — Full Stack Developer',
       period: 'July 2025 – December 2025',
       current: false,
-      certificate: { label: t('experience.certLetter') },
+      certificate: { 
+        label: t('experience.certLetter'),
+        images: ['/images/Intern/Spunindo/SPUNINDO_1.jpeg']
+      },
       points: t('experience.points.spunindo'),
       tools: ['Laravel', 'MSJ Framework', 'SAP API', 'MySQL', 'VsCode'],
     },
     {
+      id: 'upatik',
       company: 'UPA TIK Politeknik Negeri Malang',
       role: 'Intern — Back-end Developer',
       period: 'February 2025 – June 2025',
       current: false,
-      certificate: { label: t('experience.internCert') },
+      certificate: { 
+        label: t('experience.internCert'),
+        images: [
+          '/images/Intern/UPA_TIK/UPA_TIK_1.jpeg',
+          '/images/Intern/UPA_TIK/UPA_TIK_2.jpeg',
+          '/images/Intern/UPA_TIK/UPA_TIK_3.jpeg',
+          '/images/Intern/UPA_TIK/UPA_TIK_4.jpeg',
+        ]
+      },
       points: t('experience.points.upatik'),
       tools: ['VsCode', 'MySQL Workbench', 'Summernote Editor', 'Bootstrap', 'Postman', 'Laravel'],
     },
@@ -138,7 +152,7 @@ export default function Experience() {
                   {/* Certificate Button */}
                   {exp.certificate && (
                     <button
-                      onClick={() => setShowModal(true)}
+                      onClick={() => setSelectedCertId(exp.id)}
                       className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-[11px] font-black tracking-wider uppercase text-text-on-accent bg-accent rounded-full hover:bg-accent-light transition-all duration-300 flex-shrink-0 self-start sm:self-auto shadow-[0_0_15px_var(--accent-glow)] hover:shadow-[0_0_25px_var(--accent-glow)]"
                     >
                       <FiAward size={13} className="mb-[1px]" />
@@ -152,43 +166,19 @@ export default function Experience() {
         </div>
       </div>
 
-      {/* Coming Soon Modal */}
-      <AnimatePresence>
-        {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowModal(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            
-            {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative glass border border-border p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center"
-            >
-              <div className="w-16 h-16 mx-auto bg-accent/10 text-accent rounded-full flex items-center justify-center mb-4">
-                <FiAward size={32} />
-              </div>
-              <h3 className="text-xl font-display font-bold text-text-primary mb-2">{t('experience.comingSoon')}</h3>
-              <p className="text-sm text-text-secondary mb-6">
-                {t('experience.comingSoonDesc')}
-              </p>
-              <button
-                onClick={() => setShowModal(false)}
-                className="w-full py-2.5 rounded-xl bg-accent text-text-on-accent font-bold text-sm uppercase tracking-wider hover:bg-accent-light transition-colors"
-              >
-                {t('experience.close')}
-              </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Certificate Image Modal (Refactored to separate component) */}
+      <ImageModal 
+        selectedCert={
+          selectedCertId 
+            ? {
+                company: experiences.find(e => e.id === selectedCertId).company,
+                images: experiences.find(e => e.id === selectedCertId).certificate.images,
+                label: experiences.find(e => e.id === selectedCertId).certificate.label
+              }
+            : null
+        } 
+        onClose={() => setSelectedCertId(null)} 
+      />
     </section>
   );
 }
