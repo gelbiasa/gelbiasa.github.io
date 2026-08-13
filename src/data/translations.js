@@ -49,6 +49,8 @@ export const translations = {
       comingSoon: 'Coming Soon',
       comingSoonDesc: 'The certificate document is currently being prepared and will be available to view shortly.',
       close: 'Close',
+      saveImage: 'Save Image',
+      cert: 'Cert',
       points: {
         spunindo: [
           'Designed and developed a Bill of Materials (BOM) data integration system to optimize production efficiency across Jumbo, Slitter, and Meltblown lines.',
@@ -223,6 +225,8 @@ export const translations = {
       comingSoon: 'Segera Hadir',
       comingSoonDesc: 'Dokumen sertifikat saat ini sedang disiapkan dan akan segera tersedia untuk dilihat.',
       close: 'Tutup',
+      saveImage: 'Simpan Gambar',
+      cert: 'Sertifikat',
       points: {
         spunindo: [
           'Merancang dan mengembangkan sistem integrasi data Bill of Materials (BOM) untuk mengoptimalkan efisiensi produksi di lini Jumbo, Slitter, dan Meltblown.',
