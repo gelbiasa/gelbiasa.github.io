@@ -33,7 +33,7 @@ const HomeSection = ({ setActiveTab }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="mb-8"
+          className="mt-6 md:mt-8 mb-8"
         >
           <p className="text-text-secondary text-sm lg:text-base leading-relaxed text-justify w-full mb-4">
             {language === 'en' ? (
