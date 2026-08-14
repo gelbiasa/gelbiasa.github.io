@@ -88,9 +88,14 @@ export default function ScrambleName() {
   const name = 'M. Isroqi Gelby Firmansyah.';
   const { displayed, done } = useCipherDecode(name, startTrigger, 200, replayKey);
 
-  const subtitle = language === 'en'
-    ? { accent: 'Laravel Expert', rest: ' & Database Engineer' }
-    : { accent: 'Pakar Laravel', rest: ' & Rekayasa Basis Data' };
+  const subtitleAccentStr = language === 'en' ? 'Laravel Expert' : 'Pakar Laravel';
+  const subtitleRestStr = language === 'en' ? ' & Database Engineer' : ' & Rekayasa Basis Data';
+  const fullSubtitle = subtitleAccentStr + subtitleRestStr;
+  
+  const { displayed: displayedSubtitle, done: subtitleDone } = useCipherDecode(fullSubtitle, startTrigger, 400, replayKey);
+
+  const renderedAccent = displayedSubtitle.slice(0, subtitleAccentStr.length);
+  const renderedRest = displayedSubtitle.slice(subtitleAccentStr.length);
 
   return (
     <div className="mb-0">
@@ -99,7 +104,7 @@ export default function ScrambleName() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="font-black tracking-tight text-white font-display leading-[1.1] whitespace-nowrap"
+        className="font-black tracking-tight text-text-primary font-display leading-[1.1] whitespace-nowrap"
         style={{
           fontSize: 'clamp(1.2rem, 3.5vw, 2.8rem)',
           fontVariantNumeric: 'tabular-nums',
@@ -109,38 +114,41 @@ export default function ScrambleName() {
           style={{
             fontFamily: 'inherit',
             letterSpacing: done ? 'normal' : '0.01em',
-            color: done ? '#ffffff' : 'rgba(255,255,255,0.75)',
-            transition: 'color 0.4s ease',
+            opacity: done ? 1 : 0.75,
+            transition: 'opacity 0.4s ease, color 0.4s ease',
           }}
         >
           {displayed}
         </span>
         {/* Accent cursor that fades out when done */}
         {!done && (
-          <span className="inline-block w-[3px] h-[0.8em] bg-emerald-500 ml-1 align-middle" style={{ animation: 'none', opacity: 0.8 }} />
+          <span className="inline-block w-[3px] h-[0.8em] bg-accent ml-1 align-middle" style={{ animation: 'none', opacity: 0.8 }} />
         )}
       </motion.h1>
 
       {/* Subtitle + Replay on one row */}
       <motion.div
         initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: done ? 1 : 0, y: done ? 0 : 6 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="mt-3 md:mt-4 flex flex-row items-center flex-wrap gap-4 md:gap-6"
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="mt-1 flex flex-row items-center flex-wrap gap-4 md:gap-6"
       >
-        <p className="text-gray-400 text-sm md:text-lg lg:text-xl font-medium tracking-wide">
+        <p className="text-text-secondary text-sm md:text-lg lg:text-xl font-medium tracking-wide">
           <span
-            className="text-emerald-400"
-            style={{ textShadow: '0 0 20px rgba(16, 185, 129, 0.35)' }}
+            className="text-accent"
+            style={{ textShadow: '0 0 20px var(--accent-glow)' }}
           >
-            {subtitle.accent}
+            {renderedAccent}
           </span>
-          {subtitle.rest}
+          {renderedRest}
+          {!subtitleDone && (
+            <span className="inline-block w-[2px] h-[0.7em] bg-accent ml-1 align-middle opacity-60" />
+          )}
         </p>
 
         <button
           onClick={() => setReplayKey(prev => prev + 1)}
-          className="flex items-center gap-1.5 text-[10px] md:text-xs font-mono text-gray-400 hover:text-emerald-400 transition-colors opacity-80 hover:opacity-100"
+          className="flex items-center gap-1.5 text-[10px] md:text-xs font-mono text-text-secondary hover:text-accent transition-colors opacity-80 hover:opacity-100"
         >
           <FiRefreshCw size={11} /> Ulangi Animasi
         </button>
