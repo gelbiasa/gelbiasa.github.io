@@ -5,153 +5,81 @@ import { createPortal } from 'react-dom';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SESSION_KEY = 'gelby_intro_shown';
 
-// Typing effect helper
-async function typeText(setText, text, speed = 38, isActive) {
+async function typeText(setText, text, speed = 38) {
   let cur = '';
   for (let i = 0; i < text.length; i++) {
-    if (!isActive.current) return false;
     cur += text[i];
     setText(cur);
-    await sleep(speed + Math.random() * 20);
+    await sleep(speed + Math.random() * 14);
   }
-  return true;
 }
 
-// ─── Animated typing line ───────────────────────────────────────────────────
-function TypingLine({ text, color = 'text-gray-300', speed = 32, onDone, delay = 0 }) {
-  const [displayed, setDisplayed] = useState('');
-  const [showCursor, setShowCursor] = useState(false);
-  const isActive = useRef(true);
+// ── Badge ─────────────────────────────────────────────────────────────────────
+const BDGBG   = { INFO:'#3b82f6',MIGRATE:'#7c3aed',CREATE:'#059669',SEED:'#d97706',OK:'#10b981',QUERY:'#0891b2',DONE:'#9333ea' };
+const BDGFG   = { INFO:'#fff',MIGRATE:'#fff',CREATE:'#000',SEED:'#000',OK:'#000',QUERY:'#000',DONE:'#fff' };
+const TXCOLOR = { INFO:'#93c5fd',MIGRATE:'#c4b5fd',CREATE:'#6ee7b7',SEED:'#fcd34d',OK:'#a7f3d0',QUERY:'#67e8f9',DONE:'#e879f9' };
 
-  useEffect(() => {
-    isActive.current = true;
-    let cancelled = false;
-    const run = async () => {
-      await sleep(delay);
-      if (cancelled) return;
-      setShowCursor(true);
-      let cur = '';
-      for (let i = 0; i < text.length; i++) {
-        if (cancelled) return;
-        cur += text[i];
-        setDisplayed(cur);
-        await sleep(speed + Math.random() * 18);
-      }
-      setShowCursor(false);
-      if (!cancelled && onDone) onDone();
-    };
-    run();
-    return () => { cancelled = true; isActive.current = false; };
-  }, [text, delay]);
-
+function LogLine({ type, text }) {
   return (
-    <span className={color}>
-      {displayed}
-      {showCursor && <span className="inline-block w-[6px] h-[1em] bg-emerald-400 align-middle ml-0.5 animate-pulse" />}
-    </span>
-  );
-}
-
-// ─── Log entry ───────────────────────────────────────────────────────────────
-function LogLine({ type, text, delay = 0 }) {
-  const typeColors = {
-    INFO:    'bg-blue-500 text-white',
-    SQL:     'bg-amber-500 text-black',
-    OK:      'bg-emerald-500 text-black',
-    DONE:    'bg-violet-500 text-white',
-    WARN:    'bg-orange-500 text-black',
-    QUERY:   'bg-cyan-500 text-black',
-  };
-  const textColors = {
-    INFO:  'text-blue-300',
-    SQL:   'text-amber-200',
-    OK:    'text-emerald-300',
-    DONE:  'text-violet-200',
-    WARN:  'text-orange-300',
-    QUERY: 'text-cyan-200',
-  };
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.22, delay: delay / 1000 }}
+    <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.15 }}
       className="flex items-start gap-2 leading-snug"
     >
-      <span className={`shrink-0 px-1.5 py-0.5 text-[9px] font-black rounded-sm tracking-widest mt-0.5 ${typeColors[type] || 'bg-gray-600 text-white'}`}>
+      <span className="shrink-0 mt-[2px] px-1.5 py-[1px] text-[8px] font-black rounded tracking-widest"
+        style={{ background: BDGBG[type]||'#374151', color: BDGFG[type]||'#fff' }}>
         {type}
       </span>
-      <span className={`text-xs ${textColors[type] || 'text-gray-400'}`}>{text}</span>
+      <span className="text-[10.5px] font-mono" style={{ color: TXCOLOR[type]||'#9ca3af' }}>{text}</span>
     </motion.div>
   );
 }
 
-// ─── Progress bar ─────────────────────────────────────────────────────────────
-function ProgressBar({ label, target = 100, speed = 18, color = '#10b981', onDone, delay = 0 }) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    let current = 0;
-    const go = async () => {
-      await sleep(delay);
-      while (current < target) {
-        current = Math.min(current + Math.ceil(Math.random() * 4 + 1), target);
-        setVal(current);
-        await sleep(speed);
-      }
-      if (onDone) onDone();
-    };
-    go();
-  }, []);
-  const filled = Math.floor((val / 100) * 28);
-  return (
-    <div className="flex items-center gap-2 text-[11px] font-mono">
-      {label && <span className="text-gray-500 text-[10px] shrink-0">{label}</span>}
-      <span className="text-gray-700">[</span>
-      <span style={{ color }} className="tracking-tight">{'▓'.repeat(filled)}</span>
-      <span className="text-gray-800">{'░'.repeat(28 - filled)}</span>
-      <span className="text-gray-700">]</span>
-      <span className="text-gray-300 w-8 text-right">{val}%</span>
-    </div>
-  );
-}
+// ── PDM Table ─────────────────────────────────────────────────────────────────
+const TDEFS = {
+  developers:  { color:'#10b981', cols:['🔑 id INT','name VARCHAR','role VARCHAR','status ENUM'] },
+  experiences: { color:'#8b5cf6', cols:['🔑 id INT','developer_id FK','tech_stack TEXT','skills JSON'] },
+  projects:    { color:'#06b6d4', cols:['🔑 id INT','developer_id FK','scale VARCHAR','tech_stack TEXT'] },
+  educations:  { color:'#f43f5e', cols:['🔑 id INT','developer_id FK','degree VARCHAR','gpa DECIMAL'] },
+};
 
-// ─── SQL Result table ─────────────────────────────────────────────────────────
-function SqlResult({ show }) {
-  const rows = [
-    { field: 'name',       value: 'M. Isroqi Gelby Firmansyah' },
-    { field: 'role',       value: 'Laravel Expert & DB Engineer' },
-    { field: 'framework',  value: 'Laravel 11.x' },
-    { field: 'db_engine',  value: 'MySQL 8.0 / InnoDB' },
-    { field: 'status',     value: 'OPEN_TO_HIRE' },
-  ];
+function PdmTable({ name, visible, x, y, rowCount = 0 }) {
+  const def = TDEFS[name];
+  const [rows, setRows] = useState(0);
+  useEffect(() => {
+    if (!visible || !rowCount) return;
+    let i = 0;
+    const iv = setInterval(() => {
+      i = Math.min(i + Math.ceil(rowCount / 7), rowCount);
+      setRows(i);
+      if (i >= rowCount) clearInterval(iv);
+    }, 55);
+    return () => clearInterval(iv);
+  }, [visible, rowCount]);
+
   return (
     <AnimatePresence>
-      {show && (
+      {visible && (
         <motion.div
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mt-2 border border-gray-700 rounded text-[10px] font-mono overflow-hidden"
+          initial={{ opacity: 0, scale: 0.86, y: 6 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="absolute font-mono rounded-lg overflow-hidden"
+          style={{ left: x, top: y, width: 148, border: `1px solid ${def.color}44`, background: '#0d1117', boxShadow: `0 4px 20px ${def.color}18`, zIndex: 2 }}
         >
-          <div className="flex bg-gray-800/80 text-gray-400 text-[9px] tracking-widest uppercase font-bold">
-            <div className="px-2 py-1 w-28 border-r border-gray-700">field</div>
-            <div className="px-2 py-1">value</div>
+          <div className="flex items-center justify-between px-2 py-1" style={{ background: def.color+'22', borderBottom: `1px solid ${def.color}33` }}>
+            <span className="text-[10px] font-black" style={{ color: def.color }}>⬡ {name}</span>
+            {rowCount > 0 && <span className="text-[8px] text-gray-600">{rows} rows</span>}
           </div>
-          {rows.map((row, i) => (
-            <motion.div
-              key={row.field}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.08 * i, duration: 0.2 }}
-              className="flex border-t border-gray-800"
-            >
-              <div className="px-2 py-1 w-28 border-r border-gray-800 text-cyan-400 shrink-0">{row.field}</div>
-              <div className={`px-2 py-1 ${row.field === 'status' ? 'text-emerald-400 font-bold' : 'text-gray-200'}`}>
-                {row.value}
-              </div>
-            </motion.div>
-          ))}
-          <div className="px-2 py-1 border-t border-gray-800 text-gray-600 text-[9px]">
-            5 rows in set (0.002 sec)
+          <div className="px-2 py-1.5 space-y-[3px]">
+            {def.cols.map((col, i) => (
+              <motion.div key={col} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.04 * i }}
+                className="text-[8.5px] px-1.5 py-[2px] rounded"
+                style={{
+                  background: col.includes('FK') ? '#1e1230' : col.startsWith('🔑') ? def.color+'22' : '#111827',
+                  color:      col.includes('FK') ? '#a78bfa'  : col.startsWith('🔑') ? def.color  : '#6b7280',
+                  border:     col.includes('FK') ? '1px solid #4c1d9530' : col.startsWith('🔑') ? `1px solid ${def.color}44` : 'none',
+                }}
+              >{col}</motion.div>
+            ))}
           </div>
         </motion.div>
       )}
@@ -159,108 +87,278 @@ function SqlResult({ show }) {
   );
 }
 
-// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
+// ── SVG animated line ─────────────────────────────────────────────────────────
+function RelLine({ x1, y1, x2, y2, visible, color }) {
+  const len = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.line x1={x1} y1={y1} x2={x2} y2={y2}
+          stroke={color} strokeWidth="1.2" strokeLinecap="round"
+          strokeDasharray={len}
+          initial={{ strokeDashoffset: len, opacity: 0 }}
+          animate={{ strokeDashoffset: 0, opacity: 0.65 }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+        />
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ── Target Found Modal ────────────────────────────────────────────────────────
+function TargetFoundModal({ show }) {
+  const [phase, setPhase] = useState(0); // 0: hidden, 2: found, 3: ready
+  const [progress, setProgress] = useState(0);
+  
+  useEffect(() => {
+    if (!show) return;
+    const run = async () => {
+      setPhase(2);
+      await sleep(400); // wait for entrance animation
+      
+      let p = 0;
+      const iv = setInterval(() => {
+        p += 2;
+        setProgress(p);
+        if (p >= 100) clearInterval(iv);
+      }, 40); // 50 steps * 40ms = 2000ms
+      
+      await sleep(2000 + 400);
+      setPhase(3);
+    };
+    run();
+  }, [show]);
+
+  if (!show) return null;
+
+  return (
+    <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm rounded-2xl">
+      <AnimatePresence mode="wait">
+        
+        {phase >= 2 && (
+          <motion.div key="found" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', damping: 20 }}
+            className="relative w-full max-w-lg bg-[#0a0e14] border border-emerald-500/30 rounded-xl overflow-hidden shadow-[0_0_80px_rgba(16,185,129,0.2)]"
+          >
+            {/* Animated border glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 opacity-50 animate-[shimmer_2s_infinite]" />
+            
+            <div className="relative p-6 font-mono">
+              <div className="flex items-center justify-between border-b border-emerald-500/20 pb-3 mb-4">
+                <div className="flex items-center gap-2 text-emerald-400">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  <span className="text-[12px] font-black tracking-widest">TARGET ACQUIRED</span>
+                </div>
+                <div className="text-[10px] text-emerald-500/60">ROWS: 1</div>
+              </div>
+              
+              <div className="space-y-4 text-[12px] sm:text-[13px]">
+                <div>
+                  <div className="text-gray-500 text-[9px] sm:text-[10px] uppercase tracking-wider mb-1">Developer Name</div>
+                  <div className="text-white font-bold text-base sm:text-lg text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 leading-tight">
+                    M. Isroqi Gelby Firmansyah
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <div className="text-gray-500 text-[10px] uppercase tracking-wider mb-1">Primary Role</div>
+                    <div className="text-gray-200">Laravel Expert & DB Engineer</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500 text-[10px] uppercase tracking-wider mb-1">Tech Stack</div>
+                    <div className="text-gray-200">Laravel, MySQL, PHP</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-gray-800">
+                <div className="flex justify-between items-end mb-2">
+                  <div className="text-[10px] font-bold tracking-widest uppercase flex items-center gap-2"
+                       style={{ color: progress < 100 ? '#22d3ee' : '#34d399' }}>
+                    {progress < 100 && <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />}
+                    {progress < 100 ? 'INITIALIZING ENVIRONMENT...' : 'ACCESS GRANTED — REDIRECTING'}
+                  </div>
+                  <div className="text-[11px] font-mono font-bold"
+                       style={{ color: progress < 100 ? '#22d3ee' : '#34d399' }}>
+                    {progress}%
+                  </div>
+                </div>
+                <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]"
+                    style={{ width: `${progress}%`, transition: 'width 50ms linear' }}
+                  />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ── TitleBar ─────────────────────────────────────────────────────────────────
+function TitleBar({ label, accent }) {
+  return (
+    <div className="flex items-center px-4 py-2.5 border-b border-gray-800/80 shrink-0" style={{ background:'#161b22' }}>
+      <div className="flex gap-1.5">
+        <div className="w-2.5 h-2.5 rounded-full" style={{ background:'#ef4444cc' }} />
+        <div className="w-2.5 h-2.5 rounded-full" style={{ background:'#eab308cc' }} />
+        <div className="w-2.5 h-2.5 rounded-full" style={{ background:'#22c55ecc' }} />
+      </div>
+      <div className="mx-auto text-[10px] text-gray-500 font-mono flex items-center gap-1.5">
+        <span style={{ color: accent }}>{label.icon}</span> {label.text}
+      </div>
+    </div>
+  );
+}
+
+// ── MAIN ──────────────────────────────────────────────────────────────────────
 export default function TerminalIntro({ onDone }) {
-  // Phases: sql-type, sql-running, sql-result, artisan-type, artisan-logs, progress, finishing, exiting
-  const [phase, setPhase] = useState('idle');
-  const [sqlCmd, setSqlCmd] = useState('');
-  const [sqlCursor, setSqlCursor] = useState(false);
+  // Terminal state
+  const [phase, setPhase]           = useState('migrate'); // migrate | clear-typing | mysql
   const [artisanCmd, setArtisanCmd] = useState('');
-  const [artisanCursor, setArtisanCursor] = useState(false);
-  const [sqlLogs, setSqlLogs] = useState([]);
-  const [artisanLogs, setArtisanLogs] = useState([]);
-  const [sqlResultShow, setSqlResultShow] = useState(false);
-  const [progress1, setProgress1] = useState(null);
-  const [progress2, setProgress2] = useState(null);
+  const [artisanCursor, setArtisanCursor] = useState(true);
+  const [logs, setLogs]             = useState([]);
+  const [clearCmd, setClearCmd]     = useState('');
+  const [clearCursor, setClearCursor] = useState(false);
+  const [mysqlCmd, setMysqlCmd]     = useState('');
+  const [mysqlCursor, setMysqlCursor] = useState(false);
+  
+  // PDM state
+  const [tables, setTables] = useState({});
+  const [lines,  setLines]  = useState({});
+
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
   const [exiting, setExiting] = useState(false);
+  
   const isActive = useRef(true);
+  const pdmRef = useRef(null);
+  const [pdmScale, setPdmScale] = useState(1);
+
+  // Responsive PDM scaling
+  useEffect(() => {
+    if (!pdmRef.current) return;
+    const obs = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const { width, height } = entry.contentRect;
+        // Base PDM size is 550x450, add padding allowance
+        const scaleW = (width - 16) / 550;
+        const scaleH = (height - 16) / 450;
+        setPdmScale(Math.min(1, scaleW, scaleH));
+      }
+    });
+    obs.observe(pdmRef.current);
+    return () => obs.disconnect();
+  }, []);
+
+  const addLog = (t, m) => setLogs(p => [...p, { type: t, text: m }]);
+  const revealTable = (name, rows) => setTables(p => ({ ...p, [name]: { visible: true, rows } }));
+  const revealLine  = (name)       => setLines(p => ({ ...p, [name]: true }));
 
   useEffect(() => {
     isActive.current = true;
     const run = async () => {
-      await sleep(500);
-      if (!isActive.current) return;
-
-      // ── PHASE 1: SQL ──────────────────────────────────────────────────────
-      setPhase('sql-type');
-      setSqlCursor(true);
-      const sqlQuery = "SELECT * FROM developer WHERE expertise = 'Laravel' AND db = 'MySQL';";
-      let cur = '';
-      for (let i = 0; i < sqlQuery.length; i++) {
-        if (!isActive.current) return;
-        cur += sqlQuery[i];
-        setSqlCmd(cur);
-        await sleep(30 + Math.random() * 20);
-      }
-      setSqlCursor(false);
-      await sleep(280);
-      if (!isActive.current) return;
-
-      // SQL connecting
-      setPhase('sql-running');
-      setSqlLogs([{ type: 'SQL', text: 'Connected to mysql@localhost:3306/portfolio_db' }]);
       await sleep(350);
-      setSqlLogs(p => [...p, { type: 'QUERY', text: 'Executing query on table `developer`...' }]);
-      await sleep(500);
       if (!isActive.current) return;
 
-      // SQL result table
-      setSqlResultShow(true);
-      await sleep(900);
-      if (!isActive.current) return;
-
-      setSqlLogs(p => [...p, { type: 'OK', text: 'Profile data loaded. Schema: InnoDB, utf8mb4.' }]);
-      await sleep(700);
-      if (!isActive.current) return;
-
-      // ── PHASE 2: ARTISAN ──────────────────────────────────────────────────
-      setPhase('artisan-type');
+      // ─ 1. Type artisan command ────────────────────────────────────────────
       setArtisanCursor(true);
-      const artisan = 'php artisan portfolio:boot --mode=production';
-      let a = '';
-      for (let i = 0; i < artisan.length; i++) {
-        if (!isActive.current) return;
-        a += artisan[i];
-        setArtisanCmd(a);
-        await sleep(32 + Math.random() * 18);
-      }
+      await typeText(setArtisanCmd, 'php artisan migrate:fresh --seed', 42);
       setArtisanCursor(false);
-      await sleep(260);
+      await sleep(220);
       if (!isActive.current) return;
 
-      setPhase('artisan-logs');
-      const artisanSteps = [
-        { type: 'INFO', text: 'Bootstrapping Laravel application...', wait: 260 },
-        { type: 'INFO', text: 'Loading service providers (AppServiceProvider)...', wait: 220 },
-        { type: 'INFO', text: 'Migrating schemas: create_skills_table... ✓', wait: 260 },
-        { type: 'INFO', text: 'Migrating schemas: create_projects_table... ✓', wait: 220 },
-        { type: 'INFO', text: 'Migrating schemas: create_experience_table... ✓', wait: 280 },
-        { type: 'OK',   text: 'All migrations ran successfully.', wait: 320 },
-        { type: 'INFO', text: 'Compiling Eloquent relationships & query builder...', wait: 300 },
-        { type: 'DONE', text: 'Portfolio booted. Welcome, Gelby!', wait: 200 },
-      ];
+      // ─ 2. Migration logs + PDM tables appear ──────────────────────────────
+      addLog('MIGRATE', 'Running migrations...');
+      await sleep(160);
 
-      for (const step of artisanSteps) {
+      const tbls = [
+        { name:'developers',  label:'2025_01_01_create_developers_table',  rows: 14892 },
+        { name:'experiences', label:'2025_01_02_create_experiences_table', rows: 28450 },
+        { name:'projects',    label:'2025_01_03_create_projects_table',    rows: 45102 },
+        { name:'educations',  label:'2025_01_04_create_educations_table',  rows: 15300 },
+      ];
+      for (const td of tbls) {
         if (!isActive.current) return;
-        await sleep(step.wait);
-        setArtisanLogs(p => [...p, { type: step.type, text: step.text }]);
+        addLog('CREATE', td.label);
+        revealTable(td.name, td.rows);
+        if (td.name !== 'developers') setTimeout(() => revealLine(td.name), 200);
+        await sleep(230);
       }
+      addLog('OK', 'All migrations completed successfully.');
+      await sleep(200);
+      if (!isActive.current) return;
+
+      // ─ 3. Seed ───────────────────────────────────────────────────────────
+      addLog('SEED', 'Seeding: DeveloperSeeder... ✓');
+      await sleep(170);
+      addLog('SEED', 'Seeding: ExperienceSeeder... ✓');
+      await sleep(160);
+      addLog('SEED', 'Seeding: ProjectSeeder... ✓');
+      await sleep(160);
+      addLog('SEED', 'Database seeding complete.');
       await sleep(350);
       if (!isActive.current) return;
 
-      // Progress bars
-      setProgress1(true);
-      await sleep(700);
-      setProgress2(true);
-      await sleep(900);
+      // ─ 4. clear command ──────────────────────────────────────────────────
+      setPhase('clear-typing');
+      setClearCursor(true);
+      await typeText(setClearCmd, 'clear', 55);
+      setClearCursor(false);
+      await sleep(220);
       if (!isActive.current) return;
 
-      // Exit
+      // Clear terminal and enter Tinker
+      setPhase('tinker-start');
+      setLogs([]);
+      setArtisanCmd('');
+      setClearCmd('');
+      await sleep(120);
+      if (!isActive.current) return;
+
+      setClearCursor(true);
+      await typeText(setClearCmd, 'php artisan tinker', 40);
+      setClearCursor(false);
+      await sleep(250);
+      if (!isActive.current) return;
+
+      setPhase('tinker-query');
+      await sleep(100);
+
+      // ─ 5. Tinker Eloquent query ──────────────────────────────────────────────
+      setMysqlCursor(true);
+      const q = `Developer::with(['experiences', 'educations', 'projects'])
+    ->whereHas('experiences', function($q) {
+        $q->where('tech_stack', 'LIKE', '%Laravel%')
+          ->whereJsonContains('skills', ['System Planning', 'Clean Code', 'Efficiency']);
+    })
+    ->whereHas('educations', fn($q) => $q->where('gpa', '>', 3.70))
+    ->whereHas('projects', fn($q) => $q->where('scale', 'Enterprise'))
+    ->first();`;
+      await typeText(setMysqlCmd, q, 12);
+      setMysqlCursor(false);
       await sleep(300);
-      setExiting(true);
-      await sleep(700);
       if (!isActive.current) return;
 
+      // ─ 5.5. Executing ──────────────────────────────────────────────────────
+      setPhase('executing');
+      await sleep(1400);
+      if (!isActive.current) return;
+
+      // ─ 6. Show Target Found Modal ────────────────────────────────────────
+      setShowModal(true);
+      
+      // Wait for modal animations to complete (entrance + loading bar + exit delay)
+      await sleep(3000); 
+      if (!isActive.current) return;
+
+      // ─ 7. Exit ───────────────────────────────────────────────────────────
+      setExiting(true);
+      await sleep(600);
+      if (!isActive.current) return;
       sessionStorage.setItem(SESSION_KEY, '1');
       window.dispatchEvent(new Event('introFinished'));
       onDone();
@@ -269,183 +367,134 @@ export default function TerminalIntro({ onDone }) {
     return () => { isActive.current = false; };
   }, []);
 
+  // PDM node positions for 1-2-1 layout in a fixed 550x450 bounding box
+  const DEV = { x: 201, y: 20,   cx: 275, cy: 62  };
+  const EXP = { x: 40,  y: 190,  cx: 114, cy: 232 };
+  const EDU = { x: 362, y: 190,  cx: 436, cy: 232 };
+  const PRJ = { x: 201, y: 350,  cx: 275, cy: 392 };
+
   const panel = (
     <AnimatePresence>
       {!exiting && (
-        <motion.div
-          key="intro-overlay"
+        <motion.div key="intro-root"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, filter: 'blur(16px)', scale: 1.05 }}
+          exit={{ opacity: 0, filter: 'blur(18px)', scale: 1.04 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden"
-          style={{ background: '#080b10' }}
+          style={{ background: '#070b10' }}
         >
-          {/* Grid background */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-[0.07]"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(16,185,129,0.6) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(16,185,129,0.6) 1px, transparent 1px)
-              `,
-              backgroundSize: '40px 40px',
-            }}
-          />
-
+          {/* Grid */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: `linear-gradient(rgba(16,185,129,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.04) 1px,transparent 1px)`,
+            backgroundSize: '38px 38px',
+          }} />
           {/* Scanlines */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 4px)',
-            }}
-          />
-
-          {/* Big ambient glow */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: 'repeating-linear-gradient(0deg,rgba(0,0,0,0.1) 0px,rgba(0,0,0,0.1) 1px,transparent 1px,transparent 4px)',
+          }} />
+          {/* Ambient */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="w-[700px] h-[400px] rounded-full bg-emerald-500/8 blur-[140px]" />
-            <div className="absolute w-[400px] h-[200px] rounded-full bg-blue-500/5 blur-[100px] translate-y-20" />
+            <div className="w-[900px] h-[460px] rounded-full blur-[160px]"
+              style={{ background: 'radial-gradient(ellipse,rgba(16,185,129,0.07) 0%,rgba(139,92,246,0.05) 60%,transparent 100%)' }} />
           </div>
 
-          {/* DUAL TERMINAL LAYOUT */}
+          {/* ══ 2-container layout (Terminal + PDM) ══ */}
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.96 }}
+            initial={{ opacity: 0, y: 36, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-5xl mx-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="relative flex flex-col lg:flex-row gap-4 w-full px-4 lg:max-h-[600px]"
+            style={{ maxWidth: 1100, height: '95vh', maxHeight: 850 }}
           >
-            {/* ── LEFT: MySQL Terminal ─────────────────────────────── */}
-            <div className="bg-[#0d1117] rounded-2xl border border-gray-800 overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_0_1px_rgba(251,191,36,0.08)]">
-              {/* Title bar */}
-              <div className="flex items-center px-4 py-2.5 border-b border-gray-800/70 bg-[#161b22]">
-                <div className="flex space-x-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                </div>
-                <div className="mx-auto flex items-center gap-2 text-[10px] text-gray-500 font-mono">
-                  <span className="text-amber-500/80">⬡</span>
-                  mysql&gt; portfolio_db
-                </div>
-              </div>
+            {/* ── CONTAINER 1: Terminal ─────────────────────────────────── */}
+            <div className="flex flex-col rounded-2xl border border-gray-800 overflow-hidden w-full lg:w-[46%] h-[50%] lg:h-full shrink-0"
+              style={{ background:'#0d1117', boxShadow:'0 24px 70px rgba(0,0,0,0.8),0 0 0 1px rgba(139,92,246,0.1)' }}>
+              <TitleBar label={{ icon:'◉', text:'gelby@portfolio:~/app — bash' }} accent="#10b98180" />
+              <div className="p-4 font-mono text-[11px] leading-relaxed flex-1 overflow-hidden flex flex-col gap-1.5">
 
-              {/* MySQL Body */}
-              <div className="p-4 font-mono text-xs leading-relaxed min-h-[280px]">
-                {/* mysql prompt */}
-                <div className="mb-2 text-gray-400">
-                  <span className="text-amber-400 font-bold">mysql</span>
-                  <span className="text-gray-600"> [</span>
-                  <span className="text-cyan-400">portfolio_db</span>
-                  <span className="text-gray-600">]</span>
-                  <span className="text-gray-500">&gt; </span>
-                  <span className="text-gray-100">{sqlCmd}</span>
-                  {sqlCursor && (
-                    <span className="inline-block w-[7px] h-[1em] bg-amber-400 align-middle ml-0.5 animate-pulse" />
-                  )}
-                </div>
-
-                {/* SQL logs */}
-                <div className="space-y-1.5 mb-2">
-                  {sqlLogs.map((log, i) => (
-                    <LogLine key={i} type={log.type} text={log.text} delay={0} />
-                  ))}
-                </div>
-
-                {/* SQL Result Table */}
-                <SqlResult show={sqlResultShow} />
-
-                {/* Loading bars for SQL */}
-                {progress1 !== null && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="mt-3 space-y-1.5"
-                  >
-                    <ProgressBar label="schema" target={100} speed={14} color="#f59e0b" />
-                    <ProgressBar label="indexes" target={100} speed={18} color="#06b6d4" delay={200} />
-                  </motion.div>
-                )}
-              </div>
-            </div>
-
-            {/* ── RIGHT: Laravel Artisan Terminal ──────────────────── */}
-            <div className="bg-[#0d1117] rounded-2xl border border-gray-800 overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_0_1px_rgba(16,185,129,0.08)]">
-              {/* Title bar */}
-              <div className="flex items-center px-4 py-2.5 border-b border-gray-800/70 bg-[#161b22]">
-                <div className="flex space-x-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                </div>
-                <div className="mx-auto flex items-center gap-2 text-[10px] text-gray-500 font-mono">
-                  <span className="text-emerald-500/80">●</span>
-                  gelby — bash — 120x36
-                </div>
-              </div>
-
-              {/* Artisan Body */}
-              <div className="p-4 font-mono text-xs leading-relaxed min-h-[280px]">
-                {/* bash prompt */}
-                {phase !== 'idle' && phase !== 'sql-type' && phase !== 'sql-running' && (
-                  <div className="mb-2 text-gray-400">
-                    <span className="text-emerald-400 font-semibold">gelby@portfolio</span>
-                    <span className="text-gray-600">:</span>
-                    <span className="text-blue-400">~/app</span>
-                    <span className="text-gray-500">$ </span>
+                {/* Artisan prompt (migrate phase) */}
+                {(phase === 'migrate' || phase === 'clear-typing') && artisanCmd && (
+                  <div className="text-gray-400 mb-1 shrink-0">
+                    <span style={{ color:'#10b981' }} className="font-semibold">gelby</span>
+                    <span className="text-gray-700">:</span>
+                    <span style={{ color:'#60a5fa' }}>~/app</span>
+                    <span className="text-gray-600">$ </span>
                     <span className="text-gray-100">{artisanCmd}</span>
-                    {artisanCursor && (
-                      <span className="inline-block w-[6px] h-[1em] bg-emerald-400 align-middle ml-0.5 animate-pulse" />
-                    )}
+                    {artisanCursor && <span className="inline-block w-[6px] h-[0.9em] align-middle ml-0.5 animate-pulse" style={{ background:'#10b981' }} />}
                   </div>
                 )}
 
-                {/* Artisan logs */}
-                <div className="space-y-1.5">
-                  {artisanLogs.map((log, i) => (
-                    <LogLine key={i} type={log.type} text={log.text} delay={0} />
-                  ))}
-                </div>
-
-                {/* Artisan progress bars */}
-                {progress2 !== null && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="mt-3 space-y-1.5"
-                  >
-                    <ProgressBar label="compile" target={100} speed={15} color="#10b981" />
-                    <ProgressBar label="cache  " target={100} speed={20} color="#8b5cf6" delay={300}
-                      onDone={() => {
-                        // show finishing note
-                      }}
-                    />
-                  </motion.div>
+                {/* Migration logs */}
+                {logs.length > 0 && (
+                  <div className="space-y-1 flex-1 overflow-hidden">
+                    {logs.map((l, i) => <LogLine key={i} type={l.type} text={l.text} />)}
+                  </div>
                 )}
 
-                {/* Final ready message */}
-                {artisanLogs.some(l => l.type === 'DONE') && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="mt-4 pt-3 border-t border-gray-800 text-[10px] text-gray-600"
-                  >
-                    <span className="text-emerald-500/60">◉</span> Application ready on{' '}
-                    <span className="text-blue-400/70">https://gelbiasa.github.io</span>
+                {/* clear / tinker command */}
+                {(phase === 'clear-typing' || phase === 'tinker-start' || phase === 'tinker-query' || phase === 'executing') && (
+                  <div className="text-gray-400 shrink-0 border-t border-gray-800/60 pt-2">
+                    <span style={{ color:'#10b981' }} className="font-semibold">gelby</span>
+                    <span className="text-gray-700">:</span>
+                    <span style={{ color:'#60a5fa' }}>~/app</span>
+                    <span className="text-gray-600">$ </span>
+                    <span className="text-gray-100">{phase === 'clear-typing' ? clearCmd : 'php artisan tinker'}</span>
+                    {phase === 'tinker-start' && clearCursor && <span className="inline-block w-[6px] h-[0.9em] align-middle ml-0.5 animate-pulse" style={{ background:'#10b981' }} />}
+                  </div>
+                )}
+
+                {/* Tinker phase */}
+                {(phase === 'tinker-query' || phase === 'executing') && (
+                  <div className="text-gray-400 mb-1 shrink-0 mt-1">
+                    <span className="text-gray-500 font-bold">&gt; </span>
+                    <span className="text-emerald-300 whitespace-pre leading-relaxed">{mysqlCmd}</span>
+                    {mysqlCursor && <span className="inline-block w-[6px] h-[0.9em] align-middle ml-0.5 animate-pulse" style={{ background:'#6ee7b7' }} />}
+                  </div>
+                )}
+
+                {/* Executing loader */}
+                {phase === 'executing' && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 flex items-center gap-3 text-cyan-400 font-mono pl-2">
+                    <div className="w-4 h-4 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
+                    <span className="text-[10px] tracking-[0.2em] font-bold animate-pulse">EXECUTING QUERY...</span>
                   </motion.div>
                 )}
               </div>
             </div>
+
+            {/* ── CONTAINER 2: PDM Diagram (Full Height) ───────────────── */}
+            <div className="flex flex-col rounded-2xl border border-gray-800 overflow-hidden flex-1 h-[50%] lg:h-full"
+              style={{ background:'#0a0e14', boxShadow:'0 24px 70px rgba(0,0,0,0.8),0 0 0 1px rgba(245,158,11,0.1)' }}>
+              <TitleBar label={{ icon:'⬡', text:'portfolio_db — Physical Data Model' }} accent="#f59e0baa" />
+              <div className="flex-1 relative overflow-hidden flex items-center justify-center" ref={pdmRef}>
+                <div style={{ width: 550, height: 450, transform: `scale(${pdmScale})`, position: 'relative' }}>
+                  {/* SVG lines */}
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:1 }}>
+                    <RelLine x1={DEV.cx} y1={DEV.cy+40} x2={EXP.cx} y2={EXP.cy-40} visible={!!lines.experiences} color="#8b5cf6" />
+                    <RelLine x1={DEV.cx} y1={DEV.cy+40} x2={EDU.cx} y2={EDU.cy-40} visible={!!lines.educations}  color="#f43f5e" />
+                    <RelLine x1={DEV.cx} y1={DEV.cy+40} x2={PRJ.cx} y2={PRJ.cy-40} visible={!!lines.projects}    color="#06b6d4" />
+                  </svg>
+                  {/* Tables */}
+                  <div className="relative" style={{ zIndex:2, height:'100%' }}>
+                    <PdmTable name="developers"  visible={!!tables.developers?.visible}  x={DEV.x} y={DEV.y} rowCount={tables.developers?.rows||0} />
+                    <PdmTable name="experiences" visible={!!tables.experiences?.visible} x={EXP.x} y={EXP.y} rowCount={tables.experiences?.rows||0} />
+                    <PdmTable name="educations"  visible={!!tables.educations?.visible}  x={EDU.x} y={EDU.y} rowCount={tables.educations?.rows||0} />
+                    <PdmTable name="projects"    visible={!!tables.projects?.visible}    x={PRJ.x} y={PRJ.y} rowCount={tables.projects?.rows||0} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* ── Modal Overlay ── */}
+            <TargetFoundModal show={showModal} />
+
           </motion.div>
 
-          {/* Skip hint */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="absolute bottom-6 text-[10px] text-gray-700 font-mono tracking-widest"
-          >
+          {/* Hint */}
+          <motion.p initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:1.4 }}
+            className="absolute bottom-5 text-[9px] font-mono tracking-[0.25em] uppercase" style={{ color:'#1f2937' }}>
             Initializing portfolio...
-          </motion.div>
+          </motion.p>
         </motion.div>
       )}
     </AnimatePresence>
