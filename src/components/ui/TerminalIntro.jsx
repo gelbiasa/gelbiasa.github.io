@@ -51,7 +51,7 @@ function PdmTable({ name, visible, x, y, rowCount = 0 }) {
       i = Math.min(i + Math.ceil(rowCount / 7), rowCount);
       setRows(i);
       if (i >= rowCount) clearInterval(iv);
-    }, 55);
+    }, 15);
     return () => clearInterval(iv);
   }, [visible, rowCount]);
 
@@ -114,16 +114,16 @@ function TargetFoundModal({ show }) {
     if (!show) return;
     const run = async () => {
       setPhase(2);
-      await sleep(400); // wait for entrance animation
+      await sleep(200); // wait for entrance animation
       
       let p = 0;
       const iv = setInterval(() => {
         p += 2;
         setProgress(p);
         if (p >= 100) clearInterval(iv);
-      }, 40); // 50 steps * 40ms = 2000ms
+      }, 15); // 50 steps * 15ms = 750ms
       
-      await sleep(2000 + 400);
+      await sleep(750 + 200);
       setPhase(3);
     };
     run();
@@ -261,19 +261,19 @@ export default function TerminalIntro({ onDone }) {
   useEffect(() => {
     isActive.current = true;
     const run = async () => {
-      await sleep(350);
+      await sleep(100);
       if (!isActive.current) return;
 
       // ─ 1. Type artisan command ────────────────────────────────────────────
       setArtisanCursor(true);
-      await typeText(setArtisanCmd, 'php artisan migrate:fresh --seed', 42);
+      await typeText(setArtisanCmd, 'php artisan migrate:fresh --seed', 15);
       setArtisanCursor(false);
-      await sleep(220);
+      await sleep(50);
       if (!isActive.current) return;
 
       // ─ 2. Migration logs + PDM tables appear ──────────────────────────────
       addLog('MIGRATE', 'Running migrations...');
-      await sleep(160);
+      await sleep(50);
 
       const tbls = [
         { name:'developers',  label:'2025_01_01_create_developers_table',  rows: 14892 },
@@ -285,30 +285,30 @@ export default function TerminalIntro({ onDone }) {
         if (!isActive.current) return;
         addLog('CREATE', td.label);
         revealTable(td.name, td.rows);
-        if (td.name !== 'developers') setTimeout(() => revealLine(td.name), 200);
-        await sleep(230);
+        if (td.name !== 'developers') setTimeout(() => revealLine(td.name), 80);
+        await sleep(60);
       }
       addLog('OK', 'All migrations completed successfully.');
-      await sleep(200);
+      await sleep(50);
       if (!isActive.current) return;
 
       // ─ 3. Seed ───────────────────────────────────────────────────────────
       addLog('SEED', 'Seeding: DeveloperSeeder... ✓');
-      await sleep(170);
+      await sleep(40);
       addLog('SEED', 'Seeding: ExperienceSeeder... ✓');
-      await sleep(160);
+      await sleep(40);
       addLog('SEED', 'Seeding: ProjectSeeder... ✓');
-      await sleep(160);
+      await sleep(40);
       addLog('SEED', 'Database seeding complete.');
-      await sleep(350);
+      await sleep(100);
       if (!isActive.current) return;
 
       // ─ 4. clear command ──────────────────────────────────────────────────
       setPhase('clear-typing');
       setClearCursor(true);
-      await typeText(setClearCmd, 'clear', 55);
+      await typeText(setClearCmd, 'clear', 20);
       setClearCursor(false);
-      await sleep(220);
+      await sleep(50);
       if (!isActive.current) return;
 
       // Clear terminal and enter Tinker
@@ -316,17 +316,17 @@ export default function TerminalIntro({ onDone }) {
       setLogs([]);
       setArtisanCmd('');
       setClearCmd('');
-      await sleep(120);
+      await sleep(30);
       if (!isActive.current) return;
 
       setClearCursor(true);
-      await typeText(setClearCmd, 'php artisan tinker', 40);
+      await typeText(setClearCmd, 'php artisan tinker', 15);
       setClearCursor(false);
-      await sleep(250);
+      await sleep(50);
       if (!isActive.current) return;
 
       setPhase('tinker-query');
-      await sleep(100);
+      await sleep(30);
 
       // ─ 5. Tinker Eloquent query ──────────────────────────────────────────────
       setMysqlCursor(true);
@@ -338,26 +338,26 @@ export default function TerminalIntro({ onDone }) {
     ->whereHas('educations', fn($q) => $q->where('gpa', '>', 3.70))
     ->whereHas('projects', fn($q) => $q->where('scale', 'Enterprise'))
     ->first();`;
-      await typeText(setMysqlCmd, q, 12);
+      await typeText(setMysqlCmd, q, 4);
       setMysqlCursor(false);
-      await sleep(300);
+      await sleep(50);
       if (!isActive.current) return;
 
       // ─ 5.5. Executing ──────────────────────────────────────────────────────
       setPhase('executing');
-      await sleep(1400);
+      await sleep(400);
       if (!isActive.current) return;
 
       // ─ 6. Show Target Found Modal ────────────────────────────────────────
       setShowModal(true);
       
       // Wait for modal animations to complete (entrance + loading bar + exit delay)
-      await sleep(3000); 
+      await sleep(1200); 
       if (!isActive.current) return;
 
       // ─ 7. Exit ───────────────────────────────────────────────────────────
       setExiting(true);
-      await sleep(600);
+      await sleep(150);
       if (!isActive.current) return;
       sessionStorage.setItem(SESSION_KEY, '1');
       window.dispatchEvent(new Event('introFinished'));
