@@ -21,6 +21,85 @@ const categoryIcons = {
 
 const CATEGORIES = ['All', 'Intern', 'Academic', 'Personal']
 
+// Carousel Component for multiple images
+function ImageCarousel({ images, alt, className = "", imageClassName = "", objectFit = "cover" }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const imageArray = Array.isArray(images) ? images : [images];
+  
+  if (imageArray.length === 0) return null;
+
+  const handleNext = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setCurrentIndex((prev) => (prev + 1) % imageArray.length);
+  };
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setCurrentIndex((prev) => (prev - 1 + imageArray.length) % imageArray.length);
+  };
+
+  return (
+    <div className={`relative group/carousel w-full h-full overflow-hidden ${className}`}>
+      
+      {/* Photo Counter Badge - Extremely noticeable but elegant */}
+      {imageArray.length > 1 && (
+        <div className="absolute top-4 left-4 z-30 bg-black/70 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold font-mono tracking-widest px-3 py-1.5 rounded-full shadow-lg pointer-events-none flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+          {currentIndex + 1} / {imageArray.length}
+        </div>
+      )}
+
+      {/* Image with smooth crossfade */}
+      <AnimatePresence mode="popLayout">
+        <motion.img
+          key={currentIndex}
+          src={imageArray[currentIndex]}
+          alt={`${alt} - ${currentIndex + 1}`}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className={`w-full h-full object-${objectFit} opacity-95 group-hover:opacity-100 ${imageClassName}`}
+        />
+      </AnimatePresence>
+
+      {/* Controls */}
+      {imageArray.length > 1 && (
+        <>
+          {/* Always visible but subtle arrows, become fully opaque and vibrant on hover */}
+          <button
+            onClick={handlePrev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/40 backdrop-blur-sm hover:bg-accent hover:text-black flex items-center justify-center text-white/80 hover:text-black opacity-100 transition-all duration-300 z-20 border border-white/20 shadow-xl hover:scale-110 group/btn"
+            aria-label="Previous image"
+          >
+            <FiChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover/btn:-translate-x-0.5" />
+          </button>
+          
+          <button
+            onClick={handleNext}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/40 backdrop-blur-sm hover:bg-accent hover:text-black flex items-center justify-center text-white/80 hover:text-black opacity-100 transition-all duration-300 z-20 border border-white/20 shadow-xl hover:scale-110 group/btn"
+            aria-label="Next image"
+          >
+            <FiChevronRight className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover/btn:translate-x-0.5" />
+          </button>
+
+          {/* Upgraded Dot Indicators */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 bg-black/50 px-3 py-2 rounded-full backdrop-blur-md border border-white/10 pointer-events-none shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+            {imageArray.map((_, idx) => (
+              <div 
+                key={idx} 
+                className={`h-1.5 rounded-full transition-all duration-500 ease-out ${idx === currentIndex ? 'bg-accent w-5 shadow-[0_0_8px_var(--accent)]' : 'bg-white/40 w-1.5'}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // Custom Hook/Component for click-and-drag to scroll with smart arrows
 function DragScroll({ children, className }) {
   const scrollRef = useRef(null)
@@ -149,30 +228,40 @@ function ProjectModal({ project, onClose }) {
         exit={{ y: 20, opacity: 0, scale: 0.95 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative mx-auto w-full max-w-6xl bg-surface rounded-2xl md:rounded-3xl border border-border shadow-2xl flex flex-col lg:flex-row overflow-hidden"
+        className="relative mx-auto w-full max-w-4xl bg-surface rounded-2xl md:rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Close Button - Always visible at top right of the modal */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-border flex items-center justify-center text-text-primary hover:bg-accent hover:text-black transition-colors shadow-lg"
+          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-accent hover:text-black hover:scale-110 transition-all duration-300 shadow-lg"
         >
           <FiX className="w-5 h-5" />
         </button>
 
-        {/* Left/Top: Image Gallery/Banner */}
-        <div className="w-full lg:w-2/5 h-64 lg:h-auto bg-background relative flex-shrink-0">
-          <img
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full object-contain p-4 md:p-8"
+        {/* Top: Image Banner */}
+        <div className="w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] bg-[#0a0e14] relative flex-shrink-0 group/banner">
+          
+          {/* Decorative background blur (adds ambiance based on the image) */}
+          <div className="absolute inset-0 opacity-40 overflow-hidden pointer-events-none">
+            <img src={Array.isArray(project.image) ? project.image[0] : project.image} alt="blur" className="w-full h-full object-cover blur-3xl scale-110" />
+          </div>
+
+          <ImageCarousel 
+            images={project.image} 
+            alt={project.title} 
+            className="relative z-10 px-4 pt-16 pb-12 md:px-20 md:pt-20 md:pb-16" 
+            objectFit="contain"
+            imageClassName="rounded-2xl border border-accent shadow-[0_0_40px_rgb(var(--accent-rgb)/0.4)] bg-accent p-1 md:p-2"
           />
-          {/* Subtle gradient overlay to blend with content */}
-          <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent lg:bg-gradient-to-r" />
+          
+          {/* Bottom gradient fade into content */}
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-surface via-surface/90 to-transparent pointer-events-none z-20" />
         </div>
 
-        {/* Right/Bottom: Content Details */}
-        <div className="flex-1 p-6 md:p-10 lg:p-12">
-          <div className="flex flex-col gap-6 max-w-2xl mx-auto">
+        {/* Bottom: Content Details */}
+        <div className="px-4 pb-6 md:px-10 md:pb-10 lg:px-12 lg:pb-12 relative z-30 -mt-6 md:-mt-8">
+          
+          <div className="flex flex-col gap-6 max-w-3xl mx-auto bg-surface-2/95 backdrop-blur-2xl border border-border shadow-[0_-10px_40px_rgba(0,0,0,0.3)] rounded-3xl p-6 md:p-10">
             
             {/* Badges */}
             <div className="flex flex-wrap gap-2 items-center">
@@ -262,14 +351,13 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
     >
       {/* 100% Clean Image Container (No overlays blocking the content) */}
       <div className="project-img-wrapper relative overflow-hidden aspect-video bg-background">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full object-cover object-left-top transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
-          loading={index < 2 ? "eager" : "lazy"}
-          fetchpriority={index < 2 ? "high" : "auto"}
+        <ImageCarousel 
+          images={project.image} 
+          alt={project.title} 
+          imageClassName="object-left-top group-hover:scale-105" 
+          objectFit="cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-40 pointer-events-none" />
       </div>
 
       {/* Content Section */}
