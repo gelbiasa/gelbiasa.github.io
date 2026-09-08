@@ -8,7 +8,7 @@ export const projects = [
       'Engineered a comprehensive manufacturing system with dedicated modules for Jumbo, Slitter, and Meltblown lines. Executed complex database migrations and authored detailed system manual books for production handover.',
     detail:
       'The system handles complex Bill of Materials structures tailored for industrial manufacturing lines. Focus was on accurate material tracking, minimizing waste, and seamless full-stack integration for factory operations.',
-    image: '/images/PWL_POS.png', // Temporary placeholder
+    image: ['/images/Intern/Spunindo/Project/page 1.png'],
     tags: ['Laravel', 'MySQL', 'Full-Stack'],
     links: [],
     featured: true,
@@ -22,7 +22,10 @@ export const projects = [
       'Developing a web application for PPID Politeknik Negeri Malang using Laravel, PHP, MySQL, and JavaScript. The system includes Public Information, User Access Management, and Activity Log modules, with Summernote Editor integration.',
     detail:
       'The database is designed with MySQL Workbench to ensure data integrity and scalability. Development focuses on efficiency by implementing Laravel Traits for common functions such as soft delete, logging, file management, and response formatting.',
-    image: '/images/ppid_upa_tik.jpeg',
+    image: [
+      '/images/Intern/UPA_TIK/project/page 1.png',
+      '/images/Intern/UPA_TIK/project/page 2.png'
+    ],
     tags: ['Laravel', 'PHP', 'MySQL', 'JavaScript', 'Bootstrap', 'Laravel Modules'],
     links: [
       { label: 'GitHub', url: 'https://github.com/gelbiasa/ppid', icon: 'github' },
