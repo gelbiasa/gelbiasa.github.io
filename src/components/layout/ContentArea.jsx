@@ -22,15 +22,25 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
 
   return (
     <div className="w-full flex-1 relative z-10 pb-24">
-      <AnimatePresence mode="wait">
+      <AnimatePresence 
+        mode="wait" 
+        onExitComplete={() => {
+          // Fix for the blank screen issue: Reset scroll position when old component finishes exiting
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }}
+      >
         <motion.div
           key={activeTab}
           variants={variants}
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={{ duration: 0.4, ease: "easeInOut" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className="w-full h-full"
+          onAnimationStart={() => {
+            // Failsafe: Ensure window is at top when new animation starts
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          }}
         >
           {activeTab === 'home' && <HomeSection setActiveTab={setActiveTab} />}
           {activeTab === 'projects' && <Projects />}
