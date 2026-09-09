@@ -5,12 +5,15 @@ import { createPortal } from 'react-dom';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SESSION_KEY = 'gelby_intro_shown';
 
-async function typeText(setText, text, speed = 38) {
+async function typeText(setText, text, speed = 38, maxRandom = 14) {
   let cur = '';
-  for (let i = 0; i < text.length; i++) {
-    cur += text[i];
+  // To speed up very fast typing, we can type in chunks if speed is 0
+  const chunkSize = speed === 0 ? 3 : 1; 
+  
+  for (let i = 0; i < text.length; i += chunkSize) {
+    cur += text.substring(i, i + chunkSize);
     setText(cur);
-    await sleep(speed + Math.random() * 14);
+    await sleep(speed + Math.random() * maxRandom);
   }
 }
 
@@ -338,7 +341,7 @@ export default function TerminalIntro({ onDone }) {
     ->whereHas('educations', fn($q) => $q->where('gpa', '>', 3.70))
     ->whereHas('projects', fn($q) => $q->where('scale', 'Enterprise'))
     ->first();`;
-      await typeText(setMysqlCmd, q, 4);
+      await typeText(setMysqlCmd, q, 0, 2);
       setMysqlCursor(false);
       await sleep(50);
       if (!isActive.current) return;
