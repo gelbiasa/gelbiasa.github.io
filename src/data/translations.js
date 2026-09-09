@@ -146,6 +146,7 @@ export const translations = {
       liveDemo: 'Live Demo',
       download: 'Download',
       uiux: 'UI/UX',
+      visit: 'Visit',
       emptyTitle: 'Something Awesome is Brewing',
       emptyDesc: "I am currently working on some exciting personal projects behind the scenes. They'll be showcased here soon. Stay tuned!",
       readCaseStudy: 'Read Full Case Study',
@@ -177,6 +178,10 @@ export const translations = {
       6: {
         description: 'A mobile application for student compensation management at Politeknik Negeri Malang, built with Flutter and an API-based architecture for both Android and iOS.',
         detail: 'Designed with a responsive interface to ensure accessibility across various devices. The system makes the compensation process more structured, transparent, and easy to manage.'
+      },
+      7: {
+        description: 'Developing a comprehensive web analytics application for GitHub profiles using Next.js, TypeScript, and Hono.js. The system includes an interactive dashboard to visualize detailed statistics, an automated grading algorithm system to rank user profiles, and a real-time Dynamic SVG Card generator to be embedded directly into GitHub profile READMEs.',
+        detail: 'The Backend API is built on Cloudflare Workers edge computing infrastructure using Hono.js to ensure ultra-low latency and high scalability. Development heavily focuses on performance and aesthetics: utilizing GitHub GraphQL API for efficient data fetching, implementing an advanced caching system to handle API rate limits, and using the Satori engine to dynamically convert HTML/Tailwind layouts into premium, pixel-perfect SVG assets.'
       }
     }
   },
@@ -328,6 +333,7 @@ export const translations = {
       liveDemo: 'Demo Langsung',
       download: 'Unduh',
       uiux: 'UI/UX',
+      visit: 'Kunjungi',
       emptyTitle: 'Sesuatu yang Hebat Sedang Disiapkan',
       emptyDesc: 'Saat ini saya sedang mengerjakan beberapa proyek pribadi yang menarik di balik layar. Proyek-proyek tersebut akan segera dipamerkan di sini. Tetap nantikan!',
       readCaseStudy: 'Baca Studi Kasus Lengkap',
@@ -359,6 +365,10 @@ export const translations = {
       6: {
         description: 'Aplikasi mobile untuk manajemen kompensasi mahasiswa di Politeknik Negeri Malang, dibangun dengan Flutter dan arsitektur berbasis API untuk perangkat Android dan iOS.',
         detail: 'Dirancang dengan antarmuka responsif untuk memastikan aksesibilitas di berbagai perangkat. Sistem ini membuat proses kompensasi menjadi lebih terstruktur, transparan, dan mudah dikelola.'
+      },
+      7: {
+        description: 'Mengembangkan aplikasi web analitik komprehensif untuk profil GitHub menggunakan Next.js, TypeScript, dan Hono.js. Sistem ini mencakup dasbor interaktif untuk memvisualisasikan statistik mendetail (seperti commits, pull requests, issues, dan bahasa pemrograman utama), sistem algoritma grading otomatis untuk memeringkat profil pengguna, serta fitur generator Dynamic SVG Card yang beroperasi secara real-time untuk disematkan langsung ke README profil GitHub.',
+        detail: 'Backend API dibangun di atas infrastruktur edge computing Cloudflare Workers menggunakan Hono.js untuk menjamin latensi super rendah dan skalabilitas tinggi. Pengembangan sangat berfokus pada performa dan estetika: memanfaatkan GitHub GraphQL API untuk penarikan data yang efisien, mengimplementasikan sistem caching tingkat lanjut untuk mengatasi limitasi rate-limit API, serta menggunakan engine Satori untuk melakukan konversi tata letak HTML/Tailwind menjadi aset SVG bergaya premium secara dinamis dan presisi (pixel-perfect).'
       }
     }
   }
