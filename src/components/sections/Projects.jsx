@@ -22,7 +22,7 @@ const categoryIcons = {
 const CATEGORIES = ['All', 'Intern', 'Academic', 'Personal']
 
 // Carousel Component for multiple images
-function ImageCarousel({ images, alt, className = "", imageClassName = "", objectFit = "cover" }) {
+function ImageCarousel({ images, alt, className = "", imageClassName = "", objectFit = "cover", arrowsOutside = false }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const imageArray = Array.isArray(images) ? images : [images];
   
@@ -40,62 +40,105 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
     setCurrentIndex((prev) => (prev - 1 + imageArray.length) % imageArray.length);
   };
 
+  const hasMultiple = imageArray.length > 1;
+
+  // Render Arrow Buttons
+  const renderPrevButton = (isOutside) => (
+    <button
+      onClick={handlePrev}
+      className={`${
+        isOutside 
+          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 mr-3 md:mr-6 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]' 
+          : 'absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/40 backdrop-blur-sm z-20 border border-white/20 shadow-xl'
+      } hover:bg-accent hover:text-black flex items-center justify-center text-white transition-all duration-300 hover:border-accent hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] hover:scale-110 group/btn`}
+      aria-label="Previous image"
+    >
+      <FiChevronLeft className={`${isOutside ? 'w-5 h-5 md:w-6 md:h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} transition-transform duration-300 group-hover/btn:-translate-x-1`} />
+    </button>
+  );
+
+  const renderNextButton = (isOutside) => (
+    <button
+      onClick={handleNext}
+      className={`${
+        isOutside 
+          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 ml-3 md:ml-6 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]' 
+          : 'absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/40 backdrop-blur-sm z-20 border border-white/20 shadow-xl'
+      } hover:bg-accent hover:text-black flex items-center justify-center text-white transition-all duration-300 hover:border-accent hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] hover:scale-110 group/btn`}
+      aria-label="Next image"
+    >
+      <FiChevronRight className={`${isOutside ? 'w-5 h-5 md:w-6 md:h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} transition-transform duration-300 group-hover/btn:translate-x-1`} />
+    </button>
+  );
+
   return (
-    <div className={`relative group/carousel w-full h-full overflow-hidden ${className}`}>
+    <div className={`relative group/carousel w-full h-full flex items-center justify-between ${className}`}>
       
-      {/* Photo Counter Badge - Extremely noticeable but elegant */}
-      {imageArray.length > 1 && (
-        <div className="absolute top-4 left-4 z-30 bg-black/70 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold font-mono tracking-widest px-3 py-1.5 rounded-full shadow-lg pointer-events-none flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-          {currentIndex + 1} / {imageArray.length}
-        </div>
-      )}
+      {/* Outside Left Arrow */}
+      {hasMultiple && arrowsOutside && renderPrevButton(true)}
 
-      {/* Image with smooth crossfade */}
-      <AnimatePresence mode="popLayout">
-        <motion.img
-          key={currentIndex}
-          src={imageArray[currentIndex]}
-          alt={`${alt} - ${currentIndex + 1}`}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className={`w-full h-full object-${objectFit} opacity-95 group-hover:opacity-100 ${imageClassName}`}
-        />
-      </AnimatePresence>
+      {/* Image Container */}
+      <div className={`relative flex-1 h-full w-full overflow-hidden ${arrowsOutside && hasMultiple ? 'rounded-2xl' : ''}`}>
+        
+        {/* Photo Counter Badge */}
+        {hasMultiple && (
+          <div className={`absolute pointer-events-none flex items-center gap-2 text-white font-bold font-mono tracking-widest rounded-full shadow-lg border border-white/10 ${
+            arrowsOutside
+              ? 'top-4 left-4 md:top-6 md:left-6 z-30 bg-black/60 backdrop-blur-xl text-xs px-4 py-2'
+              : 'top-3 left-3 z-30 bg-black/70 backdrop-blur-md text-[10px] px-3 py-1.5'
+          }`}>
+            <div className={`${arrowsOutside ? 'w-2 h-2' : 'w-1.5 h-1.5'} rounded-full bg-accent animate-pulse`} />
+            {currentIndex + 1} / {imageArray.length}
+          </div>
+        )}
 
-      {/* Controls */}
-      {imageArray.length > 1 && (
-        <>
-          {/* Always visible but subtle arrows, become fully opaque and vibrant on hover */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/40 backdrop-blur-sm hover:bg-accent hover:text-black flex items-center justify-center text-white/80 hover:text-black opacity-100 transition-all duration-300 z-20 border border-white/20 shadow-xl hover:scale-110 group/btn"
-            aria-label="Previous image"
-          >
-            <FiChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover/btn:-translate-x-0.5" />
-          </button>
-          
-          <button
-            onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/40 backdrop-blur-sm hover:bg-accent hover:text-black flex items-center justify-center text-white/80 hover:text-black opacity-100 transition-all duration-300 z-20 border border-white/20 shadow-xl hover:scale-110 group/btn"
-            aria-label="Next image"
-          >
-            <FiChevronRight className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover/btn:translate-x-0.5" />
-          </button>
+        {/* Image with smooth crossfade */}
+        <AnimatePresence mode="popLayout">
+          <motion.img
+            key={currentIndex}
+            src={imageArray[currentIndex]}
+            alt={`${alt} - ${currentIndex + 1}`}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className={`w-full h-full object-${objectFit} opacity-95 group-hover:opacity-100 ${imageClassName}`}
+          />
+        </AnimatePresence>
 
-          {/* Upgraded Dot Indicators */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 bg-black/50 px-3 py-2 rounded-full backdrop-blur-md border border-white/10 pointer-events-none shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+        {/* Inside Arrows */}
+        {hasMultiple && !arrowsOutside && (
+          <>
+            {renderPrevButton(false)}
+            {renderNextButton(false)}
+          </>
+        )}
+
+        {/* Dot Indicators */}
+        {hasMultiple && (
+          <div className={`absolute left-1/2 -translate-x-1/2 flex pointer-events-none rounded-full border border-white/10 ${
+            arrowsOutside
+              ? 'bottom-4 md:bottom-6 gap-2 z-30 bg-black/60 px-4 py-2.5 backdrop-blur-xl shadow-[0_8px_20px_rgba(0,0,0,0.5)]'
+              : 'bottom-3 gap-1.5 z-20 bg-black/50 px-3 py-2 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.5)]'
+          }`}>
             {imageArray.map((_, idx) => (
               <div 
                 key={idx} 
-                className={`h-1.5 rounded-full transition-all duration-500 ease-out ${idx === currentIndex ? 'bg-accent w-5 shadow-[0_0_8px_var(--accent)]' : 'bg-white/40 w-1.5'}`}
+                className={`rounded-full transition-all duration-500 ease-out ${
+                  idx === currentIndex 
+                    ? `bg-accent shadow-[0_0_12px_var(--accent)] ${arrowsOutside ? 'w-6 md:w-8' : 'w-5'}` 
+                    : `bg-white/40 ${arrowsOutside ? 'w-2 md:w-2.5' : 'w-1.5'}`
+                } ${arrowsOutside ? 'h-2 md:h-2.5' : 'h-1.5'}`}
               />
             ))}
           </div>
-        </>
-      )}
+        )}
+
+      </div>
+
+      {/* Outside Right Arrow */}
+      {hasMultiple && arrowsOutside && renderNextButton(true)}
+
     </div>
   );
 }
@@ -228,7 +271,7 @@ function ProjectModal({ project, onClose }) {
         exit={{ y: 20, opacity: 0, scale: 0.95 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative mx-auto w-full max-w-4xl bg-surface rounded-2xl md:rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
+        className="relative mx-auto w-full max-w-[1400px] bg-surface rounded-2xl md:rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Close Button - Always visible at top right of the modal */}
         <button
@@ -249,9 +292,10 @@ function ProjectModal({ project, onClose }) {
           <ImageCarousel 
             images={project.image} 
             alt={project.title} 
-            className="relative z-10 px-4 pt-16 pb-12 md:px-20 md:pt-20 md:pb-16" 
+            className="relative z-10 px-4 pt-16 pb-12 md:px-8 md:pt-20 md:pb-16" 
             objectFit="contain"
-            imageClassName="rounded-2xl border border-accent shadow-[0_0_40px_rgb(var(--accent-rgb)/0.4)] bg-accent p-1 md:p-2"
+            imageClassName="rounded-2xl border border-accent shadow-[0_0_30px_rgb(var(--accent-rgb)/0.3)] bg-accent p-[2px] md:p-1"
+            arrowsOutside={true}
           />
           
           {/* Bottom gradient fade into content */}
@@ -261,15 +305,15 @@ function ProjectModal({ project, onClose }) {
         {/* Bottom: Content Details */}
         <div className="px-4 pb-6 md:px-10 md:pb-10 lg:px-12 lg:pb-12 relative z-30 -mt-6 md:-mt-8">
           
-          <div className="flex flex-col gap-6 max-w-3xl mx-auto bg-surface-2/95 backdrop-blur-2xl border border-border shadow-[0_-10px_40px_rgba(0,0,0,0.3)] rounded-3xl p-6 md:p-10">
+          <div className="flex flex-col gap-6 w-full mx-auto bg-surface-2/95 backdrop-blur-2xl border border-border shadow-[0_-10px_40px_rgba(0,0,0,0.3)] rounded-3xl p-6 md:p-10">
             
             {/* Badges */}
             <div className="flex flex-wrap gap-2 items-center">
               {project.featured && (
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400">
-                  <FiStar className="w-3.5 h-3.5 fill-amber-400/30" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Featured</span>
-                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400">
+                <FiStar className="w-3.5 h-3.5 fill-amber-400/30" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">{t('projects.featured') || 'Featured'}</span>
+              </div>
               )}
               {project.tags.map((tag) => (
                 <span key={tag} className="badge bg-surface-2 border-border text-text-primary px-2.5 py-1 text-[10px]">
@@ -302,9 +346,9 @@ function ProjectModal({ project, onClose }) {
 
             {/* Links / Call to Actions */}
             {project.links && project.links.length > 0 && (
-              <div className="mt-8 pt-8 border-t border-border">
-                <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider mb-4">Project Links</h4>
-                <div className="flex flex-wrap gap-4">
+              <div className="pt-6 border-t border-border">
+                <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider mb-4">{t('projects.projectLinks') || 'Project Links'}</h4>
+                <div className="flex flex-wrap gap-3">
                   {project.links.map(({ label, url, icon }) => {
                     const Icon = iconMap[icon] || FiExternalLink
                     return (
@@ -369,7 +413,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
             {project.featured && (
               <div className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400">
                 <FiStar className="w-3 h-3 fill-amber-400/30" />
-                <span className="text-[9px] font-bold uppercase tracking-widest">Featured</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest">{t('projects.featured') || 'Featured'}</span>
               </div>
             )}
             {project.tags.map((tag) => (
@@ -417,10 +461,10 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
           </div>
         )}
 
-        {/* Action / Footer */}
+        {/* Footer Action */}
         <div className="mt-auto pt-5 border-t border-border flex items-center justify-between group-hover:border-border transition-colors">
           <span className="text-xs font-semibold text-text-secondary group-hover:text-text-primary transition-colors">
-            Read Full Case Study
+            {t('projects.readCaseStudy') || 'Read Full Case Study'}
           </span>
           <div className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-all duration-300 text-text-secondary group-hover:text-black">
             <FiArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
@@ -432,6 +476,8 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
 })
 
 function EmptyState() {
+  const { t } = useLanguage()
+  
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -449,11 +495,10 @@ function EmptyState() {
       </div>
       
       <h3 className="font-display text-2xl font-bold text-text-primary mb-3">
-        Something Awesome is Brewing
+        {t('projects.emptyTitle') || 'Something Awesome is Brewing'}
       </h3>
       <p className="text-text-secondary max-w-md mx-auto text-sm leading-relaxed">
-        I am currently working on some exciting personal projects behind the scenes. 
-        They'll be showcased here soon. Stay tuned!
+        {t('projects.emptyDesc') || "I am currently working on some exciting personal projects behind the scenes. They'll be showcased here soon. Stay tuned!"}
       </p>
     </motion.div>
   )
@@ -540,11 +585,9 @@ export default function Projects() {
                     }`}>
                       {cat === 'All' ? (t('projects.allTab') || 'All') : cat}
                     </span>
-                    <span className={`text-[10px] uppercase tracking-wider block mt-0.5 transition-colors ${
-                      isActive ? 'text-accent/70' : 'text-slate-500'
-                    }`}>
-                      {cat === 'All' ? projects.length : projects.filter(p => p.category === cat).length} Projects
-                    </span>
+                    <span className="text-[10px] font-bold tracking-widest text-text-muted mt-1 uppercase">
+                    {cat === 'All' ? projects.length : projects.filter(p => p.category === cat).length} {t('projects.projectsCount') || 'Projects'}
+                  </span>
                   </div>
                 </button>
               )
@@ -565,12 +608,12 @@ export default function Projects() {
         </aside>
 
         {/* Right Content Area: Project Grid */}
-        <div className="flex-1 w-full min-h-[500px]">
-          <AnimatePresence mode="wait">
+        <div className="flex-1 w-full min-h-[500px] grid grid-cols-1 grid-rows-1">
+          <AnimatePresence>
             {activeTab === 'All' ? (
               <motion.div
                 key="all"
-                className="flex flex-col gap-12 pb-12"
+                className="col-start-1 row-start-1 flex flex-col gap-12 pb-12 w-full"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -611,7 +654,7 @@ export default function Projects() {
             ) : filteredProjects.length > 0 ? (
               <motion.div
                 key={activeTab}
-                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                className="col-start-1 row-start-1 grid grid-cols-1 md:grid-cols-2 gap-8 w-full"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -627,7 +670,9 @@ export default function Projects() {
                 ))}
               </motion.div>
             ) : (
-              <EmptyState key="empty" />
+              <div className="col-start-1 row-start-1 w-full">
+                <EmptyState key="empty" />
+              </div>
             )}
           </AnimatePresence>
         </div>
