@@ -2,7 +2,7 @@ export const projects = [
   {
     id: 1,
     title: 'Enterprise BOM (Bill of Materials) Management System',
-    subtitle: 'PT Multi Spunindo Jaya Tbk.',
+    subtitle: 'PT Multi Spunindo Jaya Tbk. - Full-Stack Developer',
     category: 'Intern',
     description:
       'Engineered a comprehensive manufacturing system with dedicated modules for Jumbo, Slitter, and Meltblown lines. Executed complex database migrations and authored detailed system manual books for production handover.',
@@ -16,7 +16,7 @@ export const projects = [
   {
     id: 2,
     title: 'PPID Polinema Web Application',
-    subtitle: 'UPA TIK Polinema',
+    subtitle: 'UPA TIK Politeknik Negeri Malang - Backend Developer',
     category: 'Intern',
     description:
       'Developing a web application for PPID Politeknik Negeri Malang using Laravel, PHP, MySQL, and JavaScript. The system includes Public Information, User Access Management, and Activity Log modules, with Summernote Editor integration.',
@@ -27,15 +27,13 @@ export const projects = [
       '/images/Intern/UPA_TIK/project/page 2.png'
     ],
     tags: ['Laravel', 'PHP', 'MySQL', 'JavaScript', 'Bootstrap', 'Laravel Modules'],
-    links: [
-      { label: 'GitHub', url: 'https://github.com/gelbiasa/ppid', icon: 'github' },
-    ],
+    links: [],
     featured: true,
   },
   {
     id: 3,
     title: 'Customer Satisfaction Survey Website',
-    subtitle: 'Native HTML, CSS, JavaScript & PHP',
+    subtitle: 'Politeknik Negeri Malang - Full-Stack Developer',
     category: 'Academic',
     description:
       'A customer satisfaction survey web application using native technologies. Designed to help businesses efficiently collect, manage, and analyze customer feedback with visual reports.',
@@ -52,7 +50,7 @@ export const projects = [
   {
     id: 4,
     title: 'Point of Sales (POS) Website',
-    subtitle: 'Full-Stack Laravel Application',
+    subtitle: 'Politeknik Negeri Malang - Full-Stack Developer',
     category: 'Academic',
     description:
       'A web-based POS application using Laravel and MySQL, supporting business operations in managing transactions, inventory, and sales reports efficiently.',
@@ -68,7 +66,7 @@ export const projects = [
   {
     id: 5,
     title: 'E-Kompen Web Application',
-    subtitle: 'Compensation Management System',
+    subtitle: 'Politeknik Negeri Malang - Full-Stack Developer',
     category: 'Academic',
     description:
       'A web-based student compensation management system using Laravel and MySQL for the Information Technology Department at Politeknik Negeri Malang.',
@@ -86,7 +84,7 @@ export const projects = [
   {
     id: 6,
     title: 'E-Kompen Mobile App',
-    subtitle: 'Flutter Cross-Platform Application',
+    subtitle: 'Politeknik Negeri Malang - Mobile Developer',
     category: 'Academic',
     description:
       'A mobile application for student compensation management at Politeknik Negeri Malang, built with Flutter and an API-based architecture for both Android and iOS.',
@@ -100,5 +98,27 @@ export const projects = [
       { label: 'Download', url: 'https://drive.google.com/file/d/1u59yXPYGMYtfrf2ig7RStmj2B_pckIz1/view', icon: 'download' },
     ],
     featured: false,
+  },
+  {
+    id: 7,
+    title: 'GelbySight (GitHub Analytics & Dynamic README Card)',
+    subtitle: 'Personal Project - Full-Stack Developer',
+    category: 'Personal',
+    description:
+      'Developing a comprehensive web analytics application for GitHub profiles using Next.js, TypeScript, and Hono.js. The system includes an interactive dashboard to visualize detailed statistics, an automated grading algorithm system to rank user profiles, and a real-time Dynamic SVG Card generator to be embedded directly into GitHub profile READMEs.',
+    detail:
+      'The Backend API is built on Cloudflare Workers edge computing infrastructure using Hono.js to ensure ultra-low latency and high scalability. Development heavily focuses on performance and aesthetics: utilizing GitHub GraphQL API for efficient data fetching, implementing an advanced caching system to handle API rate limits, and using the Satori engine to dynamically convert HTML/Tailwind layouts into premium, pixel-perfect SVG assets.',
+    image: [
+      '/images/Personal/Project/GelbySight/Image 1.png',
+      '/images/Personal/Project/GelbySight/Image 2.png',
+      '/images/Personal/Project/GelbySight/Image 3.png',
+      '/images/Personal/Project/GelbySight/Image 4.png',
+      '/images/Personal/Project/GelbySight/Image 5.png'
+    ],
+    tags: ['TypeScript', 'Next.js', 'React', 'Tailwind CSS', 'Hono.js', 'Cloudflare Workers', 'Satori', 'GraphQL'],
+    links: [
+      { label: 'Visit', url: 'https://gelbysight.vercel.app/', icon: 'external', transKey: 'visit' }
+    ],
+    featured: true,
   },
 ]
