@@ -23,10 +23,27 @@ const CATEGORIES = ['All', 'Intern', 'Academic', 'Personal']
 
 // Carousel Component for multiple images
 function ImageCarousel({ images, alt, className = "", imageClassName = "", objectFit = "cover", arrowsOutside = false }) {
+  const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const imageArray = Array.isArray(images) ? images : [images];
   
-  if (imageArray.length === 0) return null;
+  // Filter out invalid images
+  let imageArray = [];
+  if (Array.isArray(images)) {
+    imageArray = images.filter(img => img && typeof img === 'string' && img.trim() !== '');
+  } else if (images && typeof images === 'string' && images.trim() !== '') {
+    imageArray = [images];
+  }
+  
+  if (imageArray.length === 0) {
+    return (
+      <div className={`w-full h-full flex flex-col items-center justify-center bg-surface-2/50 text-text-muted ${className}`}>
+        <FiMonitor className="w-8 h-8 md:w-10 md:h-10 mb-3 opacity-30" />
+        <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest font-bold opacity-60">
+          {t('projects.comingSoon') || 'Coming Soon'}
+        </span>
+      </div>
+    );
+  }
 
   const handleNext = (e) => {
     e.stopPropagation();
@@ -349,7 +366,7 @@ function ProjectModal({ project, onClose }) {
               <div className="pt-6 border-t border-border">
                 <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider mb-4">{t('projects.projectLinks') || 'Project Links'}</h4>
                 <div className="flex flex-wrap gap-3">
-                  {project.links.map(({ label, url, icon }) => {
+                  {project.links.map(({ label, url, icon, transKey }) => {
                     const Icon = iconMap[icon] || FiExternalLink
                     return (
                       <a
@@ -360,7 +377,7 @@ function ProjectModal({ project, onClose }) {
                         className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-2 border border-border text-text-secondary hover:text-accent hover:border-border hover:bg-accent/10 transition-all duration-300"
                       >
                         <Icon className="w-4 h-4" />
-                        <span className="text-sm font-medium">{label}</span>
+                        <span className="text-sm font-medium">{transKey ? t(`projects.${transKey}`) || label : label}</span>
                       </a>
                     )
                   })}
@@ -442,7 +459,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
         {/* Project Links (Direct Access) */}
         {project.links && project.links.length > 0 && (
           <div className="flex flex-wrap gap-3 mt-2">
-            {project.links.map(({ label, url, icon }) => {
+            {project.links.map(({ label, url, icon, transKey }) => {
               const Icon = iconMap[icon] || FiExternalLink
               return (
                 <a
@@ -451,10 +468,10 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 border border-border text-text-primary hover:text-accent hover:border-border hover:bg-accent/10 transition-all duration-300 shadow-sm"
-                  title={label}
+                  title={transKey ? t(`projects.${transKey}`) || label : label}
                 >
                   <Icon className="w-3.5 h-3.5" />
-                  <span className="text-xs font-medium tracking-wide">{label}</span>
+                  <span className="text-xs font-medium tracking-wide">{transKey ? t(`projects.${transKey}`) || label : label}</span>
                 </a>
               )
             })}
