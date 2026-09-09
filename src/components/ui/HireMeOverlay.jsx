@@ -20,14 +20,14 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase('envelope'),    400),
-      setTimeout(() => setPhase('signal'),      800),
+      setTimeout(() => setPhase('envelope'),    250),
+      setTimeout(() => setPhase('signal'),      500),
       setTimeout(() => {
         setPhase('laser');
         onSwitchTab?.();
-      }, 1350),
-      setTimeout(() => setPhase('curtain-out'), 1750),
-      setTimeout(() => onDone?.(),              2600),
+      }, 850),
+      setTimeout(() => setPhase('curtain-out'), 1100),
+      setTimeout(() => onDone?.(),              1600),
     ]
     return () => timers.forEach(clearTimeout)
   }, [])
@@ -67,7 +67,7 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
         initial={{ y: '-100%' }}
         animate={{ y: isOut ? '-100%' : '0%' }}
         transition={{
-          duration: isOut ? 0.8 : 0.4,
+          duration: isOut ? 0.5 : 0.25,
           ease: isOut ? [0.76, 0, 0.24, 1] : [0.22, 1, 0.36, 1],
         }}
         style={{
@@ -87,7 +87,7 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
         initial={{ y: '100%' }}
         animate={{ y: isOut ? '100%' : '0%' }}
         transition={{
-          duration: isOut ? 0.8 : 0.4,
+          duration: isOut ? 0.5 : 0.25,
           ease: isOut ? [0.76, 0, 0.24, 1] : [0.22, 1, 0.36, 1],
         }}
         style={{
@@ -126,8 +126,8 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                   animate={{ width: 280, height: 280, opacity: 0, borderWidth: 1 }}
                   exit={{}}
                   transition={{
-                    duration: 0.8,
-                    delay: i * 0.15,
+                    duration: 0.5,
+                    delay: i * 0.1,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   style={{
@@ -148,8 +148,8 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                   key="laser"
                   initial={{ scaleX: 0, opacity: 1 }}
                   animate={{ scaleX: 1, opacity: 1 }}
-                  exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                  transition={{ duration: 0.4, ease: [0.87, 0, 0.13, 1], delay: 0.05 }}
+                  exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                  transition={{ duration: 0.25, ease: [0.87, 0, 0.13, 1], delay: 0.03 }}
                   style={{
                     position: 'absolute',
                     height: 3,
@@ -183,7 +183,7 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                     x: p.dx, y: p.dy,
                     opacity: 0, scale: 0,
                   }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: i * 0.01 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1], delay: i * 0.01 }}
                   style={{
                     position: 'absolute',
                     width: p.size,
@@ -209,13 +209,13 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                     opacity: [1, 1, 0],
                     filter: ['blur(0px)', 'blur(0px)', 'blur(12px)'],
                     transition: {
-                      duration: 0.3,
+                      duration: 0.2,
                       ease: 'easeIn',
                       times: [0, 0.4, 1],
                     },
                   }}
                   transition={{
-                    duration: 0.5,
+                    duration: 0.35,
                     ease: [0.34, 1.56, 0.64, 1], // spring bounce
                   }}
                   style={{
@@ -258,8 +258,8 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                         scale:   [0, 1, 0],
                       }}
                       transition={{
-                        duration: 0.85,
-                        delay: i * 0.16,
+                        duration: 0.5,
+                        delay: i * 0.1,
                         repeat: Infinity,
                         repeatDelay: 0.2,
                         ease: 'easeInOut',
@@ -289,7 +289,7 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                 key={side}
                 initial={{ scaleX: 0, opacity: 0 }}
                 animate={{ scaleX: 1, opacity: 0.4 }}
-                transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
+                transition={{ duration: 0.3, delay: 0.25, ease: 'easeOut' }}
                 style={{
                   position: 'absolute',
                   [side]: 0,
