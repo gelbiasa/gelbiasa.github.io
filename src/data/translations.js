@@ -145,7 +145,13 @@ export const translations = {
       techTitle: 'Technologies Used:',
       liveDemo: 'Live Demo',
       download: 'Download',
-      uiux: 'UI/UX'
+      uiux: 'UI/UX',
+      emptyTitle: 'Something Awesome is Brewing',
+      emptyDesc: "I am currently working on some exciting personal projects behind the scenes. They'll be showcased here soon. Stay tuned!",
+      readCaseStudy: 'Read Full Case Study',
+      featured: 'Featured',
+      projectLinks: 'Project Links',
+      projectsCount: 'Projects'
     },
     projectData: {
       1: {
@@ -321,7 +327,13 @@ export const translations = {
       techTitle: 'Teknologi yang Digunakan:',
       liveDemo: 'Demo Langsung',
       download: 'Unduh',
-      uiux: 'UI/UX'
+      uiux: 'UI/UX',
+      emptyTitle: 'Sesuatu yang Hebat Sedang Disiapkan',
+      emptyDesc: 'Saat ini saya sedang mengerjakan beberapa proyek pribadi yang menarik di balik layar. Proyek-proyek tersebut akan segera dipamerkan di sini. Tetap nantikan!',
+      readCaseStudy: 'Baca Studi Kasus Lengkap',
+      featured: 'Unggulan',
+      projectLinks: 'Tautan Proyek',
+      projectsCount: 'Proyek'
     },
     projectData: {
       1: {
