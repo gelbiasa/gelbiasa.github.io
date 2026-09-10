@@ -117,16 +117,16 @@ function TargetFoundModal({ show }) {
     if (!show) return;
     const run = async () => {
       setPhase(2);
-      await sleep(200); // wait for entrance animation
+      await sleep(300); // wait for entrance animation
       
       let p = 0;
       const iv = setInterval(() => {
         p += 2;
         setProgress(p);
         if (p >= 100) clearInterval(iv);
-      }, 15); // 50 steps * 15ms = 750ms
+      }, 35); // 50 steps * 35ms = 1750ms
       
-      await sleep(750 + 200);
+      await sleep(1750 + 600); // wait for progress bar to finish, then pause so user can read
       setPhase(3);
     };
     run();
@@ -262,17 +262,17 @@ export default function TerminalIntro({ onDone }) {
   const revealLine  = (name)       => setLines(p => ({ ...p, [name]: true }));
 
   useEffect(() => {
-    isActive.current = true;
+    let active = true;
     const run = async () => {
       await sleep(100);
-      if (!isActive.current) return;
+      if (!active) return;
 
       // ─ 1. Type artisan command ────────────────────────────────────────────
       setArtisanCursor(true);
       await typeText(setArtisanCmd, 'php artisan migrate:fresh --seed', 15);
       setArtisanCursor(false);
       await sleep(50);
-      if (!isActive.current) return;
+      if (!active) return;
 
       // ─ 2. Migration logs + PDM tables appear ──────────────────────────────
       addLog('MIGRATE', 'Running migrations...');
@@ -285,15 +285,15 @@ export default function TerminalIntro({ onDone }) {
         { name:'educations',  label:'2025_01_04_create_educations_table',  rows: 15300 },
       ];
       for (const td of tbls) {
-        if (!isActive.current) return;
+        if (!active) return;
         addLog('CREATE', td.label);
         revealTable(td.name, td.rows);
-        if (td.name !== 'developers') setTimeout(() => revealLine(td.name), 80);
+        if (td.name !== 'developers') setTimeout(() => { if (active) revealLine(td.name); }, 80);
         await sleep(60);
       }
       addLog('OK', 'All migrations completed successfully.');
       await sleep(50);
-      if (!isActive.current) return;
+      if (!active) return;
 
       // ─ 3. Seed ───────────────────────────────────────────────────────────
       addLog('SEED', 'Seeding: DeveloperSeeder... ✓');
@@ -304,32 +304,32 @@ export default function TerminalIntro({ onDone }) {
       await sleep(40);
       addLog('SEED', 'Database seeding complete.');
       await sleep(100);
-      if (!isActive.current) return;
+      if (!active) return;
 
       // ─ 4. clear command ──────────────────────────────────────────────────
       setPhase('clear-typing');
       setClearCursor(true);
       await typeText(setClearCmd, 'clear', 20);
       setClearCursor(false);
-      await sleep(50);
-      if (!isActive.current) return;
+      await sleep(400); // Wait a bit so user can read 'clear'
+      if (!active) return;
 
       // Clear terminal and enter Tinker
       setPhase('tinker-start');
       setLogs([]);
       setArtisanCmd('');
       setClearCmd('');
-      await sleep(30);
-      if (!isActive.current) return;
+      await sleep(400); // Wait before typing tinker
+      if (!active) return;
 
       setClearCursor(true);
       await typeText(setClearCmd, 'php artisan tinker', 15);
       setClearCursor(false);
-      await sleep(50);
-      if (!isActive.current) return;
+      await sleep(350); // Wait before transitioning to tinker mode
+      if (!active) return;
 
       setPhase('tinker-query');
-      await sleep(30);
+      await sleep(200); // Wait before typing query
 
       // ─ 5. Tinker Eloquent query ──────────────────────────────────────────────
       setMysqlCursor(true);
@@ -344,30 +344,30 @@ export default function TerminalIntro({ onDone }) {
       await typeText(setMysqlCmd, q, 0, 2);
       setMysqlCursor(false);
       await sleep(50);
-      if (!isActive.current) return;
+      if (!active) return;
 
       // ─ 5.5. Executing ──────────────────────────────────────────────────────
       setPhase('executing');
       await sleep(400);
-      if (!isActive.current) return;
+      if (!active) return;
 
       // ─ 6. Show Target Found Modal ────────────────────────────────────────
       setShowModal(true);
       
-      // Wait for modal animations to complete (entrance + loading bar + exit delay)
-      await sleep(1200); 
-      if (!isActive.current) return;
+      // Wait for modal animations to complete (entrance + loading bar + pause + exit delay)
+      await sleep(2800); 
+      if (!active) return;
 
       // ─ 7. Exit ───────────────────────────────────────────────────────────
       setExiting(true);
       await sleep(150);
-      if (!isActive.current) return;
+      if (!active) return;
       sessionStorage.setItem(SESSION_KEY, '1');
       window.dispatchEvent(new Event('introFinished'));
       onDone();
     };
     run();
-    return () => { isActive.current = false; };
+    return () => { active = false; };
   }, []);
 
   // PDM node positions for 1-2-1 layout in a fixed 550x450 bounding box
