@@ -65,8 +65,8 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
       onClick={handlePrev}
       className={`${
         isOutside 
-          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 mr-3 md:mr-6 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]' 
-          : 'absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/40 backdrop-blur-sm z-20 border border-white/20 shadow-xl'
+          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 mr-3 md:mr-6 rounded-full bg-black/80 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]' 
+          : 'absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/80 z-20 border border-white/20 shadow-xl'
       } hover:bg-accent hover:text-black flex items-center justify-center text-white transition-all duration-300 hover:border-accent hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] hover:scale-110 group/btn`}
       aria-label="Previous image"
     >
@@ -79,8 +79,8 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
       onClick={handleNext}
       className={`${
         isOutside 
-          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 ml-3 md:ml-6 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]' 
-          : 'absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/40 backdrop-blur-sm z-20 border border-white/20 shadow-xl'
+          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 ml-3 md:ml-6 rounded-full bg-black/80 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]' 
+          : 'absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/80 z-20 border border-white/20 shadow-xl'
       } hover:bg-accent hover:text-black flex items-center justify-center text-white transition-all duration-300 hover:border-accent hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] hover:scale-110 group/btn`}
       aria-label="Next image"
     >
@@ -101,8 +101,8 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
         {hasMultiple && (
           <div className={`absolute pointer-events-none flex items-center gap-2 text-white font-bold font-mono tracking-widest rounded-full shadow-lg border border-white/10 ${
             arrowsOutside
-              ? 'top-4 left-4 md:top-6 md:left-6 z-30 bg-black/60 backdrop-blur-xl text-xs px-4 py-2'
-              : 'top-3 left-3 z-30 bg-black/70 backdrop-blur-md text-[10px] px-3 py-1.5'
+              ? 'top-4 left-4 md:top-6 md:left-6 z-30 bg-black/80 text-xs px-4 py-2'
+              : 'top-3 left-3 z-30 bg-black/80 text-[10px] px-3 py-1.5'
           }`}>
             <div className={`${arrowsOutside ? 'w-2 h-2' : 'w-1.5 h-1.5'} rounded-full bg-accent animate-pulse`} />
             {currentIndex + 1} / {imageArray.length}
@@ -135,8 +135,8 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
         {hasMultiple && (
           <div className={`absolute left-1/2 -translate-x-1/2 flex pointer-events-none rounded-full border border-white/10 ${
             arrowsOutside
-              ? 'bottom-4 md:bottom-6 gap-2 z-30 bg-black/60 px-4 py-2.5 backdrop-blur-xl shadow-[0_8px_20px_rgba(0,0,0,0.5)]'
-              : 'bottom-3 gap-1.5 z-20 bg-black/50 px-3 py-2 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.5)]'
+              ? 'bottom-4 md:bottom-6 gap-2 z-30 bg-black/80 px-4 py-2.5 shadow-[0_8px_20px_rgba(0,0,0,0.5)]'
+              : 'bottom-3 gap-1.5 z-20 bg-black/80 px-3 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.5)]'
           }`}>
             {imageArray.map((_, idx) => (
               <div 
@@ -293,7 +293,7 @@ function ProjectModal({ project, onClose }) {
         {/* Close Button - Always visible at top right of the modal */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-accent hover:text-black hover:scale-110 transition-all duration-300 shadow-lg"
+          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/80 border border-white/10 flex items-center justify-center text-white hover:bg-accent hover:text-black hover:scale-110 transition-all duration-300 shadow-lg"
         >
           <FiX className="w-5 h-5" />
         </button>
@@ -301,10 +301,8 @@ function ProjectModal({ project, onClose }) {
         {/* Top: Image Banner */}
         <div className="w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] bg-[#0a0e14] relative flex-shrink-0 group/banner">
           
-          {/* Decorative background blur (adds ambiance based on the image) */}
-          <div className="absolute inset-0 opacity-40 overflow-hidden pointer-events-none">
-            <img src={Array.isArray(project.image) ? project.image[0] : project.image} alt="blur" className="w-full h-full object-cover blur-3xl scale-110" />
-          </div>
+          {/* Decorative background (simplified for performance) */}
+          <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-accent/20 via-transparent to-accent/5 pointer-events-none" />
 
           <ImageCarousel 
             images={project.image} 
@@ -322,7 +320,7 @@ function ProjectModal({ project, onClose }) {
         {/* Bottom: Content Details */}
         <div className="px-4 pb-6 md:px-10 md:pb-10 lg:px-12 lg:pb-12 relative z-30 -mt-6 md:-mt-8">
           
-          <div className="flex flex-col gap-6 w-full mx-auto bg-surface-2/95 backdrop-blur-2xl border border-border shadow-[0_-10px_40px_rgba(0,0,0,0.3)] rounded-3xl p-6 md:p-10">
+          <div className="flex flex-col gap-6 w-full mx-auto bg-surface-2 border border-border shadow-xl rounded-3xl p-6 md:p-10">
             
             {/* Badges */}
             <div className="flex flex-wrap gap-2 items-center">
