@@ -301,8 +301,15 @@ function ProjectModal({ project, onClose }) {
         {/* Top: Image Banner */}
         <div className="w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] bg-[#0a0e14] relative flex-shrink-0 group/banner">
           
-          {/* Decorative background (simplified for performance) */}
-          <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-accent/20 via-transparent to-accent/5 pointer-events-none" />
+          {/* Decorative background blur (adds ambiance based on the image) */}
+          <div className="absolute inset-0 opacity-50 overflow-hidden pointer-events-none" style={{ transform: 'translateZ(0)' }}>
+            <img 
+              src={Array.isArray(project.image) ? project.image[0] : project.image} 
+              alt="blur" 
+              className="w-full h-full object-cover blur-3xl scale-125 opacity-80" 
+              loading="lazy"
+            />
+          </div>
 
           <ImageCarousel 
             images={project.image} 
@@ -320,7 +327,7 @@ function ProjectModal({ project, onClose }) {
         {/* Bottom: Content Details */}
         <div className="px-4 pb-6 md:px-10 md:pb-10 lg:px-12 lg:pb-12 relative z-30 -mt-6 md:-mt-8">
           
-          <div className="flex flex-col gap-6 w-full mx-auto bg-surface-2 border border-border shadow-xl rounded-3xl p-6 md:p-10">
+          <div className="flex flex-col gap-6 w-full mx-auto bg-gradient-to-b from-surface-2/95 to-background/95 border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] rounded-3xl p-6 md:p-10">
             
             {/* Badges */}
             <div className="flex flex-wrap gap-2 items-center">
