@@ -35,7 +35,7 @@ export default function ImageModal({ selectedCert, onClose }) {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className={`relative bg-surface border border-border flex flex-col transition-all duration-300 ${
+            className={`relative bg-surface border border-border flex flex-col transition-all duration-300 will-change-transform transform-gpu ${
               isFullscreen 
                 ? 'w-full h-full rounded-none' 
                 : 'p-5 sm:p-6 rounded-2xl shadow-xl w-full max-w-4xl h-full'
