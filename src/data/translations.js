@@ -133,7 +133,9 @@ export const translations = {
       subtitle: 'A comprehensive overview of my technical skills, programming languages, and tools I use to build digital solutions.',
       allSkills: 'All Skills',
       langStack: 'Language & Stack',
-      tools: 'Tools'
+      tools: 'Tools',
+      main: 'Main',
+      additional: 'Additional'
     },
     projects: {
       title1: 'Featured',
@@ -320,7 +322,9 @@ export const translations = {
       subtitle: 'Gambaran komprehensif tentang keterampilan teknis, bahasa pemrograman, dan alat-alat yang saya gunakan untuk membangun solusi digital.',
       allSkills: 'Semua Keahlian',
       langStack: 'Bahasa & Stack',
-      tools: 'Peralatan'
+      tools: 'Peralatan',
+      main: 'Utama',
+      additional: 'Tambahan'
     },
     projects: {
       title1: 'Karya',
