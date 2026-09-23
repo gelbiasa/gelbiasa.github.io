@@ -1,7 +1,7 @@
 import {
   FaHtml5, FaCss3Alt, FaJs, FaPhp, FaLaravel, FaFigma, FaReact, FaGithub, FaTools
 } from 'react-icons/fa'
-import { SiMysql, SiFlutter, SiTailwindcss, SiNotion } from 'react-icons/si'
+import { SiMysql, SiFlutter, SiTailwindcss, SiNotion, SiMongodb, SiPostgresql } from 'react-icons/si'
 import { FiCpu, FiCode, FiGrid } from 'react-icons/fi'
 
 export const skills = [
@@ -12,7 +12,7 @@ export const skills = [
     Icon: FaHtml5,
     color: '#E34F26',
     category: 'language-stack',
-    level: 'Advanced',
+    type: 'main',
   },
   {
     id: 'css',
@@ -20,7 +20,7 @@ export const skills = [
     Icon: FaCss3Alt,
     color: '#1572B6',
     category: 'language-stack',
-    level: 'Advanced',
+    type: 'main',
   },
   {
     id: 'js',
@@ -28,7 +28,7 @@ export const skills = [
     Icon: FaJs,
     color: '#F7DF1E',
     category: 'language-stack',
-    level: 'Advanced',
+    type: 'main',
   },
   {
     id: 'php',
@@ -36,7 +36,7 @@ export const skills = [
     Icon: FaPhp,
     color: '#777BB4',
     category: 'language-stack',
-    level: 'Advanced',
+    type: 'main',
   },
   {
     id: 'laravel',
@@ -44,7 +44,7 @@ export const skills = [
     Icon: FaLaravel,
     color: '#FF2D20',
     category: 'language-stack',
-    level: 'Advanced',
+    type: 'main',
   },
   {
     id: 'react',
@@ -52,7 +52,7 @@ export const skills = [
     Icon: FaReact,
     color: '#61DAFB',
     category: 'language-stack',
-    level: 'Intermediate',
+    type: 'additional',
   },
   {
     id: 'mysql',
@@ -60,7 +60,23 @@ export const skills = [
     Icon: SiMysql,
     color: '#4479A1',
     category: 'language-stack',
-    level: 'Advanced',
+    type: 'main',
+  },
+  {
+    id: 'postgresql',
+    name: 'PostgreSQL',
+    Icon: SiPostgresql,
+    color: '#336791',
+    category: 'language-stack',
+    type: 'main',
+  },
+  {
+    id: 'mongodb',
+    name: 'MongoDB',
+    Icon: SiMongodb,
+    color: '#47A248',
+    category: 'language-stack',
+    type: 'main',
   },
   {
     id: 'tailwind',
@@ -68,7 +84,7 @@ export const skills = [
     Icon: SiTailwindcss,
     color: '#06B6D4',
     category: 'language-stack',
-    level: 'Advanced',
+    type: 'main',
   },
   {
     id: 'flutter',
@@ -76,7 +92,7 @@ export const skills = [
     Icon: SiFlutter,
     color: '#02569B',
     category: 'language-stack',
-    level: 'Intermediate',
+    type: 'additional',
   },
 
   // Tools
@@ -86,7 +102,7 @@ export const skills = [
     Icon: FaFigma,
     color: '#F24E1E',
     category: 'tools',
-    level: 'Advanced',
+    type: 'main',
   },
   {
     id: 'notion',
@@ -94,7 +110,7 @@ export const skills = [
     Icon: SiNotion,
     color: '#FFFFFF',
     category: 'tools',
-    level: 'Advanced',
+    type: 'main',
   },
   {
     id: 'github',
@@ -102,7 +118,7 @@ export const skills = [
     Icon: FaGithub,
     color: '#FFFFFF',
     category: 'tools',
-    level: 'Intermediate',
+    type: 'main',
   },
   {
     id: 'ai-tools',
@@ -110,7 +126,7 @@ export const skills = [
     Icon: FiCpu,
     color: '#A855F7',
     category: 'tools',
-    level: 'Advanced',
+    type: 'main',
   },
 ]
 
