@@ -103,7 +103,7 @@ function DragScroll({ children, className }) {
 }
 
 function SkillCard({ skill, index }) {
-  const { name, Icon, color, level } = skill
+  const { name, Icon, color } = skill
 
   return (
     <motion.div
@@ -127,17 +127,6 @@ function SkillCard({ skill, index }) {
         style={{ color: 'var(--text-primary)' }}
       >
         {name}
-      </span>
-
-      <span
-        className="text-[10px] px-2 py-0.5 rounded-full font-medium mt-auto"
-        style={{
-          background: `${color}18`,
-          color: color,
-          border: `1px solid ${color}30`,
-        }}
-      >
-        {level}
       </span>
     </motion.div>
   )
@@ -252,15 +241,34 @@ export default function Skills() {
               {filtered.length > 0 ? (
                 <motion.div
                   key={activeCategory}
-                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6"
+                  className="flex flex-col gap-10 w-full pb-8"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4 }}
                 >
-                  {filtered.map((skill, i) => (
-                    <SkillCard key={skill.id} skill={skill} index={i} />
-                  ))}
+                  {['main', 'additional'].map((type) => {
+                    const typeSkills = filtered.filter(s => s.type === type);
+                    if (typeSkills.length === 0) return null;
+                    return (
+                      <div key={type} className="flex flex-col gap-6">
+                        {/* Divider */}
+                        <div className="flex items-center gap-4">
+                          <div className="h-[1px] flex-1 bg-border"></div>
+                          <span className="text-xs font-bold uppercase tracking-widest text-text-muted">
+                            {t(`skills.${type}`) || type}
+                          </span>
+                          <div className="h-[1px] flex-1 bg-border"></div>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                          {typeSkills.map((skill, i) => (
+                            <SkillCard key={skill.id} skill={skill} index={i} />
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </motion.div>
               ) : (
                 <motion.div
