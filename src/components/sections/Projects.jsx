@@ -605,7 +605,7 @@ export default function Projects() {
                     <span className={`block font-bold tracking-wide transition-colors ${
                       isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
                     }`}>
-                      {cat === 'All' ? (t('projects.allTab') || 'All') : cat}
+                      {cat === 'All' ? (t('projects.allTab') || 'All') : (t(`projects.${cat.toLowerCase()}Tab`) || cat)}
                     </span>
                     <span className="text-[10px] font-bold tracking-widest text-text-muted mt-1 uppercase">
                     {cat === 'All' ? projects.length : projects.filter(p => p.category === cat).length} {t('projects.projectsCount') || 'Projects'}
@@ -648,7 +648,7 @@ export default function Projects() {
                       {/* Divider */}
                       <div className="flex items-center gap-4">
                         <div className="h-[1px] flex-1 bg-border"></div>
-                        <span className="text-xs font-bold uppercase tracking-widest text-text-muted">{category}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-text-muted">{t(`projects.${category.toLowerCase()}Tab`) || category}</span>
                         <div className="h-[1px] flex-1 bg-border"></div>
                       </div>
                       
