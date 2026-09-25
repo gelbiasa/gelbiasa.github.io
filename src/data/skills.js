@@ -1,7 +1,7 @@
 import {
   FaHtml5, FaCss3Alt, FaJs, FaPhp, FaLaravel, FaFigma, FaReact, FaGithub, FaTools
 } from 'react-icons/fa'
-import { SiMysql, SiFlutter, SiTailwindcss, SiNotion, SiMongodb, SiPostgresql } from 'react-icons/si'
+import { SiMysql, SiFlutter, SiTailwindcss, SiNotion, SiMongodb, SiPostgresql, SiDbeaver } from 'react-icons/si'
 import { FiCpu, FiCode, FiGrid } from 'react-icons/fi'
 
 export const skills = [
@@ -125,6 +125,22 @@ export const skills = [
     name: 'AI Coding',
     Icon: FiCpu,
     color: '#A855F7',
+    category: 'tools',
+    type: 'main',
+  },
+  {
+    id: 'dbeaver',
+    name: 'DBeaver',
+    Icon: SiDbeaver,
+    color: '#382923',
+    category: 'tools',
+    type: 'main',
+  },
+  {
+    id: 'mongodb-compass',
+    name: 'MongoDB Compass',
+    Icon: SiMongodb,
+    color: '#47A248',
     category: 'tools',
     type: 'main',
   },
