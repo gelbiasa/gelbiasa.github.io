@@ -9,6 +9,7 @@ export default function Education() {
   const { t } = useLanguage()
   const [hoveredPoint, setHoveredPoint] = useState(null)
   const [selectedKhs, setSelectedKhs] = useState(null)
+  const [showTranscript, setShowTranscript] = useState(false)
 
   const semesters = [
     { term: '1', gpa: 3.55, file: '/file/khs/KHS_1.pdf' },
@@ -243,9 +244,23 @@ export default function Education() {
               <div className="text-5xl font-black text-text-primary tracking-tighter mb-2" style={{ textShadow: '0 4px 20px rgb(var(--accent-rgb)/0.3)' }}>
                 3.78
               </div>
-              <div className="flex items-center gap-1 text-accent text-sm font-semibold">
+              <div className="flex items-center gap-1 text-accent text-sm font-semibold mb-6">
                 <FiStar className="fill-accent" /> Outstanding
               </div>
+
+              {/* Transcript Button */}
+              <button
+                onClick={() => setShowTranscript(true)}
+                className="w-full group relative flex items-center justify-center gap-2.5 py-3.5 px-4 mt-2 rounded-2xl bg-accent text-white font-semibold hover:-translate-y-1 hover:shadow-[0_8px_25px_rgb(var(--accent-rgb)/0.4)] active:scale-95 transition-all duration-300"
+              >
+                {/* Subtle highlight effect on hover */}
+                <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                <FiFileText className="w-5 h-5 relative z-10 flex-shrink-0" />
+                <span className="relative z-10 whitespace-nowrap text-sm md:text-[15px] tracking-wide">
+                  {t('education.viewTranscript')}
+                </span>
+              </button>
             </motion.div>
           </div>
 
@@ -320,6 +335,51 @@ export default function Education() {
                 )}
               </div>
               </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Transcript Modal */}
+      <AnimatePresence>
+        {showTranscript && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4 pb-4 pt-24 md:px-8 md:pb-8 md:pt-28 bg-background/95"
+          >
+            <div className="absolute inset-0" onClick={() => setShowTranscript(false)} />
+            
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-full max-w-4xl bg-surface border border-border rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col h-full max-h-[90vh] pointer-events-auto"
+            >
+              <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
+                <h3 className="text-xl font-bold text-text-primary flex items-center gap-2">
+                  <FiFileText className="text-accent" />
+                  {t('education.transcriptTitle')}
+                </h3>
+                <button
+                  onClick={() => setShowTranscript(false)}
+                  className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-full transition-colors"
+                >
+                  <FiX size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 bg-background rounded-xl overflow-hidden border border-border flex relative">
+                <div className="w-full h-full flex flex-col items-center justify-center text-center px-6 py-12">
+                  <FiClock className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+                  <h4 className="text-lg font-bold text-text-primary mb-2">Coming Soon</h4>
+                  <p className="text-sm text-text-secondary max-w-md mx-auto">
+                    {t('education.transcriptComingSoon')}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
