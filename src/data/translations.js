@@ -125,7 +125,10 @@ export const translations = {
       takeaway: 'Conclusion',
       viewKhs: 'View KHS',
       khsDetail: 'KHS Detail S',
-      khsComingSoon: 'The KHS (Study Result Card) document for this semester is currently being prepared and will be uploaded soon.'
+      khsComingSoon: 'The KHS (Study Result Card) document for this semester is currently being prepared and will be uploaded soon.',
+      viewTranscript: 'View Transcript',
+      transcriptTitle: 'Academic Transcript',
+      transcriptComingSoon: 'The official academic transcript is currently being processed and will be available to view shortly.'
     },
     skills: {
       title1: 'Technical',
@@ -317,7 +320,10 @@ export const translations = {
       takeaway: 'Kesimpulan',
       viewKhs: 'Lihat KHS',
       khsDetail: 'Detail KHS S',
-      khsComingSoon: 'Dokumen KHS (Kartu Hasil Studi) untuk semester ini sedang disiapkan dan akan segera diunggah.'
+      khsComingSoon: 'Dokumen KHS (Kartu Hasil Studi) untuk semester ini sedang disiapkan dan akan segera diunggah.',
+      viewTranscript: 'Lihat Transkrip',
+      transcriptTitle: 'Transkrip Akademik',
+      transcriptComingSoon: 'Transkrip akademik resmi saat ini sedang diproses dan akan segera tersedia untuk dilihat.'
     },
     skills: {
       title1: 'Keahlian',
