@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import TopNav from './components/layout/TopNav';
@@ -12,6 +12,14 @@ function App() {
     return localStorage.getItem('portfolioActiveTab') || 'home';
   });
   const [showOverlay, setShowOverlay] = useState(false);
+  
+  // Setup Framer Motion Scroll Progress
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
   // Show terminal intro once per browser session
   const [showIntro, setShowIntro] = useState(() => {
     return !sessionStorage.getItem('gelby_intro_shown');
@@ -42,6 +50,11 @@ function App() {
         */}
         <div className="relative min-h-screen w-full flex flex-col selection:bg-accent-glow selection:text-text-primary bg-[var(--bg-primary)]">
           
+          {/* Scroll Progress Bar */}
+          <motion.div
+            className="fixed top-0 left-0 right-0 h-1 bg-accent origin-left z-[9999] shadow-[0_0_10px_rgb(var(--accent-rgb))]"
+            style={{ scaleX }}
+          />
           {/* Full-screen terminal intro (once per session) */}
           {showIntro && <TerminalIntro onDone={() => setShowIntro(false)} />}
 
