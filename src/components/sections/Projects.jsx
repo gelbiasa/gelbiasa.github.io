@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiGithub, FiFigma, FiExternalLink, FiDownload, FiClock, FiStar, FiFolder, FiMonitor, FiUser, FiX, FiArrowRight, FiChevronRight, FiChevronLeft, FiGrid } from 'react-icons/fi'
+import Tilt from 'react-parallax-tilt'
 import { projects } from '../../data/projects'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -402,19 +403,27 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
   const { t } = useLanguage()
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
-      onClick={(e) => {
-        // Prevent modal if clicking links or buttons
-        if (!e.target.closest('a') && !e.target.closest('button')) {
-          onClick(project)
-        }
-      }}
-      className="project-card bg-surface rounded-2xl overflow-hidden border border-border hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:border-border transition-all duration-500 cursor-pointer flex flex-col h-full group"
-      style={{ borderColor: 'var(--border)' }}
+    <Tilt
+      tiltMaxAngleX={5}
+      tiltMaxAngleY={5}
+      scale={1.02}
+      transitionSpeed={2500}
+      className="h-full"
+      perspective={1000}
     >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
+        onClick={(e) => {
+          // Prevent modal if clicking links or buttons
+          if (!e.target.closest('a') && !e.target.closest('button')) {
+            onClick(project)
+          }
+        }}
+        className="project-card bg-surface rounded-2xl overflow-hidden border border-border hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:border-border transition-all duration-500 cursor-pointer flex flex-col h-full group"
+        style={{ borderColor: 'var(--border)' }}
+      >
       {/* 100% Clean Image Container (No overlays blocking the content) */}
       <div className="project-img-wrapper relative overflow-hidden aspect-video bg-background">
         <ImageCarousel 
@@ -493,7 +502,8 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
           </div>
         </div>
       </div>
-    </motion.div>
+      </motion.div>
+    </Tilt>
   )
 })
 
