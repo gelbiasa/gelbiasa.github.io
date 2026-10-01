@@ -6,6 +6,7 @@ import TopNav from './components/layout/TopNav';
 import ContentArea from './components/layout/ContentArea';
 import HireMeOverlay from './components/ui/HireMeOverlay';
 import TerminalIntro from './components/ui/TerminalIntro';
+import HiddenTerminal from './components/ui/HiddenTerminal';
 
 function App() {
   const [activeTab, setActiveTab] = useState(() => {
@@ -57,6 +58,9 @@ function App() {
           />
           {/* Full-screen terminal intro (once per session) */}
           {showIntro && <TerminalIntro onDone={() => setShowIntro(false)} />}
+
+          {/* Interactive Easter Egg Terminal */}
+          <HiddenTerminal onHireMe={() => setShowOverlay(true)} />
 
           {/* Top Navigation Bar */}
           <TopNav activeTab={activeTab} setActiveTab={handleTabChange} onHireMeClick={handleHireMeClick} />
