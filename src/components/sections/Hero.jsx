@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FiArrowDown, FiGithub, FiDownload } from 'react-icons/fi'
+import Hero3D from '../ui/Hero3D'
 
 const TYPED_STRINGS = [
   'Full-Stack Web Developer',
@@ -57,6 +58,11 @@ export default function Hero() {
       id="hero"
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16"
     >
+      {/* 3D Background Element */}
+      <div className="absolute inset-0 opacity-40">
+        <Hero3D />
+      </div>
+
       {/* Grid background */}
       <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
 
