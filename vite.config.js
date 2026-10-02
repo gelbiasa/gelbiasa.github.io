@@ -13,6 +13,7 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           motion: ['framer-motion'],
           router: ['react-router-dom'],
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
         }
       }
     }
