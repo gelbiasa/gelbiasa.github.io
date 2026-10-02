@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiEye, FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMapPin, FiBriefcase, FiBook, FiExternalLink, FiX } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
 import ScrambleName from '../ui/ScrambleName';
+import Hero3D from '../ui/Hero3D';
 
 const HomeSection = ({ setActiveTab }) => {
   const [showAboutModal, setShowAboutModal] = useState(false);
@@ -14,11 +15,20 @@ const HomeSection = ({ setActiveTab }) => {
         Full-screen section. pt-20 clears the fixed navbar (h-20) on ALL columns.
         On large screens both columns flex side by side, each individually centered.
       */}
-      <section className="w-full flex-1 flex flex-col lg:flex-row min-h-[100dvh] pt-32 lg:pt-28">
+      <section className="relative w-full flex-1 flex flex-col lg:flex-row min-h-[100dvh] pt-32 lg:pt-28 overflow-hidden">
+
+      {/* 3D Background Element - Responsive Position */}
+      <div className="absolute z-0 pointer-events-none opacity-25 
+        top-0 left-0 w-full h-[50vh] 
+        md:top-[-5%] md:left-[-5%] md:w-[600px] md:h-[600px] 
+        lg:top-[-10%] lg:left-[-10%] lg:w-[800px] lg:h-[800px] 
+        flex items-center justify-center">
+        <Hero3D />
+      </div>
 
       {/* ══════════════ LEFT — 60% ══════════════ */}
       <motion.div
-        className="flex-[6] flex flex-col justify-center px-8 md:px-12 lg:px-16 xl:px-20 pb-10 lg:pb-0"
+        className="flex-[6] flex flex-col justify-center px-8 md:px-12 lg:px-16 xl:px-20 pb-10 lg:pb-0 relative z-10"
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
@@ -234,7 +244,7 @@ const HomeSection = ({ setActiveTab }) => {
 
       {/* ══════════════ RIGHT — 40% ══════════════ */}
       <motion.div
-        className="flex-[4] flex flex-col items-center justify-center px-8 lg:px-10 pb-12 lg:pb-0 gap-6"
+        className="flex-[4] flex flex-col items-center justify-center px-8 lg:px-10 pb-12 lg:pb-0 gap-6 relative z-10"
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
