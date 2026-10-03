@@ -1,15 +1,31 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, ContactShadows, Environment, MeshDistortMaterial } from '@react-three/drei';
+import { useTheme } from '../../context/ThemeContext';
 
 function FloatingObject() {
   const meshRef = useRef();
+  const { isDark, colorTheme } = useTheme();
   
   // Rotate the object slowly
   useFrame((state, delta) => {
     meshRef.current.rotation.x -= delta * 0.15;
     meshRef.current.rotation.y += delta * 0.2;
   });
+
+  // Determine colors based on active theme
+  // In Dark Mode: use brighter accent for high contrast
+  // In Light Mode: use darker accent for high contrast against white
+  let accentColor = isDark ? '#34D399' : '#047857'; // Green (light/dark)
+  let coreColor = isDark ? '#062c22' : '#d1fae5'; // Core background
+
+  if (colorTheme === 'blue') {
+    accentColor = isDark ? '#60A5FA' : '#1E3A8A'; // Blue (light/dark)
+    coreColor = isDark ? '#0f172a' : '#dbeafe';
+  } else if (colorTheme === 'amber') {
+    accentColor = isDark ? '#FBBF24' : '#92400E'; // Amber (light/dark)
+    coreColor = isDark ? '#1e1b15' : '#fef3c7';
+  }
 
   return (
     <Float
@@ -20,12 +36,12 @@ function FloatingObject() {
     >
       <mesh ref={meshRef} position={[0, 0, 0]} scale={1.5}>
         <icosahedronGeometry args={[1, 1]} />
-        {/* Glowy Tech Material */}
+        {/* Responsive Tech Material */}
         <meshStandardMaterial 
-          color="#06b6d4" 
+          color={accentColor} 
           wireframe={true} 
-          emissive="#06b6d4"
-          emissiveIntensity={1.5}
+          emissive={accentColor}
+          emissiveIntensity={isDark ? 1.5 : 0.8}
         />
       </mesh>
       
@@ -33,9 +49,9 @@ function FloatingObject() {
       <mesh scale={1.4}>
         <icosahedronGeometry args={[0.7, 0]} />
         <meshStandardMaterial 
-          color="#083344"
+          color={coreColor}
           transparent
-          opacity={0.8}
+          opacity={isDark ? 0.8 : 0.4}
         />
       </mesh>
     </Float>
