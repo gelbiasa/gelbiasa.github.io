@@ -17,14 +17,11 @@ function FloatingObject() {
   // In Dark Mode: use brighter accent for high contrast
   // In Light Mode: use darker accent for high contrast against white
   let accentColor = isDark ? '#34D399' : '#047857'; // Green (light/dark)
-  let coreColor = isDark ? '#062c22' : '#d1fae5'; // Core background
 
   if (colorTheme === 'blue') {
     accentColor = isDark ? '#60A5FA' : '#1E3A8A'; // Blue (light/dark)
-    coreColor = isDark ? '#0f172a' : '#dbeafe';
   } else if (colorTheme === 'amber') {
     accentColor = isDark ? '#FBBF24' : '#92400E'; // Amber (light/dark)
-    coreColor = isDark ? '#1e1b15' : '#fef3c7';
   }
 
   return (
@@ -45,13 +42,14 @@ function FloatingObject() {
         />
       </mesh>
       
-      {/* Inner solid core */}
+      {/* Inner solid core - Holographic Glass Effect */}
       <mesh scale={1.4}>
         <icosahedronGeometry args={[0.7, 0]} />
         <meshStandardMaterial 
-          color={coreColor}
+          color={accentColor}
           transparent
-          opacity={isDark ? 0.8 : 0.4}
+          opacity={isDark ? 0.15 : 0.1}
+          depthWrite={false}
         />
       </mesh>
     </Float>
