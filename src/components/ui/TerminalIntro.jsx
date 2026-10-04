@@ -241,6 +241,14 @@ export default function TerminalIntro({ onDone }) {
   const pdmRef = useRef(null);
   const [pdmScale, setPdmScale] = useState(1);
 
+  // Prevent background scrolling while intro is active
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   // Responsive PDM scaling
   useEffect(() => {
     if (!pdmRef.current) return;
