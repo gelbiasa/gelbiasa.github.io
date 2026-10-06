@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX } from 'react-icons/fi';
+import { terminalTranslations } from '../../data/terminalTranslations';
 
 export default function HiddenTerminal({ onHireMe }) {
+  const [termLang, setTermLang] = useState(() => localStorage.getItem('portfolioTerminalLang') || 'en');
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
+  
   const [history, setHistory] = useState([
-    { type: 'system', text: 'Welcome to GelbyOS v2.0.0.' },
-    { type: 'system', text: 'Type "help" to see available commands.' }
+    { type: 'system', text: terminalTranslations[localStorage.getItem('portfolioTerminalLang') || 'en'].welcome },
+    { type: 'system', text: terminalTranslations[localStorage.getItem('portfolioTerminalLang') || 'en'].hint }
   ]);
   const inputRef = useRef(null);
   const bottomRef = useRef(null);
@@ -50,48 +53,65 @@ export default function HiddenTerminal({ onHireMe }) {
     }
   }, [history, isOpen]);
 
+  useEffect(() => {
+    localStorage.setItem('portfolioTerminalLang', termLang);
+  }, [termLang]);
+
   const handleCommand = (e) => {
     if (e.key === 'Enter') {
       const cmd = input.trim().toLowerCase();
       const newHistory = [...history, { type: 'user', text: cmd }];
+      const t = terminalTranslations[termLang];
       
       switch (cmd) {
         case 'help':
-          newHistory.push({ type: 'system', text: 'Available commands:' });
-          newHistory.push({ type: 'system', text: '  about    - Who is Gelby?' });
-          newHistory.push({ type: 'system', text: '  skills   - Tech stack' });
-          newHistory.push({ type: 'system', text: '  clear    - Clear terminal' });
-          newHistory.push({ type: 'system', text: '  sudo hire gelby - [RESTRICTED]' });
+          newHistory.push({ type: 'system', text: t.helpHeader });
+          newHistory.push({ type: 'system', text: t.helpAbout });
+          newHistory.push({ type: 'system', text: t.helpSkills });
+          newHistory.push({ type: 'system', text: t.helpLangId });
+          newHistory.push({ type: 'system', text: t.helpLangEn });
+          newHistory.push({ type: 'system', text: t.helpClear });
+          newHistory.push({ type: 'system', text: t.helpHire });
           break;
         case 'about':
-          newHistory.push({ type: 'system', text: 'M. Isroqi Gelby Firmansyah - Laravel Expert & Full Stack Web Developer.' });
+          newHistory.push({ type: 'system', text: t.aboutMsg });
           break;
         case 'skills':
-          newHistory.push({ type: 'system', text: 'Laravel, PHP, React, Tailwind CSS, MySQL, PostgreSQL, MongoDB, Flutter.' });
+          newHistory.push({ type: 'system', text: t.skillsMsg });
+          break;
+        case 'lang id':
+        case 'language id':
+          setTermLang('id');
+          newHistory.push({ type: 'system', text: terminalTranslations.id.langChangeId });
+          break;
+        case 'lang en':
+        case 'language en':
+          setTermLang('en');
+          newHistory.push({ type: 'system', text: terminalTranslations.en.langChangeEn });
           break;
         case 'clear':
           setHistory([]);
           setInput('');
           return;
         case 'sudo hire gelby':
-          newHistory.push({ type: 'system', text: 'Checking credentials...' });
-          newHistory.push({ type: 'system', text: 'Access granted! Initiating premium hire sequence...' });
+          newHistory.push({ type: 'system', text: t.hireCheck });
+          newHistory.push({ type: 'system', text: t.hireGranted });
           setTimeout(() => {
             setIsOpen(false);
             if (onHireMe) onHireMe();
           }, 1500);
           break;
         case 'sudo':
-          newHistory.push({ type: 'system', text: 'usage: sudo <command>' });
-          newHistory.push({ type: 'system', text: 'Hint: Try "sudo hire gelby"' });
+          newHistory.push({ type: 'system', text: t.sudoUsage });
+          newHistory.push({ type: 'system', text: t.sudoHint });
           break;
         case '':
           break;
         default:
           if (cmd.startsWith('sudo ')) {
-            newHistory.push({ type: 'system', text: `gelby is not in the sudoers file. This incident will be reported.` });
+            newHistory.push({ type: 'system', text: t.sudoReport });
           } else {
-            newHistory.push({ type: 'system', text: `Command not found: ${cmd}. Type "help".` });
+            newHistory.push({ type: 'system', text: `${t.notFound} ${cmd}. ${t.typeHelp}` });
           }
           break;
       }
