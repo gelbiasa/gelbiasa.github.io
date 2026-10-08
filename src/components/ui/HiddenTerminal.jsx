@@ -7,8 +7,39 @@ export default function HiddenTerminal({ onHireMe }) {
   const [termLang, setTermLang] = useState(() => localStorage.getItem('portfolioTerminalLang') || 'en');
   const [isOpen, setIsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [size, setSize] = useState({ w: 800, h: 450 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [input, setInput] = useState('');
   const dragControls = useDragControls();
+
+  const handleResizeStart = (e, edge) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startW = size.w;
+    const startH = size.h;
+
+    const onMove = (moveEv) => {
+      let newW = startW;
+      let newH = startH;
+      if (edge === 'right' || edge === 'br') newW = startW + (moveEv.clientX - startX);
+      if (edge === 'bottom' || edge === 'br') newH = startH + (moveEv.clientY - startY);
+      
+      setSize({ 
+        w: Math.max(300, newW), 
+        h: Math.max(200, newH) 
+      });
+    };
+
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  };
   
   const [history, setHistory] = useState([
     { type: 'system', text: terminalTranslations[localStorage.getItem('portfolioTerminalLang') || 'en'].welcome },
@@ -131,16 +162,19 @@ export default function HiddenTerminal({ onHireMe }) {
           dragControls={dragControls}
           dragListener={false}
           dragMomentum={false}
-          initial={{ opacity: 0, scale: 0.95, y: 20, x: '-50%', left: '50%', top: '20%' }}
+          onDragEnd={(e, info) => {
+            setPosition({ x: position.x + info.offset.x, y: position.y + info.offset.y });
+          }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ 
             opacity: 1, 
             scale: 1, 
-            y: 0,
-            x: isFullscreen ? 0 : '-50%',
-            left: isFullscreen ? 0 : '50%',
-            top: isFullscreen ? 0 : '15%',
-            width: isFullscreen ? '100vw' : '800px',
-            height: isFullscreen ? '100vh' : '450px',
+            x: isFullscreen ? 0 : position.x,
+            y: isFullscreen ? 0 : position.y,
+            left: isFullscreen ? 0 : 'max(2vw, calc(50vw - 400px))',
+            top: isFullscreen ? 0 : '15vh',
+            width: isFullscreen ? '100vw' : size.w,
+            height: isFullscreen ? '100vh' : size.h,
             maxWidth: isFullscreen ? '100vw' : '95vw',
             maxHeight: isFullscreen ? '100vh' : '85vh',
             borderRadius: isFullscreen ? '0px' : '6px'
@@ -150,6 +184,24 @@ export default function HiddenTerminal({ onHireMe }) {
           className="fixed z-[99999] bg-[#0c0c0c] border border-[#333] shadow-[0_0_40px_rgba(0,0,0,0.8)] font-mono text-sm flex flex-col overflow-hidden"
           style={{ touchAction: 'none' }}
         >
+          {/* Resize Handles */}
+          {!isFullscreen && (
+            <>
+              <div 
+                className="absolute top-0 right-0 w-2 h-full cursor-e-resize z-50"
+                onPointerDown={(e) => handleResizeStart(e, 'right')}
+              />
+              <div 
+                className="absolute bottom-0 left-0 w-full h-2 cursor-s-resize z-50"
+                onPointerDown={(e) => handleResizeStart(e, 'bottom')}
+              />
+              <div 
+                className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-50"
+                onPointerDown={(e) => handleResizeStart(e, 'br')}
+              />
+            </>
+          )}
+
           {/* Windows CMD Header */}
           <div 
             className="flex items-center justify-between bg-[#1e1e1e] select-none h-8"
