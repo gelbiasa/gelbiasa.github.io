@@ -181,8 +181,8 @@ export default function HiddenTerminal({ onHireMe }) {
           }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-          className="fixed z-[99999] bg-[#0c0c0c] border border-[#333] shadow-[0_0_40px_rgba(0,0,0,0.8)] font-mono text-sm flex flex-col overflow-hidden"
-          style={{ touchAction: 'none' }}
+          className="fixed z-[99999] bg-[#050505]/85 backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] font-mono text-sm flex flex-col overflow-hidden"
+          style={{ touchAction: 'none', boxShadow: '0 0 0 1px rgba(255,255,255,0.05) inset' }}
         >
           {/* Resize Handles */}
           {!isFullscreen && (
@@ -202,85 +202,82 @@ export default function HiddenTerminal({ onHireMe }) {
             </>
           )}
 
-          {/* Windows CMD Header */}
+          {/* Elegant Custom Header */}
           <div 
-            className="flex items-center justify-between bg-[#1e1e1e] select-none h-8"
+            className="flex items-center justify-between bg-black/40 border-b border-white/5 select-none h-10"
             onPointerDown={(e) => {
               if (!isFullscreen) dragControls.start(e);
             }}
             onDoubleClick={() => setIsFullscreen(!isFullscreen)}
             style={{ cursor: isFullscreen ? 'default' : 'grab' }}
           >
-            <div className="flex gap-2 items-center px-2 flex-1 overflow-hidden">
-              <span className="text-[#cccccc] text-[10px] bg-black px-1.5 py-[1px] border border-[#333] hidden sm:block">C:\_</span>
-              <div className="text-[#cccccc] text-xs font-sans truncate">
-                Command Prompt - GelbyOS v2.0
+            <div className="flex gap-3 items-center px-4 flex-1 overflow-hidden">
+              <div className="flex items-center justify-center w-5 h-5 rounded bg-white/5 border border-white/10">
+                <span className="text-accent text-[10px] font-bold">λ</span>
+              </div>
+              <div className="text-gray-300 text-xs tracking-wider font-semibold truncate">
+                TERMINAL // GELBY_OS
               </div>
             </div>
             
-            {/* Windows Window Controls */}
-            <div className="flex h-full">
-              <button 
-                onClick={() => setIsOpen(false)} 
-                className="w-12 h-full flex items-center justify-center hover:bg-white/10 text-gray-400 transition-colors"
-                title="Minimize"
-              >
-                <div className="w-[10px] h-[1px] bg-current translate-y-1" />
-              </button>
+            {/* Minimalist Controls */}
+            <div className="flex h-full px-2 gap-1 items-center">
               <button 
                 onClick={() => setIsFullscreen(!isFullscreen)} 
-                className="w-12 h-full flex items-center justify-center hover:bg-white/10 text-gray-400 transition-colors"
+                className="w-7 h-7 rounded flex items-center justify-center hover:bg-white/10 text-gray-400 transition-all"
                 title={isFullscreen ? "Restore Down" : "Maximize"}
               >
                 <div className={isFullscreen 
-                  ? "w-[9px] h-[9px] border border-current relative after:content-[''] after:absolute after:-top-[3px] after:-right-[3px] after:w-[9px] after:h-[9px] after:border-t after:border-r after:border-current" 
-                  : "w-[10px] h-[10px] border border-current"} 
+                  ? "w-2.5 h-2.5 border-2 border-current relative after:content-[''] after:absolute after:-top-1.5 after:-right-1.5 after:w-2.5 after:h-2.5 after:border-t-2 after:border-r-2 after:border-current" 
+                  : "w-3 h-3 border-2 border-current rounded-sm"} 
                 />
               </button>
               <button 
                 onClick={() => setIsOpen(false)} 
-                className="w-12 h-full flex items-center justify-center hover:bg-[#e81123] hover:text-white text-gray-400 transition-colors"
+                className="w-7 h-7 rounded flex items-center justify-center hover:bg-red-500/80 hover:text-white text-gray-400 transition-all"
                 title="Close"
               >
-                <FiX size={16} strokeWidth={1.5} />
+                <FiX size={16} strokeWidth={2.5} />
               </button>
             </div>
           </div>
 
           {/* Terminal Body */}
           <div 
-            className="flex-1 p-3 md:p-4 overflow-y-auto text-[#cccccc] bg-black [&::-webkit-scrollbar]:w-4 [&::-webkit-scrollbar-thumb]:bg-[#4d4d4d] [&::-webkit-scrollbar-track]:bg-[#1e1e1e]"
+            className="flex-1 p-4 md:p-5 overflow-y-auto text-gray-300 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent"
             onClick={() => inputRef.current?.focus()}
           >
-            <div className="mb-4">
-              <div className="text-[#cccccc]">Microsoft Windows [Version 10.0.22631.3296]</div>
-              <div className="text-[#cccccc]">(c) Microsoft Corporation. All rights reserved.</div>
+            <div className="mb-6 opacity-70">
+              <div className="text-accent font-bold tracking-widest text-xs mb-1">=== SYSTEM INITIALIZED ===</div>
+              <div className="text-gray-400 text-xs">Kernel v2.0.0-stable | Encryption: Active</div>
             </div>
 
             {history.map((line, i) => (
-              <div key={i} className="mb-1 leading-relaxed">
+              <div key={i} className="mb-1.5 leading-relaxed">
                 {line.type === 'system' ? (
-                  <span className={line.text.includes('Access granted') ? 'text-green-400 font-bold' : 'text-[#cccccc]'}>
+                  <span className={line.text.includes('Access granted') ? 'text-accent font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'text-gray-300'}>
                     {line.text}
                   </span>
                 ) : (
                   <div className="flex">
-                    <span className="text-[#cccccc] mr-2">C:\Users\guest&gt;</span>
-                    <span className="text-[#cccccc]">{line.text}</span>
+                    <span className="text-accent mr-2">λ</span>
+                    <span className="text-gray-400 mr-2">guest ~</span>
+                    <span className="text-gray-200">{line.text}</span>
                   </div>
                 )}
               </div>
             ))}
             
-            <div className="flex items-center mt-1">
-              <span className="text-[#cccccc] mr-2">C:\Users\guest&gt;</span>
+            <div className="flex items-center mt-2">
+              <span className="text-accent mr-2">λ</span>
+              <span className="text-gray-400 mr-2">guest ~</span>
               <input
                 ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleCommand}
-                className="flex-1 bg-transparent outline-none text-[#cccccc] border-none focus:ring-0 p-0 shadow-none font-mono"
+                className="flex-1 bg-transparent outline-none text-gray-100 border-none focus:ring-0 p-0 shadow-none font-mono selection:bg-accent/30"
                 autoFocus
                 spellCheck={false}
                 autoComplete="off"
