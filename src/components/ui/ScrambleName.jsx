@@ -24,7 +24,7 @@ function useCipherDecode(target, startTrigger, delay = 0, replayKey = 0) {
       started = true;
       const startTime = performance.now();
       // Total reveal duration ms
-      const totalDuration = 1200;
+      const totalDuration = 2200;
       // How many scramble cycles per character
       const scrambleCycles = 6;
 
