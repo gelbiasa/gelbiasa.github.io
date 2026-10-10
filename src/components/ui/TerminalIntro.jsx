@@ -272,7 +272,9 @@ export default function TerminalIntro({ onDone }) {
   useEffect(() => {
     let active = true;
     const run = async () => {
-      await sleep(100);
+      // Tunggu lebih lama di awal (800ms) agar browser bisa menyelesaikan proses
+      // render 3D Canvas dan komponen berat lainnya sebelum memulai animasi ketik.
+      await sleep(800);
       if (!active) return;
 
       // ─ 1. Type artisan command ────────────────────────────────────────────
