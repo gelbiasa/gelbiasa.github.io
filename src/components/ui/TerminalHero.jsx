@@ -158,23 +158,17 @@ export default function TerminalHero() {
             
             <div className="mt-3 md:mt-4 flex flex-row items-center flex-wrap gap-4 md:gap-6">
               <p className="text-gray-400 text-sm md:text-lg lg:text-xl font-medium tracking-wide">
-                {language === 'en' ? (
-                  <>
-                    <span className="text-emerald-400" style={{ textShadow: '0 0 20px rgba(16, 185, 129, 0.3)' }}>Laravel Expert</span> & Database Engineer
-                  </>
-                ) : (
-                  <>
-                    <span className="text-emerald-400" style={{ textShadow: '0 0 20px rgba(16, 185, 129, 0.3)' }}>Pakar Laravel</span> & Rekayasa Basis Data
-                  </>
-                )}
+                <span className="text-emerald-400" style={{ textShadow: '0 0 20px rgba(16, 185, 129, 0.3)' }}>Laravel Expert</span> & Database Engineer
               </p>
               
               {/* Subtle Replay Button */}
               <button 
                 onClick={startAnimation}
-                className="flex items-center gap-1.5 text-[10px] md:text-xs font-mono text-gray-400 hover:text-emerald-400 transition-colors opacity-80 hover:opacity-100"
+                className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border border-emerald-500/30 bg-emerald-950/20 hover:bg-emerald-900/30 text-gray-300 hover:text-emerald-400 transition-all duration-200 shadow-sm active:scale-95 cursor-pointer"
+                title={language === 'en' ? 'Replay animation' : 'Ulangi animasi'}
               >
-                <FiRefreshCw /> Ulangi Animasi
+                <FiRefreshCw className="transition-transform duration-500 group-hover:rotate-180 text-emerald-400" />
+                <span>{language === 'en' ? 'Replay Animation' : 'Ulangi Animasi'}</span>
               </button>
             </div>
           </motion.div>
