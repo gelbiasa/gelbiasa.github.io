@@ -207,7 +207,7 @@ export const translations = {
       hireMe: 'Rekrut Saya',
     },
     home: {
-      subtitle: 'Pakar Laravel & Rekayasa Basis Data',
+      subtitle: 'Laravel Expert & Database Engineer',
       terminalResolving: 'Memverifikasi identitas developer...',
       terminalSuccess: 'Identitas berhasil ditetapkan.',
       bio: 'Mahasiswa D-IV Sistem Informasi Bisnis di Politeknik Negeri Malang. Saya berfokus sebagai Laravel Expert dan Database Engineer, dengan spesialisasi dalam menulis kode terstandardisasi dan merancang arsitektur sistem tingkat enterprise yang tangguh dan terukur.',
