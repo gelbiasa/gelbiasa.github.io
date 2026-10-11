@@ -88,8 +88,8 @@ export default function ScrambleName() {
   const name = 'M. Isroqi Gelby Firmansyah.';
   const { displayed, done } = useCipherDecode(name, startTrigger, 200, replayKey);
 
-  const subtitleAccentStr = language === 'en' ? 'Laravel Expert' : 'Pakar Laravel';
-  const subtitleRestStr = language === 'en' ? ' & Database Engineer' : ' & Rekayasa Basis Data';
+  const subtitleAccentStr = 'Laravel Expert';
+  const subtitleRestStr = ' & Database Engineer';
   const fullSubtitle = subtitleAccentStr + subtitleRestStr;
   
   const { displayed: displayedSubtitle, done: subtitleDone } = useCipherDecode(fullSubtitle, startTrigger, 400, replayKey);
@@ -148,9 +148,14 @@ export default function ScrambleName() {
 
         <button
           onClick={() => setReplayKey(prev => prev + 1)}
-          className="flex items-center gap-1.5 text-[10px] md:text-xs font-mono text-text-secondary hover:text-accent transition-colors opacity-80 hover:opacity-100"
+          className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border border-border bg-surface hover:bg-surface-2 text-text-primary hover:text-accent transition-all duration-200 shadow-sm active:scale-95 cursor-pointer"
+          title={language === 'en' ? 'Replay decode animation' : 'Ulangi animasi'}
         >
-          <FiRefreshCw size={11} /> Ulangi Animasi
+          <FiRefreshCw 
+            size={12} 
+            className="transition-transform duration-500 group-hover:rotate-180 text-accent flex-shrink-0" 
+          />
+          <span className="whitespace-nowrap">{language === 'en' ? 'Replay Animation' : 'Ulangi Animasi'}</span>
         </button>
       </motion.div>
     </div>
