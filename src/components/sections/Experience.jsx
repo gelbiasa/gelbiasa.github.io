@@ -14,15 +14,15 @@ const fadeUp = {
 };
 
 export default function Experience() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [selectedCertId, setSelectedCertId] = useState(null);
 
   const experiences = [
     {
       id: 'spunindo',
       company: 'PT Multi Spunindo Jaya Tbk',
-      role: 'Intern — Full Stack Developer',
-      period: 'July 2025 – December 2025',
+      role: language === 'id' ? 'Magang — Full Stack Developer' : 'Intern — Full Stack Developer',
+      period: language === 'id' ? 'Juli 2025 – Desember 2025' : 'July 2025 – December 2025',
       current: false,
       certificate: { 
         label: t('experience.certLetter'),
@@ -34,8 +34,8 @@ export default function Experience() {
     {
       id: 'upatik',
       company: 'UPA TIK Politeknik Negeri Malang',
-      role: 'Intern — Back-end Developer',
-      period: 'February 2025 – June 2025',
+      role: language === 'id' ? 'Magang — Back-end Developer' : 'Intern — Back-end Developer',
+      period: language === 'id' ? 'Februari 2025 – Juni 2025' : 'February 2025 – June 2025',
       current: false,
       certificate: { 
         label: t('experience.internCert'),
