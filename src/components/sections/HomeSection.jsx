@@ -77,13 +77,13 @@ const HomeSection = ({ setActiveTab }) => {
           {[
             {
               company: 'PT Multi Spunindo Jaya Tbk',
-              role: 'Intern — Full Stack Developer',
-              period: 'Jul – Dec 2025',
+              role: language === 'id' ? 'Magang — Full Stack Developer' : 'Intern — Full Stack Developer',
+              period: language === 'id' ? 'Jul – Des 2025' : 'Jul – Dec 2025',
             },
             {
               company: 'UPA TIK Politeknik Negeri Malang',
-              role: 'Intern — Back-end Developer',
-              period: 'Feb – Jun 2025',
+              role: language === 'id' ? 'Magang — Back-end Developer' : 'Intern — Back-end Developer',
+              period: language === 'id' ? 'Feb – Jun 2025' : 'Feb – Jun 2025',
             },
           ].map((exp, i) => (
             <div
@@ -98,7 +98,7 @@ const HomeSection = ({ setActiveTab }) => {
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <p className="text-text-primary font-semibold text-sm truncate">{exp.company}</p>
-                <p className="text-slate-500 text-xs">{exp.role}</p>
+                <p className="text-text-secondary text-xs">{exp.role}</p>
               </div>
               {/* Period */}
               <span className="flex-shrink-0 text-[11px] font-mono text-text-primary bg-surface-2 px-2.5 py-1 rounded-full">
