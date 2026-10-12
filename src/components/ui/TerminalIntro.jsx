@@ -220,7 +220,7 @@ function TitleBar({ label, accent }) {
 // ── MAIN ──────────────────────────────────────────────────────────────────────
 export default function TerminalIntro({ onDone }) {
   // Terminal state
-  const [phase, setPhase]           = useState('migrate'); // migrate | clear-typing | mysql
+  const [phase, setPhase]           = useState('migrate'); // migrate | clear-typing | tinker-start | tinker-query | executing
   const [artisanCmd, setArtisanCmd] = useState('');
   const [artisanCursor, setArtisanCursor] = useState(true);
   const [logs, setLogs]             = useState([]);
@@ -237,9 +237,15 @@ export default function TerminalIntro({ onDone }) {
   const [showModal, setShowModal] = useState(false);
   const [exiting, setExiting] = useState(false);
   
-  const isActive = useRef(true);
+  const isMounted = useRef(true);
   const pdmRef = useRef(null);
   const [pdmScale, setPdmScale] = useState(1);
+
+  const finishIntro = () => {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    window.dispatchEvent(new Event('introFinished'));
+    onDone();
+  };
 
   // Prevent background scrolling while intro is active
   useEffect(() => {
@@ -249,13 +255,23 @@ export default function TerminalIntro({ onDone }) {
     };
   }, []);
 
+  // Keyboard shortcut: ESC to skip intro
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        finishIntro();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Responsive PDM scaling
   useEffect(() => {
     if (!pdmRef.current) return;
     const obs = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const { width, height } = entry.contentRect;
-        // Base PDM size is 550x450, add padding allowance
         const scaleW = (width - 16) / 550;
         const scaleH = (height - 16) / 450;
         setPdmScale(Math.min(1, scaleW, scaleH));
@@ -265,85 +281,108 @@ export default function TerminalIntro({ onDone }) {
     return () => obs.disconnect();
   }, []);
 
-  const addLog = (t, m) => setLogs(p => [...p, { type: t, text: m }]);
-  const revealTable = (name, rows) => setTables(p => ({ ...p, [name]: { visible: true, rows } }));
-  const revealLine  = (name)       => setLines(p => ({ ...p, [name]: true }));
+  const addLog = (t, m) => {
+    if (!isMounted.current) return;
+    setLogs(p => [...p, { type: t, text: m }]);
+  };
+  const revealTable = (name, rows) => {
+    if (!isMounted.current) return;
+    setTables(p => ({ ...p, [name]: { visible: true, rows } }));
+  };
+  const revealLine  = (name) => {
+    if (!isMounted.current) return;
+    setLines(p => ({ ...p, [name]: true }));
+  };
 
   useEffect(() => {
-    let active = true;
-    const run = async () => {
-      // Tunggu lebih lama di awal (800ms) agar browser bisa menyelesaikan proses
-      // render 3D Canvas dan komponen berat lainnya sebelum memulai animasi ketik.
-      await sleep(800);
-      if (!active) return;
+    isMounted.current = true;
+    let localActive = true;
 
-      // ─ 1. Type artisan command ────────────────────────────────────────────
-      setArtisanCursor(true);
-      await typeText(setArtisanCmd, 'php artisan migrate:fresh --seed', 15);
-      setArtisanCursor(false);
-      await sleep(50);
-      if (!active) return;
-
-      // ─ 2. Migration logs + PDM tables appear ──────────────────────────────
-      addLog('MIGRATE', 'Running migrations...');
-      await sleep(50);
-
-      const tbls = [
-        { name:'developers',  label:'2025_01_01_create_developers_table',  rows: 14892 },
-        { name:'experiences', label:'2025_01_02_create_experiences_table', rows: 28450 },
-        { name:'projects',    label:'2025_01_03_create_projects_table',    rows: 45102 },
-        { name:'educations',  label:'2025_01_04_create_educations_table',  rows: 15300 },
-      ];
-      for (const td of tbls) {
-        if (!active) return;
-        addLog('CREATE', td.label);
-        revealTable(td.name, td.rows);
-        if (td.name !== 'developers') setTimeout(() => { if (active) revealLine(td.name); }, 80);
-        await sleep(60);
+    // Safety watchdog: ensure intro never gets stuck forever (max 12s)
+    const watchdog = setTimeout(() => {
+      if (localActive && isMounted.current) {
+        finishIntro();
       }
-      addLog('OK', 'All migrations completed successfully.');
-      await sleep(50);
-      if (!active) return;
+    }, 12000);
 
-      // ─ 3. Seed ───────────────────────────────────────────────────────────
-      addLog('SEED', 'Seeding: DeveloperSeeder... ✓');
-      await sleep(40);
-      addLog('SEED', 'Seeding: ExperienceSeeder... ✓');
-      await sleep(40);
-      addLog('SEED', 'Seeding: ProjectSeeder... ✓');
-      await sleep(40);
-      addLog('SEED', 'Database seeding complete.');
-      await sleep(100);
-      if (!active) return;
+    const run = async () => {
+      try {
+        // Snappy initial pause (200ms) for modal entrance transition
+        await sleep(200);
+        if (!localActive || !isMounted.current) return;
 
-      // ─ 4. clear command ──────────────────────────────────────────────────
-      setPhase('clear-typing');
-      setClearCursor(true);
-      await typeText(setClearCmd, 'clear', 20);
-      setClearCursor(false);
-      await sleep(400); // Wait a bit so user can read 'clear'
-      if (!active) return;
+        // ─ 1. Type artisan command ──────────────────────────────────────────
+        setArtisanCursor(true);
+        await typeText(setArtisanCmd, 'php artisan migrate:fresh --seed', 22);
+        if (!localActive || !isMounted.current) return;
+        setArtisanCursor(false);
+        await sleep(60);
+        if (!localActive || !isMounted.current) return;
 
-      // Clear terminal and enter Tinker
-      setPhase('tinker-start');
-      setLogs([]);
-      setArtisanCmd('');
-      setClearCmd('');
-      await sleep(400); // Wait before typing tinker
-      if (!active) return;
+        // ─ 2. Migration logs + PDM tables appear ────────────────────────────
+        addLog('MIGRATE', 'Running migrations...');
+        await sleep(60);
 
-      setClearCursor(true);
-      await typeText(setClearCmd, 'php artisan tinker', 15);
-      setClearCursor(false);
-      await sleep(350); // Wait before transitioning to tinker mode
-      if (!active) return;
+        const tbls = [
+          { name:'developers',  label:'2025_01_01_create_developers_table',  rows: 14892 },
+          { name:'experiences', label:'2025_01_02_create_experiences_table', rows: 28450 },
+          { name:'projects',    label:'2025_01_03_create_projects_table',    rows: 45102 },
+          { name:'educations',  label:'2025_01_04_create_educations_table',  rows: 15300 },
+        ];
+        for (const td of tbls) {
+          if (!localActive || !isMounted.current) return;
+          addLog('CREATE', td.label);
+          revealTable(td.name, td.rows);
+          if (td.name !== 'developers') {
+            setTimeout(() => { if (localActive && isMounted.current) revealLine(td.name); }, 90);
+          }
+          await sleep(70);
+        }
+        addLog('OK', 'All migrations completed successfully.');
+        await sleep(60);
+        if (!localActive || !isMounted.current) return;
 
-      setPhase('tinker-query');
-      await sleep(200); // Wait before typing query
+        // ─ 3. Seed ─────────────────────────────────────────────────────────
+        addLog('SEED', 'Seeding: DeveloperSeeder... ✓');
+        await sleep(50);
+        addLog('SEED', 'Seeding: ExperienceSeeder... ✓');
+        await sleep(50);
+        addLog('SEED', 'Seeding: ProjectSeeder... ✓');
+        await sleep(50);
+        addLog('SEED', 'Database seeding complete.');
+        await sleep(120);
+        if (!localActive || !isMounted.current) return;
 
-      // ─ 5. Tinker Eloquent query ──────────────────────────────────────────────
-      setMysqlCursor(true);
-      const q = `Developer::with(['experiences', 'educations', 'projects'])
+        // ─ 4. clear command ────────────────────────────────────────────────
+        setPhase('clear-typing');
+        setClearCursor(true);
+        await typeText(setClearCmd, 'clear', 24);
+        if (!localActive || !isMounted.current) return;
+        setClearCursor(false);
+        await sleep(350);
+        if (!localActive || !isMounted.current) return;
+
+        // Clear terminal and enter Tinker
+        setPhase('tinker-start');
+        setLogs([]);
+        setArtisanCmd('');
+        setClearCmd('');
+        await sleep(350);
+        if (!localActive || !isMounted.current) return;
+
+        setClearCursor(true);
+        await typeText(setClearCmd, 'php artisan tinker', 20);
+        if (!localActive || !isMounted.current) return;
+        setClearCursor(false);
+        await sleep(300);
+        if (!localActive || !isMounted.current) return;
+
+        setPhase('tinker-query');
+        await sleep(180);
+
+        // ─ 5. Tinker Eloquent query ────────────────────────────────────────────
+        setMysqlCursor(true);
+        const q = `Developer::with(['experiences', 'educations', 'projects'])
     ->whereHas('experiences', function($q) {
         $q->where('tech_stack', 'LIKE', '%Laravel%')
           ->whereJsonContains('skills', ['System Planning', 'Clean Code', 'Efficiency']);
@@ -351,33 +390,41 @@ export default function TerminalIntro({ onDone }) {
     ->whereHas('educations', fn($q) => $q->where('gpa', '>', 3.70))
     ->whereHas('projects', fn($q) => $q->where('scale', 'Enterprise'))
     ->first();`;
-      await typeText(setMysqlCmd, q, 0, 2);
-      setMysqlCursor(false);
-      await sleep(50);
-      if (!active) return;
+        await typeText(setMysqlCmd, q, 0, 2);
+        if (!localActive || !isMounted.current) return;
+        setMysqlCursor(false);
+        await sleep(60);
+        if (!localActive || !isMounted.current) return;
 
-      // ─ 5.5. Executing ──────────────────────────────────────────────────────
-      setPhase('executing');
-      await sleep(400);
-      if (!active) return;
+        // ─ 5.5. Executing ────────────────────────────────────────────────────
+        setPhase('executing');
+        await sleep(400);
+        if (!localActive || !isMounted.current) return;
 
-      // ─ 6. Show Target Found Modal ────────────────────────────────────────
-      setShowModal(true);
-      
-      // Wait for modal animations to complete (entrance + loading bar + pause + exit delay)
-      await sleep(2800); 
-      if (!active) return;
+        // ─ 6. Show Target Found Modal ──────────────────────────────────────
+        setShowModal(true);
+        await sleep(2800);
+        if (!localActive || !isMounted.current) return;
 
-      // ─ 7. Exit ───────────────────────────────────────────────────────────
-      setExiting(true);
-      await sleep(150);
-      if (!active) return;
-      sessionStorage.setItem(SESSION_KEY, '1');
-      window.dispatchEvent(new Event('introFinished'));
-      onDone();
+        // ─ 7. Exit ─────────────────────────────────────────────────────────
+        setExiting(true);
+        await sleep(150);
+        clearTimeout(watchdog);
+        finishIntro();
+      } catch (err) {
+        console.error('[TerminalIntro] Sequence error, finishing fallback:', err);
+        clearTimeout(watchdog);
+        finishIntro();
+      }
     };
+
     run();
-    return () => { active = false; };
+
+    return () => {
+      localActive = false;
+      isMounted.current = false;
+      clearTimeout(watchdog);
+    };
   }, []);
 
   // PDM node positions for 1-2-1 layout in a fixed 550x450 bounding box
@@ -385,6 +432,8 @@ export default function TerminalIntro({ onDone }) {
   const EXP = { x: 40,  y: 190,  cx: 114, cy: 232 };
   const EDU = { x: 362, y: 190,  cx: 436, cy: 232 };
   const PRJ = { x: 201, y: 350,  cx: 275, cy: 392 };
+
+  const hasAnyTables = Object.keys(tables).length > 0;
 
   const panel = (
     <AnimatePresence>
@@ -396,6 +445,16 @@ export default function TerminalIntro({ onDone }) {
           className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden"
           style={{ background: '#070b10' }}
         >
+          {/* Skip Button */}
+          <button
+            onClick={finishIntro}
+            className="absolute top-4 right-4 z-50 px-3 py-1.5 rounded-lg text-[11px] font-mono text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center gap-2 cursor-pointer backdrop-blur-md shadow-lg group active:scale-95"
+            title="Press ESC to skip intro"
+          >
+            <span className="group-hover:text-emerald-400 transition-colors">Skip Intro</span>
+            <kbd className="px-1.5 py-0.5 text-[9px] bg-black/50 rounded border border-white/15 text-gray-300 font-mono">ESC</kbd>
+          </button>
+
           {/* Grid */}
           <div className="absolute inset-0 pointer-events-none" style={{
             backgroundImage: `linear-gradient(rgba(16,185,129,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.04) 1px,transparent 1px)`,
@@ -425,8 +484,8 @@ export default function TerminalIntro({ onDone }) {
               <TitleBar label={{ icon:'◉', text:'gelby@portfolio:~/app — bash' }} accent="#10b98180" />
               <div className="p-4 font-mono text-[11px] leading-relaxed flex-1 overflow-hidden flex flex-col gap-1.5">
 
-                {/* Artisan prompt (migrate phase) */}
-                {(phase === 'migrate' || phase === 'clear-typing') && artisanCmd && (
+                {/* Artisan prompt (migrate phase): Always show prompt & cursor from start */}
+                {(phase === 'migrate' || phase === 'clear-typing') && (
                   <div className="text-gray-400 mb-1 shrink-0">
                     <span style={{ color:'#10b981' }} className="font-semibold">gelby</span>
                     <span className="text-gray-700">:</span>
@@ -476,11 +535,21 @@ export default function TerminalIntro({ onDone }) {
             </div>
 
             {/* ── CONTAINER 2: PDM Diagram (Full Height) ───────────────── */}
-            <div className="flex flex-col rounded-2xl border border-gray-800 overflow-hidden flex-1 h-[50%] lg:h-full"
+            <div className="flex flex-col rounded-2xl border border-gray-800 overflow-hidden flex-1 h-[50%] lg:h-full relative"
               style={{ background:'#0a0e14', boxShadow:'0 24px 70px rgba(0,0,0,0.8),0 0 0 1px rgba(245,158,11,0.1)' }}>
               <TitleBar label={{ icon:'⬡', text:'portfolio_db — Physical Data Model' }} accent="#f59e0baa" />
               <div className="flex-1 relative overflow-hidden flex items-center justify-center" ref={pdmRef}>
                 <div style={{ width: 550, height: 450, transform: `scale(${pdmScale})`, position: 'relative' }}>
+                  {/* Standby placeholder before migrations */}
+                  {!hasAnyTables && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center font-mono pointer-events-none select-none">
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400/80 text-[10px]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        <span className="font-semibold tracking-wider">DATABASE ENGINE STANDBY</span>
+                      </div>
+                    </div>
+                  )}
+
                   {/* SVG lines */}
                   <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:1 }}>
                     <RelLine x1={DEV.cx} y1={DEV.cy+40} x2={EXP.cx} y2={EXP.cy-40} visible={!!lines.experiences} color="#8b5cf6" />
@@ -503,11 +572,13 @@ export default function TerminalIntro({ onDone }) {
 
           </motion.div>
 
-          {/* Hint */}
-          <motion.p initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:1.4 }}
-            className="absolute bottom-5 text-[9px] font-mono tracking-[0.25em] uppercase" style={{ color:'#1f2937' }}>
-            Initializing portfolio...
-          </motion.p>
+          {/* Hint / Click to Skip */}
+          <button
+            onClick={finishIntro}
+            className="absolute bottom-5 text-[9px] font-mono tracking-[0.25em] uppercase text-gray-600 hover:text-emerald-400 transition-colors cursor-pointer"
+          >
+            Initializing portfolio... (Click to skip)
+          </button>
         </motion.div>
       )}
     </AnimatePresence>
