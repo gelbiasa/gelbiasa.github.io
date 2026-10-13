@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { skills, skillCategories } from '../../data/skills'
 import { useLanguage } from '../../context/LanguageContext'
+import { useTheme } from '../../context/ThemeContext'
 
 // We need DragScroll for the sidebar in mobile view
 function DragScroll({ children, className }) {
@@ -103,7 +104,10 @@ function DragScroll({ children, className }) {
 }
 
 function SkillCard({ skill, index }) {
-  const { name, Icon, color } = skill
+  const { isDark } = useTheme()
+  const { name, Icon } = skill
+  // Warna adaptif: pakai varian khusus tema bila ada agar ikon selalu kontras
+  const color = (isDark ? skill.colorDark : skill.colorLight) || skill.color
 
   return (
     <motion.div
