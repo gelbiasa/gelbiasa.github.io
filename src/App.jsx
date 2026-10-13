@@ -65,7 +65,8 @@ function App() {
             lg:top-[-10%] lg:left-[-10%] lg:w-[800px] lg:h-[800px] 
             flex items-center justify-center`}
           >
-            <Hero3D />
+            {/* Defer WebGL init until intro is done to avoid main-thread stalls during typing */}
+            {!showIntro && <Hero3D />}
           </div>
           {/* Full-screen terminal intro (once per session) */}
           {showIntro && <TerminalIntro onDone={() => setShowIntro(false)} />}
