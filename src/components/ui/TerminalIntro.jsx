@@ -435,6 +435,20 @@ export default function TerminalIntro({ onDone }) {
 
   const hasAnyTables = Object.keys(tables).length > 0;
 
+  // Langkah progres untuk status bar
+  const STEP_LABELS = [
+    'Running database migrations...',
+    'Clearing terminal...',
+    'Opening Laravel Tinker...',
+    'Executing Eloquent query...',
+    'Developer found, preparing portfolio...',
+  ];
+  const stepIndex = showModal ? 4
+    : phase === 'executing' || phase === 'tinker-query' ? 3
+    : phase === 'tinker-start' ? 2
+    : phase === 'clear-typing' ? 1
+    : 0;
+
   const panel = (
     <AnimatePresence>
       {!exiting && (
@@ -442,7 +456,7 @@ export default function TerminalIntro({ onDone }) {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, filter: 'blur(18px)', scale: 1.04 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden px-4 pt-14 pb-4 gap-3"
           style={{ background: '#070b10' }}
         >
           {/* Skip Button */}
@@ -475,8 +489,8 @@ export default function TerminalIntro({ onDone }) {
             initial={{ opacity: 0, y: 36, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex flex-col lg:flex-row gap-4 w-full px-4 lg:max-h-[600px]"
-            style={{ maxWidth: 1100, height: '95vh', maxHeight: 850 }}
+            className="relative flex flex-col lg:flex-row gap-4 w-full lg:max-h-[600px] min-h-0 flex-1"
+            style={{ maxWidth: 1100, maxHeight: 850 }}
           >
             {/* ── CONTAINER 1: Terminal ─────────────────────────────────── */}
             <div className="flex flex-col rounded-2xl border border-gray-800 overflow-hidden w-full lg:w-[46%] h-[50%] lg:h-full shrink-0"
@@ -572,13 +586,38 @@ export default function TerminalIntro({ onDone }) {
 
           </motion.div>
 
-          {/* Hint / Click to Skip */}
-          <button
-            onClick={finishIntro}
-            className="absolute bottom-5 text-[9px] font-mono tracking-[0.25em] uppercase text-gray-600 hover:text-emerald-400 transition-colors cursor-pointer"
+          {/* Status bar: berada di alur layout, tidak menimpa panel */}
+          <div
+            className="relative w-full shrink-0 flex items-center justify-between gap-4 px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-md font-mono"
+            style={{ maxWidth: 1100 }}
           >
-            Initializing portfolio... (Click to skip)
-          </button>
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-3.5 h-3.5 shrink-0 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin" />
+              <div className="min-w-0">
+                <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-emerald-400 truncate">
+                  Initializing Portfolio
+                </div>
+                <div className="text-[10px] text-gray-400 truncate">{STEP_LABELS[stepIndex]}</div>
+              </div>
+            </div>
+
+            <div className="hidden sm:flex flex-1 items-center gap-3 max-w-xs">
+              <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400 transition-all duration-500"
+                  style={{ width: `${((stepIndex + 1) / STEP_LABELS.length) * 100}%` }}
+                />
+              </div>
+              <span className="text-[10px] text-gray-400 tabular-nums">{stepIndex + 1}/{STEP_LABELS.length}</span>
+            </div>
+
+            <button
+              onClick={finishIntro}
+              className="shrink-0 text-[10px] tracking-widest uppercase text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer"
+            >
+              Skip →
+            </button>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
