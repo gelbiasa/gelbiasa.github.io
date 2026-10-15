@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useAnimate, stagger } from 'framer-motion'
+import { useLanguage } from '../../context/LanguageContext'
 
 /**
  * Cinematic "Hire Me" — Curtain Reveal / Split Screen
@@ -15,19 +16,20 @@ import { motion, AnimatePresence, useAnimate, stagger } from 'framer-motion'
  */
 
 export default function HireMeOverlay({ onDone, onSwitchTab }) {
+  const { t } = useLanguage()
   const [phase, setPhase] = useState('curtain-in')
   // curtain-in | envelope | signal | laser | curtain-out
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase('envelope'),    250),
-      setTimeout(() => setPhase('signal'),      500),
+      setTimeout(() => setPhase('envelope'),    300),
+      setTimeout(() => setPhase('signal'),      750),
       setTimeout(() => {
         setPhase('laser');
         onSwitchTab?.();
-      }, 850),
-      setTimeout(() => setPhase('curtain-out'), 1100),
-      setTimeout(() => onDone?.(),              1600),
+      }, 1400),
+      setTimeout(() => setPhase('curtain-out'), 1750),
+      setTimeout(() => onDone?.(),              2500),
     ]
     return () => timers.forEach(clearTimeout)
   }, [])
@@ -36,12 +38,16 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
   const showEnvelope = ['envelope', 'signal'].includes(phase)
   const showSignal   = phase === 'signal'
   const showLaser    = phase === 'laser'
+  const showText     = ['envelope', 'signal', 'laser'].includes(phase)
+
+  // Teks sapaan per huruf, mengikuti bahasa aktif
+  const headline = `${t('contact.title1')} ${t('contact.title2')}`.toUpperCase()
 
   // Stable burst positions (so no randomness on re-render)
   const burstParticles = useRef(
-    [...Array(14)].map((_, i) => {
-      const angle = (i / 14) * 360
-      const dist  = 55 + (i % 3) * 22
+    [...Array(24)].map((_, i) => {
+      const angle = (i / 24) * 360
+      const dist  = 70 + (i % 4) * 28
       return {
         angle,
         dx: Math.cos((angle * Math.PI) / 180) * dist,
@@ -67,7 +73,7 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
         initial={{ y: '-100%' }}
         animate={{ y: isOut ? '-100%' : '0%' }}
         transition={{
-          duration: isOut ? 0.5 : 0.25,
+          duration: isOut ? 0.75 : 0.35,
           ease: isOut ? [0.76, 0, 0.24, 1] : [0.22, 1, 0.36, 1],
         }}
         style={{
@@ -87,7 +93,7 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
         initial={{ y: '100%' }}
         animate={{ y: isOut ? '100%' : '0%' }}
         transition={{
-          duration: isOut ? 0.5 : 0.25,
+          duration: isOut ? 0.75 : 0.35,
           ease: isOut ? [0.76, 0, 0.24, 1] : [0.22, 1, 0.36, 1],
         }}
         style={{
@@ -117,6 +123,53 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
+            {/* ── Glow aura di belakang amplop ── */}
+            {showEnvelope && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: [0, 0.8, 0.5], scale: [0.5, 1.2, 1] }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                style={{
+                  position: 'absolute',
+                  width: 220, height: 220,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgb(var(--accent-rgb)/0.28) 0%, transparent 70%)',
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
+
+            {/* ── Teks sapaan per huruf ── */}
+            {showText && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 78,
+                  display: 'flex',
+                  gap: '0.08em',
+                  fontFamily: 'var(--font-mono, monospace)',
+                  fontWeight: 800,
+                  fontSize: 'clamp(14px, 2.2vw, 22px)',
+                  letterSpacing: '0.35em',
+                  color: 'var(--text-primary)',
+                  textShadow: '0 0 18px rgb(var(--accent-rgb)/0.6)',
+                  pointerEvents: 'none',
+                  whiteSpace: 'pre',
+                }}
+              >
+                {headline.split('').map((ch, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    transition={{ duration: 0.35, delay: 0.25 + i * 0.035, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {ch}
+                  </motion.span>
+                ))}
+              </div>
+            )}
+
             {/* ── Signal Rings ── */}
             <AnimatePresence>
               {showSignal && [0, 1, 2].map((i) => (
@@ -173,6 +226,39 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
               )}
             </AnimatePresence>
 
+            {/* ── Shockwave + flash saat laser menembak ── */}
+            <AnimatePresence>
+              {showLaser && (
+                <>
+                  <motion.div
+                    key="shockwave"
+                    initial={{ width: 20, height: 20, opacity: 0.9 }}
+                    animate={{ width: 900, height: 900, opacity: 0 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    style={{
+                      position: 'absolute',
+                      borderRadius: '50%',
+                      border: '2px solid rgb(var(--accent-rgb))',
+                      boxShadow: '0 0 40px rgb(var(--accent-rgb)/0.6), inset 0 0 40px rgb(var(--accent-rgb)/0.3)',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                  <motion.div
+                    key="flash"
+                    initial={{ opacity: 0.35 }}
+                    animate={{ opacity: 0 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    style={{
+                      position: 'fixed', inset: 0,
+                      background: 'rgb(var(--accent-rgb))',
+                      mixBlendMode: 'screen',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                </>
+              )}
+            </AnimatePresence>
+
             {/* ── Particle Burst (when laser fires) ── */}
             <AnimatePresence>
               {showLaser && burstParticles.map((p, i) => (
@@ -183,7 +269,7 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                     x: p.dx, y: p.dy,
                     opacity: 0, scale: 0,
                   }}
-                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1], delay: i * 0.01 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: i * 0.008 }}
                   style={{
                     position: 'absolute',
                     width: p.size,
