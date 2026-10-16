@@ -301,44 +301,127 @@ export default function Contact() {
                     ></textarea>
                   </div>
 
-                  <button
+                  <motion.button
                     type="submit"
                     disabled={status === 'submitting'}
-                    className="group w-full py-3.5 rounded-xl bg-accent text-text-on-accent font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:bg-accent-light transition-all shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)] disabled:opacity-70 disabled:cursor-not-allowed mt-2 border border-accent/20"
+                    whileHover={status === 'idle' ? { scale: 1.015 } : {}}
+                    whileTap={status === 'idle' ? { scale: 0.97 } : {}}
+                    animate={status === 'error' ? { x: [0, -8, 8, -6, 6, -3, 3, 0] } : { x: 0 }}
+                    transition={{ duration: 0.45 }}
+                    className={`group relative overflow-hidden w-full py-3.5 rounded-xl font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-colors duration-500 mt-2 border disabled:cursor-not-allowed ${
+                      status === 'success'
+                        ? 'bg-emerald-500 text-white border-emerald-400/40 shadow-[0_0_28px_rgba(16,185,129,0.45)]'
+                        : 'bg-accent text-text-on-accent border-accent/20 shadow-[0_0_20px_var(--accent-glow)] hover:bg-accent-light hover:shadow-[0_0_30px_var(--accent-glow)]'
+                    }`}
                   >
-                    {status === 'submitting' ? (
-                      <>
-                        <span className="w-4 h-4 border-2 border-text-on-accent/20 border-t-text-on-accent rounded-full animate-spin" />
-                        {t('contact.sending')}
-                      </>
-                    ) : (
-                      <>
-                        {t('contact.send')} <FiSend className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </>
+                    {/* Shimmer berjalan saat mengirim */}
+                    {status === 'submitting' && (
+                      <motion.span
+                        className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        initial={{ x: '-120%' }}
+                        animate={{ x: '420%' }}
+                        transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+                      />
                     )}
-                  </button>
+
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={status}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="relative z-10 flex items-center gap-2"
+                      >
+                        {status === 'submitting' ? (
+                          <>
+                            <motion.span
+                              className="inline-flex"
+                              animate={{ x: [0, 6, 22, -14, 0], y: [0, -4, -16, 10, 0], rotate: [0, 8, 18, -10, 0], opacity: [1, 1, 0, 0, 1] }}
+                              transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut', times: [0, 0.3, 0.55, 0.6, 1] }}
+                            >
+                              <FiSend className="w-4 h-4" />
+                            </motion.span>
+                            {t('contact.sending')}
+                          </>
+                        ) : status === 'success' ? (
+                          <>
+                            <motion.span
+                              initial={{ scale: 0, rotate: -90 }}
+                              animate={{ scale: 1, rotate: 0 }}
+                              transition={{ type: 'spring', stiffness: 400, damping: 14 }}
+                              className="inline-flex"
+                            >
+                              <FiCheckCircle className="w-5 h-5" />
+                            </motion.span>
+                            {language === 'en' ? 'Sent' : 'Terkirim'}
+                          </>
+                        ) : (
+                          <>
+                            {t('contact.send')} <FiSend className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                          </>
+                        )}
+                      </motion.span>
+                    </AnimatePresence>
+                  </motion.button>
 
                   <AnimatePresence>
                     {status === 'success' && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-2 text-emerald-500 bg-emerald-500/10 px-4 py-3 rounded-xl border border-emerald-500/20 text-sm font-medium"
+                        key="status-success"
+                        initial={{ opacity: 0, y: 14, scale: 0.92 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                        transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+                        className="relative overflow-hidden flex items-center gap-3 text-emerald-500 bg-emerald-500/10 px-4 py-3 rounded-xl border border-emerald-500/25 text-sm font-medium"
                       >
-                        <FiCheckCircle className="w-5 h-5" />
-                        {t('contact.success')}
+                        {/* Centang yang digambar + cincin pulsa */}
+                        <span className="relative w-7 h-7 flex-shrink-0 flex items-center justify-center">
+                          <motion.span
+                            className="absolute inset-0 rounded-full border-2 border-emerald-500"
+                            initial={{ scale: 0.6, opacity: 0.8 }}
+                            animate={{ scale: 1.9, opacity: 0 }}
+                            transition={{ duration: 0.9, ease: 'easeOut' }}
+                          />
+                          <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                            <motion.circle cx="12" cy="12" r="9" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.45 }} />
+                            <motion.path d="M7.5 12.5l3 3 6-6.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.35, delay: 0.35 }} />
+                          </svg>
+                        </span>
+                        <span>{t('contact.success')}</span>
+                        {/* Bar hitung mundur 5 detik sebelum banner hilang */}
+                        <motion.span
+                          className="absolute bottom-0 left-0 h-[2px] bg-emerald-500/70"
+                          initial={{ width: '100%' }}
+                          animate={{ width: '0%' }}
+                          transition={{ duration: 5, ease: 'linear' }}
+                        />
                       </motion.div>
                     )}
                     {status === 'error' && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-2 text-red-500 bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/20 text-sm font-medium"
+                        key="status-error"
+                        initial={{ opacity: 0, y: 14, scale: 0.92 }}
+                        animate={{ opacity: 1, y: 0, scale: 1, x: [0, -6, 6, -4, 4, 0] }}
+                        exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                        transition={{ duration: 0.45 }}
+                        className="relative overflow-hidden flex items-center gap-3 text-red-500 bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/25 text-sm font-medium"
                       >
-                        <FiAlertCircle className="w-5 h-5" />
-                        {t('contact.error')}
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: [0, 1.25, 1] }}
+                          transition={{ duration: 0.4 }}
+                          className="inline-flex"
+                        >
+                          <FiAlertCircle className="w-6 h-6" />
+                        </motion.span>
+                        <span>{t('contact.error')}</span>
+                        <motion.span
+                          className="absolute bottom-0 left-0 h-[2px] bg-red-500/70"
+                          initial={{ width: '100%' }}
+                          animate={{ width: '0%' }}
+                          transition={{ duration: 5, ease: 'linear' }}
+                        />
                       </motion.div>
                     )}
                   </AnimatePresence>
