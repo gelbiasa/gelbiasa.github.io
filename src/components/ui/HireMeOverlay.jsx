@@ -126,14 +126,24 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
             {/* ── Glow aura di belakang amplop ── */}
             {showEnvelope && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: [0, 0.8, 0.5], scale: [0.5, 1.2, 1] }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{
+                  opacity: [0, 0.9, 0.7, 0.85],
+                  scale: [0.6, 1.15, 1.05, 1.22],
+                }}
+                transition={{
+                  duration: 1.2,
+                  ease: 'easeInOut',
+                  times: [0, 0.35, 0.7, 1],
+                  repeat: showSignal ? Infinity : 0,
+                  repeatType: 'mirror',
+                }}
                 style={{
                   position: 'absolute',
-                  width: 220, height: 220,
+                  width: 240, height: 240,
                   borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgb(var(--accent-rgb)/0.28) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(var(--accent-rgb),0.28) 0%, rgba(var(--accent-rgb),0.12) 28%, transparent 72%)',
+                  boxShadow: '0 0 40px rgba(var(--accent-rgb),0.28), inset 0 0 30px rgba(var(--accent-rgb),0.14)',
                   pointerEvents: 'none',
                 }}
               />
@@ -289,7 +299,13 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                 <motion.div
                   key="envelope"
                   initial={{ x: '-55vw', opacity: 0, scale: 0.4, rotate: -25 }}
-                  animate={{ x: 0, opacity: 1, scale: 1, rotate: 0 }}
+                  animate={{
+                    x: 0,
+                    y: showSignal ? [0, -7, 0, 6, 0] : 0,
+                    opacity: 1,
+                    scale: showSignal ? [1, 1.08, 1, 1.04, 1] : 1,
+                    rotate: showSignal ? [0, -3, 2, 0] : 0,
+                  }}
                   exit={{
                     scale: [1, 1.6, 0],
                     opacity: [1, 1, 0],
@@ -301,32 +317,47 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                     },
                   }}
                   transition={{
-                    duration: 0.35,
-                    ease: [0.34, 1.56, 0.64, 1], // spring bounce
+                    duration: showSignal ? 1.2 : 0.35,
+                    ease: [0.34, 1.56, 0.64, 1],
+                    repeat: showSignal ? Infinity : 0,
+                    repeatType: 'mirror',
                   }}
                   style={{
                     position: 'relative',
                     zIndex: 10,
                     color: 'rgb(var(--accent-rgb))',
                     filter: `
-                      drop-shadow(0 0 12px rgb(var(--accent-rgb)/0.9))
-                      drop-shadow(0 0 30px rgb(var(--accent-rgb)/0.5))
+                      drop-shadow(0 0 14px rgb(var(--accent-rgb)/0.9))
+                      drop-shadow(0 0 32px rgb(var(--accent-rgb)/0.55))
                     `,
                   }}
                 >
-                  {/* Envelope SVG */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={1.25}
-                    style={{ width: 64, height: 64 }}
+                  <motion.div
+                    animate={{
+                      boxShadow: showSignal
+                        ? [
+                            '0 0 14px rgba(var(--accent-rgb),0.3)',
+                            '0 0 26px rgba(var(--accent-rgb),0.7)',
+                            '0 0 18px rgba(var(--accent-rgb),0.5)',
+                          ]
+                        : '0 0 18px rgba(var(--accent-rgb),0.5)',
+                    }}
+                    transition={{ duration: 1.1, repeat: showSignal ? Infinity : 0, ease: 'easeInOut' }}
+                    style={{ borderRadius: '22px', padding: 8 }}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round"
-                      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                    />
-                  </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.25}
+                      style={{ width: 72, height: 72, display: 'block' }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round"
+                        d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+                      />
+                    </svg>
+                  </motion.div>
 
                   {/* Floating micro-particles around envelope during signal */}
                   {showSignal && [
@@ -341,10 +372,10 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                       key={`micro-${i}`}
                       animate={{
                         opacity: [0, 1, 0],
-                        scale:   [0, 1, 0],
+                        scale: [0, 1, 0],
                       }}
                       transition={{
-                        duration: 0.5,
+                        duration: 0.6,
                         delay: i * 0.1,
                         repeat: Infinity,
                         repeatDelay: 0.2,
@@ -356,7 +387,7 @@ export default function HireMeOverlay({ onDone, onSwitchTab }) {
                         width: p.s, height: p.s,
                         borderRadius: '50%',
                         background: 'rgb(var(--accent-rgb))',
-                        boxShadow: '0 0 6px rgb(var(--accent-rgb))',
+                        boxShadow: '0 0 8px rgb(var(--accent-rgb))',
                         transform: `translate(
                           calc(-50% + ${Math.cos((p.a * Math.PI) / 180) * p.d}px),
                           calc(-50% + ${Math.sin((p.a * Math.PI) / 180) * p.d}px)
