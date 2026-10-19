@@ -228,7 +228,7 @@ export default function Contact() {
               {/* Location */}
               <div className="flex items-center gap-2 mt-auto" style={{ color: 'var(--text-muted)' }}>
                 <FiMapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="text-xs">Malang, East Java, Indonesia</span>
+                <span className="text-xs">{t('contact.location')}</span>
               </div>
             </div>
           </motion.div>
