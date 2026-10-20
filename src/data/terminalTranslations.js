@@ -1,6 +1,6 @@
 export const terminalTranslations = {
   en: {
-    welcome: 'Welcome to GelbyOS v2.0.0.',
+    welcome: 'Welcome to GelbyOS.',
     hint: 'Type "help" to see available commands.',
     helpHeader: 'Available commands:',
     helpAbout: '  about    - Who is Gelby?',
@@ -22,7 +22,7 @@ export const terminalTranslations = {
     langChangeEn: 'Success! Terminal language changed to English (EN).'
   },
   id: {
-    welcome: 'Selamat datang di GelbyOS v2.0.0.',
+    welcome: 'Selamat datang di GelbyOS.',
     hint: 'Ketik "help" untuk melihat daftar perintah.',
     helpHeader: 'Perintah yang tersedia:',
     helpAbout: '  about    - Siapa itu Gelby?',
