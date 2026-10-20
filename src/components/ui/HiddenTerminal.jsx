@@ -5,6 +5,7 @@ import { terminalTranslations } from '../../data/terminalTranslations';
 
 export default function HiddenTerminal({ onHireMe }) {
   const [termLang, setTermLang] = useState(() => localStorage.getItem('portfolioTerminalLang') || 'en');
+  const [isSelectingLang, setIsSelectingLang] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [size, setSize] = useState({ w: 800, h: 450 });
@@ -41,12 +42,28 @@ export default function HiddenTerminal({ onHireMe }) {
     window.addEventListener('pointerup', onUp);
   };
   
-  const [history, setHistory] = useState([
-    { type: 'system', text: terminalTranslations[localStorage.getItem('portfolioTerminalLang') || 'en'].welcome },
-    { type: 'system', text: terminalTranslations[localStorage.getItem('portfolioTerminalLang') || 'en'].hint }
-  ]);
+  const [history, setHistory] = useState([]);
   const inputRef = useRef(null);
   const bottomRef = useRef(null);
+
+  const selectLanguage = (selectedLang, userInput) => {
+    setTermLang(selectedLang);
+    setIsSelectingLang(false);
+    const t = terminalTranslations[selectedLang];
+    const userLabel = userInput || (selectedLang === 'en' ? '1 (English)' : '2 (Indonesia)');
+    const confirmMsg = selectedLang === 'en' 
+      ? terminalTranslations.en.langChangeEn 
+      : terminalTranslations.id.langChangeId;
+
+    setHistory([
+      { type: 'user', text: userLabel },
+      { type: 'system', text: confirmMsg },
+      { type: 'system', text: t.welcome },
+      { type: 'system', text: t.hint },
+    ]);
+    setInput('');
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
 
   // Key listener for Ctrl + ` or typing 'sudo' (Easter Egg style)
   useEffect(() => {
@@ -92,8 +109,32 @@ export default function HiddenTerminal({ onHireMe }) {
 
   const handleCommand = (e) => {
     if (e.key === 'Enter') {
-      const cmd = input.trim().toLowerCase();
-      const newHistory = [...history, { type: 'user', text: cmd }];
+      const trimmed = input.trim();
+      const cmd = trimmed.toLowerCase();
+
+      // If in language selection mode
+      if (isSelectingLang) {
+        if (!trimmed) return;
+        if (cmd === '1' || cmd === 'en' || cmd === 'english') {
+          selectLanguage('en', trimmed);
+          return;
+        }
+        if (cmd === '2' || cmd === 'id' || cmd === 'indonesia' || cmd === 'indo') {
+          selectLanguage('id', trimmed);
+          return;
+        }
+        setHistory((prev) => [
+          ...prev,
+          { type: 'user', text: trimmed },
+          { type: 'system', text: 'Please select [1] for English or [2] for Indonesia / Silakan pilih [1] atau [2].' }
+        ]);
+        setInput('');
+        return;
+      }
+
+      if (!trimmed) return;
+
+      const newHistory = [...history, { type: 'user', text: trimmed }];
       const t = terminalTranslations[termLang];
       
       switch (cmd) {
@@ -122,8 +163,16 @@ export default function HiddenTerminal({ onHireMe }) {
           setTermLang('en');
           newHistory.push({ type: 'system', text: terminalTranslations.en.langChangeEn });
           break;
+        case 'set language':
+        case 'language':
+        case 'lang':
+          setIsSelectingLang(true);
+          setInput('');
+          return;
         case 'clear':
-          setHistory([]);
+          setHistory([
+            { type: 'system', text: t.hint }
+          ]);
           setInput('');
           return;
         case 'sudo hire gelby':
@@ -138,13 +187,11 @@ export default function HiddenTerminal({ onHireMe }) {
           newHistory.push({ type: 'system', text: t.sudoUsage });
           newHistory.push({ type: 'system', text: t.sudoHint });
           break;
-        case '':
-          break;
         default:
           if (cmd.startsWith('sudo ')) {
             newHistory.push({ type: 'system', text: t.sudoReport });
           } else {
-            newHistory.push({ type: 'system', text: `${t.notFound} ${cmd}. ${t.typeHelp}` });
+            newHistory.push({ type: 'system', text: `${t.notFound} ${trimmed}. ${t.typeHelp}` });
           }
           break;
       }
@@ -247,10 +294,35 @@ export default function HiddenTerminal({ onHireMe }) {
             className="flex-1 p-4 md:p-5 overflow-y-auto text-gray-300 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent"
             onClick={() => inputRef.current?.focus()}
           >
-            <div className="mb-6 opacity-70">
-              <div className="text-accent font-bold tracking-widest text-xs mb-1">=== SYSTEM INITIALIZED ===</div>
-              <div className="text-gray-400 text-xs">Kernel v2.0.0-stable | Encryption: Active</div>
-            </div>
+            {/* Language Selection Header (shown during initial terminal open or when set language is triggered) */}
+            {isSelectingLang && (
+              <div className="mb-5 pb-4 border-b border-white/5">
+                <div className="text-accent font-bold tracking-wide text-xs mb-2.5">
+                  Set Language // Pilih Bahasa:
+                </div>
+                <div className="flex flex-wrap gap-2.5 mb-2.5">
+                  <button
+                    type="button"
+                    onClick={() => selectLanguage('en')}
+                    className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-all text-xs flex items-center gap-2 group cursor-pointer active:scale-95"
+                  >
+                    <span className="text-accent font-bold font-mono">[1]</span>
+                    <span>English (EN)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => selectLanguage('id')}
+                    className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-all text-xs flex items-center gap-2 group cursor-pointer active:scale-95"
+                  >
+                    <span className="text-accent font-bold font-mono">[2]</span>
+                    <span>Indonesia (ID)</span>
+                  </button>
+                </div>
+                <div className="text-gray-500 text-[11px] font-mono">
+                  Type 1 or 2, or click an option above
+                </div>
+              </div>
+            )}
 
             {history.map((line, i) => (
               <div key={i} className="mb-1.5 leading-relaxed">
@@ -270,14 +342,17 @@ export default function HiddenTerminal({ onHireMe }) {
             
             <div className="flex items-center mt-2">
               <span className="text-accent mr-2">λ</span>
-              <span className="text-gray-400 mr-2">guest ~</span>
+              <span className="text-gray-400 mr-2">
+                {isSelectingLang ? 'setup ~' : 'guest ~'}
+              </span>
               <input
                 ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleCommand}
-                className="flex-1 bg-transparent outline-none text-gray-100 border-none focus:ring-0 p-0 shadow-none font-mono selection:bg-accent/30"
+                placeholder={isSelectingLang ? 'Select 1 or 2...' : ''}
+                className="flex-1 bg-transparent outline-none text-gray-100 placeholder-gray-600 border-none focus:ring-0 p-0 shadow-none font-mono selection:bg-accent/30"
                 autoFocus
                 spellCheck={false}
                 autoComplete="off"
