@@ -107,98 +107,128 @@ export default function HiddenTerminal({ onHireMe }) {
     localStorage.setItem('portfolioTerminalLang', termLang);
   }, [termLang]);
 
-  const handleCommand = (e) => {
-    if (e.key === 'Enter') {
-      const trimmed = input.trim();
-      const cmd = trimmed.toLowerCase();
+  const runCommand = (cmdText) => {
+    const trimmed = (cmdText || '').trim();
+    const cmd = trimmed.toLowerCase();
 
-      // If in language selection mode
-      if (isSelectingLang) {
-        if (!trimmed) return;
-        if (cmd === '1' || cmd === 'en' || cmd === 'english') {
-          selectLanguage('en', trimmed);
-          return;
-        }
-        if (cmd === '2' || cmd === 'id' || cmd === 'indonesia' || cmd === 'indo') {
-          selectLanguage('id', trimmed);
-          return;
-        }
-        setHistory((prev) => [
-          ...prev,
-          { type: 'user', text: trimmed },
-          { type: 'system', text: 'Please select [1] for English or [2] for Indonesia / Silakan pilih [1] atau [2].' }
+    // If in language selection mode
+    if (isSelectingLang) {
+      if (!trimmed) return;
+      if (cmd === '1' || cmd === 'en' || cmd === 'english') {
+        selectLanguage('en', trimmed);
+        return;
+      }
+      if (cmd === '2' || cmd === 'id' || cmd === 'indonesia' || cmd === 'indo') {
+        selectLanguage('id', trimmed);
+        return;
+      }
+      setHistory((prev) => [
+        ...prev,
+        { type: 'user', text: trimmed },
+        { type: 'system', text: 'Please select [1] for English or [2] for Indonesia / Silakan pilih [1] atau [2].' }
+      ]);
+      setInput('');
+      return;
+    }
+
+    if (!trimmed) return;
+
+    const newHistory = [...history, { type: 'user', text: trimmed }];
+    const t = terminalTranslations[termLang];
+    
+    switch (cmd) {
+      case 'help':
+        newHistory.push({ type: 'system', text: t.helpHeader });
+        newHistory.push({ type: 'system', text: t.helpAbout });
+        newHistory.push({ type: 'system', text: t.helpSkills });
+        newHistory.push({ type: 'system', text: t.helpLangId });
+        newHistory.push({ type: 'system', text: t.helpLangEn });
+        newHistory.push({ type: 'system', text: t.helpClear });
+        newHistory.push({ type: 'system', text: t.helpHire });
+        break;
+      case 'about':
+        newHistory.push({ type: 'system', text: t.aboutMsg });
+        break;
+      case 'skills':
+        newHistory.push({ type: 'system', text: t.skillsMsg });
+        break;
+      case 'lang id':
+      case 'language id':
+        setTermLang('id');
+        newHistory.push({ type: 'system', text: terminalTranslations.id.langChangeId });
+        break;
+      case 'lang en':
+      case 'language en':
+        setTermLang('en');
+        newHistory.push({ type: 'system', text: terminalTranslations.en.langChangeEn });
+        break;
+      case 'set language':
+      case 'language':
+      case 'lang':
+        setIsSelectingLang(true);
+        setInput('');
+        return;
+      case 'clear':
+        setHistory([
+          { type: 'system', text: t.hint }
         ]);
         setInput('');
         return;
-      }
-
-      if (!trimmed) return;
-
-      const newHistory = [...history, { type: 'user', text: trimmed }];
-      const t = terminalTranslations[termLang];
-      
-      switch (cmd) {
-        case 'help':
-          newHistory.push({ type: 'system', text: t.helpHeader });
-          newHistory.push({ type: 'system', text: t.helpAbout });
-          newHistory.push({ type: 'system', text: t.helpSkills });
-          newHistory.push({ type: 'system', text: t.helpLangId });
-          newHistory.push({ type: 'system', text: t.helpLangEn });
-          newHistory.push({ type: 'system', text: t.helpClear });
-          newHistory.push({ type: 'system', text: t.helpHire });
-          break;
-        case 'about':
-          newHistory.push({ type: 'system', text: t.aboutMsg });
-          break;
-        case 'skills':
-          newHistory.push({ type: 'system', text: t.skillsMsg });
-          break;
-        case 'lang id':
-        case 'language id':
-          setTermLang('id');
-          newHistory.push({ type: 'system', text: terminalTranslations.id.langChangeId });
-          break;
-        case 'lang en':
-        case 'language en':
-          setTermLang('en');
-          newHistory.push({ type: 'system', text: terminalTranslations.en.langChangeEn });
-          break;
-        case 'set language':
-        case 'language':
-        case 'lang':
-          setIsSelectingLang(true);
-          setInput('');
-          return;
-        case 'clear':
-          setHistory([
-            { type: 'system', text: t.hint }
-          ]);
-          setInput('');
-          return;
-        case 'sudo hire gelby':
-          newHistory.push({ type: 'system', text: t.hireCheck });
-          newHistory.push({ type: 'system', text: t.hireGranted });
-          setTimeout(() => {
-            setIsOpen(false);
-            if (onHireMe) onHireMe();
-          }, 1500);
-          break;
-        case 'sudo':
-          newHistory.push({ type: 'system', text: t.sudoUsage });
-          newHistory.push({ type: 'system', text: t.sudoHint });
-          break;
-        default:
-          if (cmd.startsWith('sudo ')) {
-            newHistory.push({ type: 'system', text: t.sudoReport });
-          } else {
-            newHistory.push({ type: 'system', text: `${t.notFound} ${trimmed}. ${t.typeHelp}` });
-          }
-          break;
-      }
-      
-      setHistory(newHistory);
-      setInput('');
+      case 'sudo hire gelby':
+        newHistory.push({ type: 'system', text: t.hireCheck });
+        newHistory.push({ type: 'system', text: t.hireGranted });
+        setTimeout(() => {
+          setIsOpen(false);
+          if (onHireMe) onHireMe();
+        }, 1500);
+        break;
+      case 'sudo':
+        newHistory.push({ type: 'system', text: t.sudoUsage });
+        newHistory.push({ type: 'system', text: t.sudoHint });
+        break;
+      default:
+        if (cmd.startsWith('sudo ')) {
+          newHistory.push({ type: 'system', text: t.sudoReport });
+        } else {
+          newHistory.push({ type: 'system', text: `${t.notFound} ${trimmed}. ${t.typeHelp}` });
+        }
+        break;
     }
+    
+    setHistory(newHistory);
+    setInput('');
+  };
+
+  const handleCommand = (e) => {
+    if (e.key === 'Enter') {
+      runCommand(input);
+    }
+  };
+
+  const renderFormattedText = (text) => {
+    if (!text || typeof text !== 'string') return text;
+    const parts = text.split(/(".*?")/g);
+    if (parts.length === 1) return text;
+
+    return parts.map((part, idx) => {
+      if (part.startsWith('"') && part.endsWith('"')) {
+        const cmdInner = part.slice(1, -1);
+        return (
+          <span
+            key={idx}
+            onClick={() => {
+              runCommand(cmdInner);
+              inputRef.current?.focus();
+            }}
+            className="text-accent font-bold cursor-pointer hover:underline hover:text-accent-light transition-all px-1.5 py-0.5 rounded bg-white/5 border border-white/5 hover:border-accent/40 mx-0.5 inline-block text-xs active:scale-95"
+            title={`Klik untuk jalankan "${cmdInner}" / Click to execute`}
+          >
+            {part}
+          </span>
+        );
+      }
+      return <span key={idx}>{part}</span>;
+    });
   };
 
   return (
@@ -328,7 +358,7 @@ export default function HiddenTerminal({ onHireMe }) {
               <div key={i} className="mb-1.5 leading-relaxed">
                 {line.type === 'system' ? (
                   <span className={line.text.includes('Access granted') ? 'text-accent font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'text-gray-300'}>
-                    {line.text}
+                    {renderFormattedText(line.text)}
                   </span>
                 ) : (
                   <div className="flex">
