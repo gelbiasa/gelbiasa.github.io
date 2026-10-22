@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 
@@ -7,13 +7,14 @@ const SESSION_KEY = 'gelby_intro_shown';
 
 async function typeText(setText, text, speed = 38, maxRandom = 14) {
   let cur = '';
-  // To speed up very fast typing, we can type in chunks if speed is 0
-  const chunkSize = speed === 0 ? 3 : 1; 
-  
+  // Batch characters to minimize React state updates on low-end / mobile CPUs
+  const chunkSize = speed === 0 ? 8 : 2;
+  const effectiveSpeed = speed === 0 ? 12 : speed * 1.6;
+
   for (let i = 0; i < text.length; i += chunkSize) {
     cur += text.substring(i, i + chunkSize);
     setText(cur);
-    await sleep(speed + Math.random() * maxRandom);
+    await sleep(effectiveSpeed + Math.random() * maxRandom);
   }
 }
 
@@ -22,9 +23,9 @@ const BDGBG   = { INFO:'#3b82f6',MIGRATE:'#7c3aed',CREATE:'#059669',SEED:'#d9770
 const BDGFG   = { INFO:'#fff',MIGRATE:'#fff',CREATE:'#000',SEED:'#000',OK:'#000',QUERY:'#000',DONE:'#fff' };
 const TXCOLOR = { INFO:'#93c5fd',MIGRATE:'#c4b5fd',CREATE:'#6ee7b7',SEED:'#fcd34d',OK:'#a7f3d0',QUERY:'#67e8f9',DONE:'#e879f9' };
 
-function LogLine({ type, text }) {
+const LogLine = memo(function LogLine({ type, text }) {
   return (
-    <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.15 }}
+    <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.14 }}
       className="flex items-start gap-2 leading-snug"
     >
       <span className="shrink-0 mt-[2px] px-1.5 py-[1px] text-[8px] font-black rounded tracking-widest"
@@ -34,7 +35,7 @@ function LogLine({ type, text }) {
       <span className="text-[10.5px] font-mono" style={{ color: TXCOLOR[type]||'#9ca3af' }}>{text}</span>
     </motion.div>
   );
-}
+});
 
 // ── PDM Table ─────────────────────────────────────────────────────────────────
 const TDEFS = {
@@ -44,54 +45,43 @@ const TDEFS = {
   educations:  { color:'#f43f5e', cols:['🔑 id INT','developer_id FK','degree VARCHAR','gpa DECIMAL'] },
 };
 
-function PdmTable({ name, visible, x, y, rowCount = 0 }) {
+const PdmTable = memo(function PdmTable({ name, visible, x, y, rowCount = 0 }) {
   const def = TDEFS[name];
-  const [rows, setRows] = useState(0);
-  useEffect(() => {
-    if (!visible || !rowCount) return;
-    let i = 0;
-    const iv = setInterval(() => {
-      i = Math.min(i + Math.ceil(rowCount / 7), rowCount);
-      setRows(i);
-      if (i >= rowCount) clearInterval(iv);
-    }, 15);
-    return () => clearInterval(iv);
-  }, [visible, rowCount]);
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.86, y: 6 }}
+          initial={{ opacity: 0, scale: 0.88, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           className="absolute font-mono rounded-lg overflow-hidden"
-          style={{ left: x, top: y, width: 148, border: `1px solid ${def.color}44`, background: '#0d1117', boxShadow: `0 4px 20px ${def.color}18`, zIndex: 2 }}
+          style={{ left: x, top: y, width: 148, border: `1px solid ${def.color}44`, background: '#0d1117', boxShadow: `0 4px 16px ${def.color}18`, zIndex: 2, willChange: 'transform, opacity' }}
         >
           <div className="flex items-center justify-between px-2 py-1" style={{ background: def.color+'22', borderBottom: `1px solid ${def.color}33` }}>
             <span className="text-[10px] font-black" style={{ color: def.color }}>⬡ {name}</span>
-            {rowCount > 0 && <span className="text-[8px] text-gray-600">{rows} rows</span>}
+            {rowCount > 0 && <span className="text-[8px] text-gray-500">{rowCount} rows</span>}
           </div>
           <div className="px-2 py-1.5 space-y-[3px]">
-            {def.cols.map((col, i) => (
-              <motion.div key={col} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.04 * i }}
+            {def.cols.map((col) => (
+              <div key={col}
                 className="text-[8.5px] px-1.5 py-[2px] rounded"
                 style={{
                   background: col.includes('FK') ? '#1e1230' : col.startsWith('🔑') ? def.color+'22' : '#111827',
                   color:      col.includes('FK') ? '#a78bfa'  : col.startsWith('🔑') ? def.color  : '#6b7280',
                   border:     col.includes('FK') ? '1px solid #4c1d9530' : col.startsWith('🔑') ? `1px solid ${def.color}44` : 'none',
                 }}
-              >{col}</motion.div>
+              >{col}</div>
             ))}
           </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
-}
+});
 
 // ── SVG animated line ─────────────────────────────────────────────────────────
-function RelLine({ x1, y1, x2, y2, visible, color }) {
+const RelLine = memo(function RelLine({ x1, y1, x2, y2, visible, color }) {
   const len = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
   return (
     <AnimatePresence>
@@ -101,51 +91,45 @@ function RelLine({ x1, y1, x2, y2, visible, color }) {
           strokeDasharray={len}
           initial={{ strokeDashoffset: len, opacity: 0 }}
           animate={{ strokeDashoffset: 0, opacity: 0.65 }}
-          transition={{ duration: 0.45, ease: 'easeOut' }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         />
       )}
     </AnimatePresence>
   );
-}
+});
 
 // ── Target Found Modal ────────────────────────────────────────────────────────
 function TargetFoundModal({ show }) {
   const [phase, setPhase] = useState(0); // 0: hidden, 2: found, 3: ready
-  const [progress, setProgress] = useState(0);
+  const [done, setDone] = useState(false);
   
   useEffect(() => {
     if (!show) return;
+    let active = true;
     const run = async () => {
       setPhase(2);
-      await sleep(300); // wait for entrance animation
-      
-      let p = 0;
-      const iv = setInterval(() => {
-        p += 2;
-        setProgress(p);
-        if (p >= 100) clearInterval(iv);
-      }, 35); // 50 steps * 35ms = 1750ms
-      
-      await sleep(1750 + 600); // wait for progress bar to finish, then pause so user can read
+      await sleep(1750);
+      if (!active) return;
+      setDone(true);
+      await sleep(600);
+      if (!active) return;
       setPhase(3);
     };
     run();
+    return () => { active = false; };
   }, [show]);
 
   if (!show) return null;
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm rounded-2xl">
+    <div className="absolute inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/65 rounded-2xl">
       <AnimatePresence mode="wait">
-        
         {phase >= 2 && (
-          <motion.div key="found" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', damping: 20 }}
-            className="relative w-full max-w-lg bg-[#0a0e14] border border-emerald-500/30 rounded-xl overflow-hidden shadow-[0_0_80px_rgba(16,185,129,0.2)]"
+          <motion.div key="found" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="relative w-full max-w-lg bg-[#0a0e14] border border-emerald-500/30 rounded-xl overflow-hidden shadow-2xl"
+            style={{ willChange: 'transform, opacity' }}
           >
-            {/* Animated border glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 opacity-50 animate-[shimmer_2s_infinite]" />
-            
-            <div className="relative p-6 font-mono">
+            <div className="relative p-5 sm:p-6 font-mono">
               <div className="flex items-center justify-between border-b border-emerald-500/20 pb-3 mb-4">
                 <div className="flex items-center gap-2 text-emerald-400">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
@@ -177,19 +161,22 @@ function TargetFoundModal({ show }) {
               <div className="mt-6 pt-4 border-t border-gray-800">
                 <div className="flex justify-between items-end mb-2">
                   <div className="text-[10px] font-bold tracking-widest uppercase flex items-center gap-2"
-                       style={{ color: progress < 100 ? '#22d3ee' : '#34d399' }}>
-                    {progress < 100 && <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />}
-                    {progress < 100 ? 'INITIALIZING ENVIRONMENT...' : 'ACCESS GRANTED — REDIRECTING'}
+                       style={{ color: !done ? '#22d3ee' : '#34d399' }}>
+                    {!done && <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />}
+                    {!done ? 'INITIALIZING ENVIRONMENT...' : 'ACCESS GRANTED — REDIRECTING'}
                   </div>
                   <div className="text-[11px] font-mono font-bold"
-                       style={{ color: progress < 100 ? '#22d3ee' : '#34d399' }}>
-                    {progress}%
+                       style={{ color: !done ? '#22d3ee' : '#34d399' }}>
+                    {done ? '100%' : '...'}
                   </div>
                 </div>
                 <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]"
-                    style={{ width: `${progress}%`, transition: 'width 50ms linear' }}
+                  <motion.div 
+                    className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 origin-left"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1.7, ease: 'linear' }}
+                    style={{ willChange: 'transform' }}
                   />
                 </div>
               </div>
@@ -454,15 +441,18 @@ export default function TerminalIntro({ onDone }) {
       {!exiting && (
         <motion.div key="intro-root"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, filter: 'blur(18px)', scale: 1.04 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden px-4 pt-14 pb-4 gap-3"
-          style={{ background: '#070b10' }}
+          exit={{ opacity: 0, scale: 1.02 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden px-3 sm:px-4 pt-12 pb-3 sm:pb-4 gap-3"
+          style={{
+            background: 'radial-gradient(ellipse 70% 55% at 50% 50%, #0b161b 0%, #070b10 75%)',
+            willChange: 'transform, opacity',
+          }}
         >
           {/* Skip Button */}
           <button
             onClick={finishIntro}
-            className="absolute top-4 right-4 z-50 px-3 py-1.5 rounded-lg text-[11px] font-mono text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center gap-2 cursor-pointer backdrop-blur-md shadow-lg group active:scale-95"
+            className="absolute top-3.5 right-3.5 z-50 px-3 py-1.5 rounded-lg text-[11px] font-mono text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex items-center gap-2 cursor-pointer shadow-lg group active:scale-95"
             title="Press ESC to skip intro"
           >
             <span className="group-hover:text-emerald-400 transition-colors">Skip Intro</span>
@@ -471,26 +461,17 @@ export default function TerminalIntro({ onDone }) {
 
           {/* Grid */}
           <div className="absolute inset-0 pointer-events-none" style={{
-            backgroundImage: `linear-gradient(rgba(16,185,129,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.04) 1px,transparent 1px)`,
+            backgroundImage: `linear-gradient(rgba(16,185,129,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.035) 1px,transparent 1px)`,
             backgroundSize: '38px 38px',
           }} />
-          {/* Scanlines */}
-          <div className="absolute inset-0 pointer-events-none" style={{
-            backgroundImage: 'repeating-linear-gradient(0deg,rgba(0,0,0,0.1) 0px,rgba(0,0,0,0.1) 1px,transparent 1px,transparent 4px)',
-          }} />
-          {/* Ambient */}
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="w-[900px] h-[460px] rounded-full blur-[160px]"
-              style={{ background: 'radial-gradient(ellipse,rgba(16,185,129,0.07) 0%,rgba(139,92,246,0.05) 60%,transparent 100%)' }} />
-          </div>
 
           {/* ══ 2-container layout (Terminal + PDM) ══ */}
           <motion.div
-            initial={{ opacity: 0, y: 36, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex flex-col lg:flex-row gap-4 w-full lg:max-h-[600px] min-h-0 flex-1"
-            style={{ maxWidth: 1100, maxHeight: 850 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="relative flex flex-col lg:flex-row gap-3 sm:gap-4 w-full lg:max-h-[600px] min-h-0 flex-1"
+            style={{ maxWidth: 1100, maxHeight: 850, willChange: 'transform, opacity' }}
           >
             {/* ── CONTAINER 1: Terminal ─────────────────────────────────── */}
             <div className="flex flex-col rounded-2xl border border-gray-800 overflow-hidden w-full lg:w-[46%] h-[50%] lg:h-full shrink-0"
@@ -588,7 +569,7 @@ export default function TerminalIntro({ onDone }) {
 
           {/* Status bar: berada di alur layout, tidak menimpa panel */}
           <div
-            className="relative w-full shrink-0 flex items-center justify-between gap-4 px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-md font-mono"
+            className="relative w-full shrink-0 flex items-center justify-between gap-4 px-4 py-2.5 rounded-xl border border-white/10 bg-[#0d1117] font-mono"
             style={{ maxWidth: 1100 }}
           >
             <div className="flex items-center gap-3 min-w-0">
