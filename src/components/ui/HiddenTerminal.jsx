@@ -1,58 +1,126 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { FiX } from 'react-icons/fi';
 import { terminalTranslations } from '../../data/terminalTranslations';
+
+// Memoized single history row so typing in the input never re-renders history lines
+const HistoryRow = memo(function HistoryRow({ line, onRunCommand }) {
+  const formattedContent = useMemo(() => {
+    if (line.type !== 'system') return null;
+    const text = line.text;
+    if (!text || typeof text !== 'string') return text;
+    const parts = text.split(/(".*?")/g);
+    if (parts.length === 1) return text;
+
+    return parts.map((part, idx) => {
+      if (part.startsWith('"') && part.endsWith('"')) {
+        const cmdInner = part.slice(1, -1);
+        return (
+          <span
+            key={idx}
+            onClick={() => onRunCommand(cmdInner)}
+            className="text-accent font-bold cursor-pointer hover:underline hover:text-accent-light transition-colors px-1.5 py-0.5 rounded bg-white/5 border border-white/10 hover:border-accent/40 mx-0.5 inline-block text-xs active:scale-95"
+            title={`Klik untuk jalankan "${cmdInner}" / Click to execute`}
+          >
+            {part}
+          </span>
+        );
+      }
+      return <span key={idx}>{part}</span>;
+    });
+  }, [line.type, line.text, onRunCommand]);
+
+  if (line.type === 'system') {
+    const isGranted = typeof line.text === 'string' && (line.text.includes('Access granted') || line.text.includes('Akses diberikan'));
+    return (
+      <div className="mb-1.5 leading-relaxed break-words">
+        <span className={isGranted ? 'text-accent font-bold' : 'text-gray-300'}>
+          {formattedContent}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-1.5 leading-relaxed flex flex-wrap">
+      <span className="text-accent mr-2">λ</span>
+      <span className="text-gray-400 mr-2">guest ~</span>
+      <span className="text-gray-200 break-all">{line.text}</span>
+    </div>
+  );
+});
 
 export default function HiddenTerminal({ onHireMe }) {
   const [termLang, setTermLang] = useState(() => localStorage.getItem('portfolioTerminalLang') || 'en');
   const [isSelectingLang, setIsSelectingLang] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
   const [size, setSize] = useState({ w: 800, h: 450 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [input, setInput] = useState('');
   const dragControls = useDragControls();
 
-  const handleResizeStart = (e, edge) => {
+  const [history, setHistory] = useState([]);
+  const inputRef = useRef(null);
+  const scrollContainerRef = useRef(null);
+
+  // Detect screen size changes efficiently
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = (e) => setIsMobileOrTablet(e.matches);
+    setIsMobileOrTablet(mq.matches);
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  // rAF-throttled resize handler for 60fps desktop resizing
+  const handleResizeStart = useCallback((e, edge) => {
     e.preventDefault();
     e.stopPropagation();
     const startX = e.clientX;
     const startY = e.clientY;
     const startW = size.w;
     const startH = size.h;
+    let rafId = null;
 
     const onMove = (moveEv) => {
-      let newW = startW;
-      let newH = startH;
-      if (edge === 'right' || edge === 'br') newW = startW + (moveEv.clientX - startX);
-      if (edge === 'bottom' || edge === 'br') newH = startH + (moveEv.clientY - startY);
-      
-      setSize({ 
-        w: Math.max(300, newW), 
-        h: Math.max(200, newH) 
+      if (rafId) return;
+      const clientX = moveEv.clientX;
+      const clientY = moveEv.clientY;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        let newW = startW;
+        let newH = startH;
+        if (edge === 'right' || edge === 'br') newW = startW + (clientX - startX);
+        if (edge === 'bottom' || edge === 'br') newH = startH + (clientY - startY);
+
+        setSize({
+          w: Math.min(window.innerWidth - 24, Math.max(300, newW)),
+          h: Math.min(window.innerHeight - 40, Math.max(220, newH)),
+        });
       });
     };
 
     const onUp = () => {
+      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
     };
 
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  };
-  
-  const [history, setHistory] = useState([]);
-  const inputRef = useRef(null);
-  const bottomRef = useRef(null);
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp, { passive: true });
+  }, [size.w, size.h]);
 
-  const selectLanguage = (selectedLang, userInput) => {
+  const selectLanguage = useCallback((selectedLang, userInput) => {
     setTermLang(selectedLang);
     setIsSelectingLang(false);
     const t = terminalTranslations[selectedLang];
     const userLabel = userInput || (selectedLang === 'en' ? '1 (English)' : '2 (Indonesia)');
-    const confirmMsg = selectedLang === 'en' 
-      ? terminalTranslations.en.langChangeEn 
+    const confirmMsg = selectedLang === 'en'
+      ? terminalTranslations.en.langChangeEn
       : terminalTranslations.id.langChangeId;
 
     setHistory([
@@ -62,22 +130,22 @@ export default function HiddenTerminal({ onHireMe }) {
       { type: 'system', text: t.hint },
     ]);
     setInput('');
-    setTimeout(() => inputRef.current?.focus(), 50);
-  };
+    setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 40);
+  }, []);
 
   // Key listener for Ctrl + ` or typing 'sudo' (Easter Egg style)
   useEffect(() => {
     let keyBuffer = '';
     const handleKeyDown = (e) => {
-      // Shortcut to open/close
       if (e.ctrlKey && e.key === '`') {
         e.preventDefault();
         setIsOpen((prev) => !prev);
         return;
       }
 
-      // Easter egg typing 'sudo' on keyboard anywhere
       if (!isOpen && !e.ctrlKey && !e.metaKey && e.key.length === 1) {
+        const tag = e.target?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
         keyBuffer += e.key.toLowerCase();
         if (keyBuffer.length > 10) keyBuffer = keyBuffer.slice(-10);
         if (keyBuffer.includes('sudo')) {
@@ -93,25 +161,28 @@ export default function HiddenTerminal({ onHireMe }) {
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus({ preventScroll: true });
     }
   }, [isOpen]);
 
+  // Direct scrollTop manipulation avoids layout thrashing & prevents mobile page jump
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    const el = scrollContainerRef.current;
+    if (el && isOpen) {
+      requestAnimationFrame(() => {
+        el.scrollTop = el.scrollHeight;
+      });
     }
-  }, [history, isOpen]);
+  }, [history, isSelectingLang, isOpen]);
 
   useEffect(() => {
     localStorage.setItem('portfolioTerminalLang', termLang);
   }, [termLang]);
 
-  const runCommand = (cmdText) => {
+  const runCommand = useCallback((cmdText) => {
     const trimmed = (cmdText || '').trim();
     const cmd = trimmed.toLowerCase();
 
-    // If in language selection mode
     if (isSelectingLang) {
       if (!trimmed) return;
       if (cmd === '1' || cmd === 'en' || cmd === 'english') {
@@ -133,71 +204,78 @@ export default function HiddenTerminal({ onHireMe }) {
 
     if (!trimmed) return;
 
-    const newHistory = [...history, { type: 'user', text: trimmed }];
     const t = terminalTranslations[termLang];
-    
-    switch (cmd) {
-      case 'help':
-        newHistory.push({ type: 'system', text: t.helpHeader });
-        newHistory.push({ type: 'system', text: t.helpAbout });
-        newHistory.push({ type: 'system', text: t.helpSkills });
-        newHistory.push({ type: 'system', text: t.helpLangId });
-        newHistory.push({ type: 'system', text: t.helpLangEn });
-        newHistory.push({ type: 'system', text: t.helpClear });
-        newHistory.push({ type: 'system', text: t.helpHire });
-        break;
-      case 'about':
-        newHistory.push({ type: 'system', text: t.aboutMsg });
-        break;
-      case 'skills':
-        newHistory.push({ type: 'system', text: t.skillsMsg });
-        break;
-      case 'lang id':
-      case 'language id':
-        setTermLang('id');
-        newHistory.push({ type: 'system', text: terminalTranslations.id.langChangeId });
-        break;
-      case 'lang en':
-      case 'language en':
-        setTermLang('en');
-        newHistory.push({ type: 'system', text: terminalTranslations.en.langChangeEn });
-        break;
-      case 'set language':
-      case 'language':
-      case 'lang':
-        setIsSelectingLang(true);
-        setInput('');
-        return;
-      case 'clear':
-        setHistory([
-          { type: 'system', text: t.hint }
-        ]);
-        setInput('');
-        return;
-      case 'sudo hire gelby':
-        newHistory.push({ type: 'system', text: t.hireCheck });
-        newHistory.push({ type: 'system', text: t.hireGranted });
-        setTimeout(() => {
-          setIsOpen(false);
-          if (onHireMe) onHireMe();
-        }, 1500);
-        break;
-      case 'sudo':
-        newHistory.push({ type: 'system', text: t.sudoUsage });
-        newHistory.push({ type: 'system', text: t.sudoHint });
-        break;
-      default:
-        if (cmd.startsWith('sudo ')) {
-          newHistory.push({ type: 'system', text: t.sudoReport });
-        } else {
-          newHistory.push({ type: 'system', text: `${t.notFound} ${trimmed}. ${t.typeHelp}` });
-        }
-        break;
+
+    if (cmd === 'set language' || cmd === 'language' || cmd === 'lang') {
+      setIsSelectingLang(true);
+      setInput('');
+      return;
     }
-    
-    setHistory(newHistory);
+
+    if (cmd === 'clear') {
+      setHistory([{ type: 'system', text: t.hint }]);
+      setInput('');
+      return;
+    }
+
+    setHistory((prev) => {
+      const next = [...prev, { type: 'user', text: trimmed }];
+      switch (cmd) {
+        case 'help':
+          next.push(
+            { type: 'system', text: t.helpHeader },
+            { type: 'system', text: t.helpAbout },
+            { type: 'system', text: t.helpSkills },
+            { type: 'system', text: t.helpLangId },
+            { type: 'system', text: t.helpLangEn },
+            { type: 'system', text: t.helpClear },
+            { type: 'system', text: t.helpHire }
+          );
+          break;
+        case 'about':
+          next.push({ type: 'system', text: t.aboutMsg });
+          break;
+        case 'skills':
+          next.push({ type: 'system', text: t.skillsMsg });
+          break;
+        case 'lang id':
+        case 'language id':
+          setTermLang('id');
+          next.push({ type: 'system', text: terminalTranslations.id.langChangeId });
+          break;
+        case 'lang en':
+        case 'language en':
+          setTermLang('en');
+          next.push({ type: 'system', text: terminalTranslations.en.langChangeEn });
+          break;
+        case 'sudo hire gelby':
+          next.push(
+            { type: 'system', text: t.hireCheck },
+            { type: 'system', text: t.hireGranted }
+          );
+          setTimeout(() => {
+            setIsOpen(false);
+            if (onHireMe) onHireMe();
+          }, 1200);
+          break;
+        case 'sudo':
+          next.push(
+            { type: 'system', text: t.sudoUsage },
+            { type: 'system', text: t.sudoHint }
+          );
+          break;
+        default:
+          if (cmd.startsWith('sudo ')) {
+            next.push({ type: 'system', text: t.sudoReport });
+          } else {
+            next.push({ type: 'system', text: `${t.notFound} ${trimmed}. ${t.typeHelp}` });
+          }
+          break;
+      }
+      return next;
+    });
     setInput('');
-  };
+  }, [isSelectingLang, selectLanguage, termLang, onHireMe]);
 
   const handleCommand = (e) => {
     if (e.key === 'Enter') {
@@ -205,74 +283,79 @@ export default function HiddenTerminal({ onHireMe }) {
     }
   };
 
-  const renderFormattedText = (text) => {
-    if (!text || typeof text !== 'string') return text;
-    const parts = text.split(/(".*?")/g);
-    if (parts.length === 1) return text;
+  const handleQuickExecute = useCallback((cmdInner) => {
+    runCommand(cmdInner);
+    inputRef.current?.focus({ preventScroll: true });
+  }, [runCommand]);
 
-    return parts.map((part, idx) => {
-      if (part.startsWith('"') && part.endsWith('"')) {
-        const cmdInner = part.slice(1, -1);
-        return (
-          <span
-            key={idx}
-            onClick={() => {
-              runCommand(cmdInner);
-              inputRef.current?.focus();
-            }}
-            className="text-accent font-bold cursor-pointer hover:underline hover:text-accent-light transition-all px-1.5 py-0.5 rounded bg-white/5 border border-white/5 hover:border-accent/40 mx-0.5 inline-block text-xs active:scale-95"
-            title={`Klik untuk jalankan "${cmdInner}" / Click to execute`}
-          >
-            {part}
-          </span>
-        );
-      }
-      return <span key={idx}>{part}</span>;
-    });
-  };
+  const effectiveFullscreen = isFullscreen;
+  const canDrag = !effectiveFullscreen && !isMobileOrTablet;
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          drag={!isFullscreen}
+          drag={canDrag}
           dragControls={dragControls}
           dragListener={false}
           dragMomentum={false}
           onDragEnd={(e, info) => {
-            setPosition({ x: position.x + info.offset.x, y: position.y + info.offset.y });
+            setPosition((prev) => ({ x: prev.x + info.offset.x, y: prev.y + info.offset.y }));
           }}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ 
-            opacity: 1, 
-            scale: 1, 
-            x: isFullscreen ? 0 : position.x,
-            y: isFullscreen ? 0 : position.y,
-            left: isFullscreen ? 0 : 'max(2vw, calc(50vw - 400px))',
-            top: isFullscreen ? 0 : '15vh',
-            width: isFullscreen ? '100vw' : size.w,
-            height: isFullscreen ? '100vh' : size.h,
-            maxWidth: isFullscreen ? '100vw' : '95vw',
-            maxHeight: isFullscreen ? '100vh' : '85vh',
-            borderRadius: isFullscreen ? '0px' : '6px'
+          initial={{ opacity: 0, scale: 0.96, y: 8 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            x: canDrag ? position.x : 0,
+            y: canDrag ? position.y : 0,
           }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-          className="fixed z-[99999] bg-[#050505]/85 backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] font-mono text-sm flex flex-col overflow-hidden"
-          style={{ touchAction: 'none', boxShadow: '0 0 0 1px rgba(255,255,255,0.05) inset' }}
+          exit={{ opacity: 0, scale: 0.96, y: 8 }}
+          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            touchAction: canDrag ? 'none' : 'manipulation',
+            willChange: 'transform, opacity',
+            ...(effectiveFullscreen
+              ? {
+                  left: 0,
+                  top: 0,
+                  width: '100vw',
+                  height: '100dvh',
+                  maxWidth: '100vw',
+                  maxHeight: '100dvh',
+                  borderRadius: '0px',
+                }
+              : isMobileOrTablet
+              ? {
+                  left: '3vw',
+                  top: '8dvh',
+                  width: '94vw',
+                  height: 'min(420px, 72dvh)',
+                  borderRadius: '10px',
+                }
+              : {
+                  left: 'max(2vw, calc(50vw - 400px))',
+                  top: '15vh',
+                  width: size.w,
+                  height: size.h,
+                  maxWidth: '95vw',
+                  maxHeight: '82vh',
+                  borderRadius: '8px',
+                }),
+          }}
+          className="fixed z-[99999] bg-[#08080b]/95 md:bg-[#08080b]/90 md:backdrop-blur-md border border-white/15 shadow-2xl font-mono text-xs sm:text-sm flex flex-col overflow-hidden"
         >
-          {/* Resize Handles */}
-          {!isFullscreen && (
+          {/* Resize Handles (Desktop only) */}
+          {canDrag && (
             <>
-              <div 
+              <div
                 className="absolute top-0 right-0 w-2 h-full cursor-e-resize z-50"
                 onPointerDown={(e) => handleResizeStart(e, 'right')}
               />
-              <div 
+              <div
                 className="absolute bottom-0 left-0 w-full h-2 cursor-s-resize z-50"
                 onPointerDown={(e) => handleResizeStart(e, 'bottom')}
               />
-              <div 
+              <div
                 className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-50"
                 onPointerDown={(e) => handleResizeStart(e, 'br')}
               />
@@ -280,38 +363,43 @@ export default function HiddenTerminal({ onHireMe }) {
           )}
 
           {/* Elegant Custom Header */}
-          <div 
-            className="flex items-center justify-between bg-black/40 border-b border-white/5 select-none h-10"
+          <div
+            className="flex items-center justify-between bg-black/50 border-b border-white/10 select-none h-10 shrink-0"
             onPointerDown={(e) => {
-              if (!isFullscreen) dragControls.start(e);
+              if (canDrag) dragControls.start(e);
             }}
-            onDoubleClick={() => setIsFullscreen(!isFullscreen)}
-            style={{ cursor: isFullscreen ? 'default' : 'grab' }}
+            onDoubleClick={() => setIsFullscreen((prev) => !prev)}
+            style={{ cursor: canDrag ? 'grab' : 'default' }}
           >
-            <div className="flex gap-3 items-center px-4 flex-1 overflow-hidden">
-              <div className="flex items-center justify-center w-5 h-5 rounded bg-white/5 border border-white/10">
+            <div className="flex gap-2.5 items-center px-3.5 flex-1 overflow-hidden">
+              <div className="flex items-center justify-center w-5 h-5 rounded bg-white/5 border border-white/10 shrink-0">
                 <span className="text-accent text-[10px] font-bold">λ</span>
               </div>
               <div className="text-gray-300 text-xs tracking-wider font-semibold truncate">
                 TERMINAL // GELBY_OS
               </div>
             </div>
-            
+
             {/* Minimalist Controls */}
             <div className="flex h-full px-2 gap-1 items-center">
-              <button 
-                onClick={() => setIsFullscreen(!isFullscreen)} 
-                className="w-7 h-7 rounded flex items-center justify-center hover:bg-white/10 text-gray-400 transition-all"
-                title={isFullscreen ? "Restore Down" : "Maximize"}
+              <button
+                type="button"
+                onClick={() => setIsFullscreen((prev) => !prev)}
+                className="w-7 h-7 rounded flex items-center justify-center hover:bg-white/10 text-gray-400 transition-colors"
+                title={effectiveFullscreen ? 'Restore Down' : 'Maximize'}
               >
-                <div className={isFullscreen 
-                  ? "w-2.5 h-2.5 border-2 border-current relative after:content-[''] after:absolute after:-top-1.5 after:-right-1.5 after:w-2.5 after:h-2.5 after:border-t-2 after:border-r-2 after:border-current" 
-                  : "w-3 h-3 border-2 border-current rounded-sm"} 
+                <div
+                  className={
+                    effectiveFullscreen
+                      ? "w-2.5 h-2.5 border-2 border-current relative after:content-[''] after:absolute after:-top-1.5 after:-right-1.5 after:w-2.5 after:h-2.5 after:border-t-2 after:border-r-2 after:border-current"
+                      : 'w-3 h-3 border-2 border-current rounded-sm'
+                  }
                 />
               </button>
-              <button 
-                onClick={() => setIsOpen(false)} 
-                className="w-7 h-7 rounded flex items-center justify-center hover:bg-red-500/80 hover:text-white text-gray-400 transition-all"
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-7 h-7 rounded flex items-center justify-center hover:bg-red-500/80 hover:text-white text-gray-400 transition-colors"
                 title="Close"
               >
                 <FiX size={16} strokeWidth={2.5} />
@@ -320,59 +408,54 @@ export default function HiddenTerminal({ onHireMe }) {
           </div>
 
           {/* Terminal Body */}
-          <div 
-            className="flex-1 p-4 md:p-5 overflow-y-auto text-gray-300 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent"
-            onClick={() => inputRef.current?.focus()}
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 p-3.5 sm:p-5 overflow-y-auto overscroll-contain text-gray-300 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/15 [&::-webkit-scrollbar-track]:bg-transparent"
+            onClick={() => inputRef.current?.focus({ preventScroll: true })}
           >
-            {/* Language Selection Header (shown during initial terminal open or when set language is triggered) */}
+            {/* Language Selection Header */}
             {isSelectingLang && (
-              <div className="mb-5 pb-4 border-b border-white/5">
+              <div className="mb-4 pb-3.5 border-b border-white/10">
                 <div className="text-accent font-bold tracking-wide text-xs mb-2.5">
                   Set Language // Pilih Bahasa:
                 </div>
-                <div className="flex flex-wrap gap-2.5 mb-2.5">
+                <div className="flex flex-wrap gap-2.5 mb-2">
                   <button
                     type="button"
-                    onClick={() => selectLanguage('en')}
-                    className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-all text-xs flex items-center gap-2 group cursor-pointer active:scale-95"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectLanguage('en');
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-colors text-xs flex items-center gap-2 cursor-pointer active:scale-95"
                   >
                     <span className="text-accent font-bold font-mono">[1]</span>
                     <span>English (EN)</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => selectLanguage('id')}
-                    className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-all text-xs flex items-center gap-2 group cursor-pointer active:scale-95"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectLanguage('id');
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-colors text-xs flex items-center gap-2 cursor-pointer active:scale-95"
                   >
                     <span className="text-accent font-bold font-mono">[2]</span>
                     <span>Indonesia (ID)</span>
                   </button>
                 </div>
                 <div className="text-gray-500 text-[11px] font-mono">
-                  Type 1 or 2, or click an option above
+                  Type 1 or 2, or tap an option above
                 </div>
               </div>
             )}
 
             {history.map((line, i) => (
-              <div key={i} className="mb-1.5 leading-relaxed">
-                {line.type === 'system' ? (
-                  <span className={line.text.includes('Access granted') ? 'text-accent font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'text-gray-300'}>
-                    {renderFormattedText(line.text)}
-                  </span>
-                ) : (
-                  <div className="flex">
-                    <span className="text-accent mr-2">λ</span>
-                    <span className="text-gray-400 mr-2">guest ~</span>
-                    <span className="text-gray-200">{line.text}</span>
-                  </div>
-                )}
-              </div>
+              <HistoryRow key={i} line={line} onRunCommand={handleQuickExecute} />
             ))}
-            
+
             <div className="flex items-center mt-2">
-              <span className="text-accent mr-2">λ</span>
-              <span className="text-gray-400 mr-2">
+              <span className="text-accent mr-2 shrink-0">λ</span>
+              <span className="text-gray-400 mr-2 shrink-0">
                 {isSelectingLang ? 'setup ~' : 'guest ~'}
               </span>
               <input
@@ -382,13 +465,15 @@ export default function HiddenTerminal({ onHireMe }) {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleCommand}
                 placeholder={isSelectingLang ? 'Select 1 or 2...' : ''}
-                className="flex-1 bg-transparent outline-none text-gray-100 placeholder-gray-600 border-none focus:ring-0 p-0 shadow-none font-mono selection:bg-accent/30"
+                className="flex-1 min-w-0 bg-transparent outline-none text-gray-100 placeholder-gray-600 border-none focus:ring-0 p-0 shadow-none font-mono text-[16px] sm:text-sm selection:bg-accent/30"
                 autoFocus
                 spellCheck={false}
                 autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
               />
             </div>
-            <div ref={bottomRef} className="h-4" />
+            <div className="h-3" />
           </div>
         </motion.div>
       )}
