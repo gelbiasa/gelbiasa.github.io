@@ -31,10 +31,12 @@ const HistoryRow = memo(function HistoryRow({ line, onRunCommand }) {
   }, [line.type, line.text, onRunCommand]);
 
   if (line.type === 'system') {
-    const isGranted = typeof line.text === 'string' && (line.text.includes('Access granted') || line.text.includes('Akses diberikan'));
+    const textStr = typeof line.text === 'string' ? line.text : '';
+    const isGranted = textStr.includes('Access granted') || textStr.includes('Akses diberikan');
+    const isBoxBorder = textStr.startsWith('┌─') || textStr.startsWith('└─');
     return (
-      <div className="mb-1.5 leading-relaxed break-words">
-        <span className={isGranted ? 'text-accent font-bold' : 'text-gray-300'}>
+      <div className="mb-1 leading-relaxed break-words">
+        <span className={isGranted || isBoxBorder ? 'text-accent font-bold' : 'text-gray-300'}>
           {formattedContent}
         </span>
       </div>
@@ -226,6 +228,7 @@ export default function HiddenTerminal({ onHireMe }) {
             { type: 'system', text: t.helpHeader },
             { type: 'system', text: t.helpAbout },
             { type: 'system', text: t.helpSkills },
+            { type: 'system', text: t.helpExperience },
             { type: 'system', text: t.helpLangId },
             { type: 'system', text: t.helpLangEn },
             { type: 'system', text: t.helpClear },
@@ -233,10 +236,18 @@ export default function HiddenTerminal({ onHireMe }) {
           );
           break;
         case 'about':
-          next.push({ type: 'system', text: t.aboutMsg });
+          t.aboutLines.forEach((lineText) => {
+            next.push({ type: 'system', text: lineText });
+          });
           break;
         case 'skills':
           next.push({ type: 'system', text: t.skillsMsg });
+          break;
+        case 'experience':
+        case 'exp':
+          t.experienceLines.forEach((lineText) => {
+            next.push({ type: 'system', text: lineText });
+          });
           break;
         case 'lang id':
         case 'language id':
