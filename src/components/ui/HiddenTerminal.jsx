@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { FiX } from 'react-icons/fi';
 import { terminalTranslations } from '../../data/terminalTranslations';
 
-// Memoized single history row so typing in the input never re-renders history lines
+const MAX_HISTORY_LINES = 200;
+
+// Memoized single history row with CSS content-visibility so off-screen lines cost 0ms to scroll
 const HistoryRow = memo(function HistoryRow({ line, onRunCommand }) {
   const formattedContent = useMemo(() => {
     if (line.type !== 'system') return null;
@@ -19,7 +20,7 @@ const HistoryRow = memo(function HistoryRow({ line, onRunCommand }) {
           <span
             key={idx}
             onClick={() => onRunCommand(cmdInner)}
-            className="text-accent font-bold cursor-pointer hover:underline hover:text-accent-light transition-colors px-1.5 py-0.5 rounded bg-white/5 border border-white/10 hover:border-accent/40 mx-0.5 inline-block text-xs active:scale-95"
+            className="text-accent font-bold cursor-pointer hover:underline hover:text-accent-light px-1.5 py-0.5 rounded bg-[#141720] border border-white/10 hover:border-accent/40 mx-0.5 inline-block text-xs"
             title={`Klik untuk jalankan "${cmdInner}" / Click to execute`}
           >
             {part}
@@ -35,7 +36,10 @@ const HistoryRow = memo(function HistoryRow({ line, onRunCommand }) {
     const isGranted = textStr.includes('Access granted') || textStr.includes('Akses diberikan');
     const isBoxBorder = textStr.startsWith('┌─') || textStr.startsWith('└─');
     return (
-      <div className="mb-1 leading-relaxed break-words">
+      <div
+        className="mb-1 leading-relaxed break-words"
+        style={{ contentVisibility: 'auto', containIntrinsicSize: '0 22px' }}
+      >
         <span className={isGranted || isBoxBorder ? 'text-accent font-bold' : 'text-gray-300'}>
           {formattedContent}
         </span>
@@ -44,7 +48,10 @@ const HistoryRow = memo(function HistoryRow({ line, onRunCommand }) {
   }
 
   return (
-    <div className="mb-1.5 leading-relaxed flex flex-wrap">
+    <div
+      className="mb-1 leading-relaxed flex flex-wrap"
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 22px' }}
+    >
       <span className="text-accent mr-2">λ</span>
       <span className="text-gray-400 mr-2">guest ~</span>
       <span className="text-gray-200 break-all">{line.text}</span>
@@ -60,14 +67,15 @@ export default function HiddenTerminal({ onHireMe }) {
   const [isMobileOrTablet, setIsMobileOrTablet] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth < 768 : false
   );
-  const [size, setSize] = useState({ w: 800, h: 450 });
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [input, setInput] = useState('');
-  const dragControls = useDragControls();
-
   const [history, setHistory] = useState([]);
+
+  // Direct DOM refs for zero-overhead drag & resize (no Framer Motion projection listeners on scroll)
+  const windowRef = useRef(null);
   const inputRef = useRef(null);
   const scrollContainerRef = useRef(null);
+  const posRef = useRef({ x: 0, y: 0 });
+  const sizeRef = useRef({ w: 800, h: 450 });
 
   // Detect screen size changes efficiently
   useEffect(() => {
@@ -78,31 +86,31 @@ export default function HiddenTerminal({ onHireMe }) {
     return () => mq.removeEventListener('change', update);
   }, []);
 
-  // rAF-throttled resize handler for 60fps desktop resizing
-  const handleResizeStart = useCallback((e, edge) => {
+  const canDrag = !isFullscreen && !isMobileOrTablet;
+
+  // Pure DOM translate3d drag — 0 React re-renders, 0 scroll projection overhead
+  const handleHeaderDragStart = useCallback((e) => {
+    if (!canDrag || e.button !== 0) return;
+    if (e.target.closest('button')) return;
     e.preventDefault();
-    e.stopPropagation();
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startW = size.w;
-    const startH = size.h;
+    const el = windowRef.current;
+    if (!el) return;
+
+    const startX = e.clientX - posRef.current.x;
+    const startY = e.clientY - posRef.current.y;
     let rafId = null;
 
     const onMove = (moveEv) => {
+      const nextX = moveEv.clientX - startX;
+      const nextY = moveEv.clientY - startY;
+      posRef.current.x = nextX;
+      posRef.current.y = nextY;
       if (rafId) return;
-      const clientX = moveEv.clientX;
-      const clientY = moveEv.clientY;
       rafId = requestAnimationFrame(() => {
         rafId = null;
-        let newW = startW;
-        let newH = startH;
-        if (edge === 'right' || edge === 'br') newW = startW + (clientX - startX);
-        if (edge === 'bottom' || edge === 'br') newH = startH + (clientY - startY);
-
-        setSize({
-          w: Math.min(window.innerWidth - 24, Math.max(300, newW)),
-          h: Math.min(window.innerHeight - 40, Math.max(220, newH)),
-        });
+        if (windowRef.current) {
+          windowRef.current.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0)`;
+        }
       });
     };
 
@@ -114,7 +122,53 @@ export default function HiddenTerminal({ onHireMe }) {
 
     window.addEventListener('pointermove', onMove, { passive: true });
     window.addEventListener('pointerup', onUp, { passive: true });
-  }, [size.w, size.h]);
+  }, [canDrag]);
+
+  // Pure DOM resize — updates style directly in rAF without React state re-renders
+  const handleResizeStart = useCallback((e, edge) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = windowRef.current;
+    if (!el) return;
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startW = sizeRef.current.w;
+    const startH = sizeRef.current.h;
+    let rafId = null;
+
+    const onMove = (moveEv) => {
+      const clientX = moveEv.clientX;
+      const clientY = moveEv.clientY;
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        let newW = startW;
+        let newH = startH;
+        if (edge === 'right' || edge === 'br') newW = startW + (clientX - startX);
+        if (edge === 'bottom' || edge === 'br') newH = startH + (clientY - startY);
+
+        const clampedW = Math.min(window.innerWidth - 24, Math.max(300, newW));
+        const clampedH = Math.min(window.innerHeight - 40, Math.max(220, newH));
+        sizeRef.current.w = clampedW;
+        sizeRef.current.h = clampedH;
+
+        if (windowRef.current) {
+          windowRef.current.style.width = `${clampedW}px`;
+          windowRef.current.style.height = `${clampedH}px`;
+        }
+      });
+    };
+
+    const onUp = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp, { passive: true });
+  }, []);
 
   const selectLanguage = useCallback((selectedLang, userInput) => {
     setTermLang(selectedLang);
@@ -167,7 +221,7 @@ export default function HiddenTerminal({ onHireMe }) {
     }
   }, [isOpen]);
 
-  // Direct scrollTop manipulation avoids layout thrashing & prevents mobile page jump
+  // Direct scrollTop manipulation when new command output is appended
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (el && isOpen) {
@@ -283,7 +337,7 @@ export default function HiddenTerminal({ onHireMe }) {
           }
           break;
       }
-      return next;
+      return next.length > MAX_HISTORY_LINES ? next.slice(-MAX_HISTORY_LINES) : next;
     });
     setInput('');
   }, [isSelectingLang, selectLanguage, termLang, onHireMe]);
@@ -299,195 +353,189 @@ export default function HiddenTerminal({ onHireMe }) {
     inputRef.current?.focus({ preventScroll: true });
   }, [runCommand]);
 
-  const effectiveFullscreen = isFullscreen;
-  const canDrag = !effectiveFullscreen && !isMobileOrTablet;
+  // Only focus input on click if user isn't selecting text
+  const handleBodyClick = useCallback(() => {
+    const sel = window.getSelection?.();
+    if (sel && sel.toString().length > 0) return;
+    inputRef.current?.focus({ preventScroll: true });
+  }, []);
+
+  if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          drag={canDrag}
-          dragControls={dragControls}
-          dragListener={false}
-          dragMomentum={false}
-          onDragEnd={(e, info) => {
-            setPosition((prev) => ({ x: prev.x + info.offset.x, y: prev.y + info.offset.y }));
-          }}
-          initial={{ opacity: 0, scale: 0.96, y: 8 }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-            x: canDrag ? position.x : 0,
-            y: canDrag ? position.y : 0,
-          }}
-          exit={{ opacity: 0, scale: 0.96, y: 8 }}
-          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            touchAction: canDrag ? 'none' : 'manipulation',
-            willChange: 'transform, opacity',
-            ...(effectiveFullscreen
-              ? {
-                  left: 0,
-                  top: 0,
-                  width: '100vw',
-                  height: '100dvh',
-                  maxWidth: '100vw',
-                  maxHeight: '100dvh',
-                  borderRadius: '0px',
-                }
-              : isMobileOrTablet
-              ? {
-                  left: '3vw',
-                  top: '8dvh',
-                  width: '94vw',
-                  height: 'min(420px, 72dvh)',
-                  borderRadius: '10px',
-                }
-              : {
-                  left: 'max(2vw, calc(50vw - 400px))',
-                  top: '15vh',
-                  width: size.w,
-                  height: size.h,
-                  maxWidth: '95vw',
-                  maxHeight: '82vh',
-                  borderRadius: '8px',
-                }),
-          }}
-          className="fixed z-[99999] bg-[#08080b]/95 md:bg-[#08080b]/90 md:backdrop-blur-md border border-white/15 shadow-2xl font-mono text-xs sm:text-sm flex flex-col overflow-hidden"
-        >
-          {/* Resize Handles (Desktop only) */}
-          {canDrag && (
-            <>
-              <div
-                className="absolute top-0 right-0 w-2 h-full cursor-e-resize z-50"
-                onPointerDown={(e) => handleResizeStart(e, 'right')}
-              />
-              <div
-                className="absolute bottom-0 left-0 w-full h-2 cursor-s-resize z-50"
-                onPointerDown={(e) => handleResizeStart(e, 'bottom')}
-              />
-              <div
-                className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-50"
-                onPointerDown={(e) => handleResizeStart(e, 'br')}
-              />
-            </>
-          )}
-
-          {/* Elegant Custom Header */}
+    <div
+      ref={windowRef}
+      style={{
+        contain: 'layout paint style',
+        isolation: 'isolate',
+        transform: canDrag
+          ? `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0)`
+          : 'translate3d(0, 0, 0)',
+        ...(isFullscreen
+          ? {
+              left: 0,
+              top: 0,
+              width: '100vw',
+              height: '100dvh',
+              maxWidth: '100vw',
+              maxHeight: '100dvh',
+              borderRadius: '0px',
+            }
+          : isMobileOrTablet
+          ? {
+              left: '3vw',
+              top: '8dvh',
+              width: '94vw',
+              height: 'min(420px, 72dvh)',
+              borderRadius: '10px',
+            }
+          : {
+              left: 'max(2vw, calc(50vw - 400px))',
+              top: '15vh',
+              width: sizeRef.current.w,
+              height: sizeRef.current.h,
+              maxWidth: '95vw',
+              maxHeight: '82vh',
+              borderRadius: '8px',
+            }),
+      }}
+      className="fixed z-[99999] bg-[#08090d] border border-white/15 shadow-2xl font-mono text-xs sm:text-sm flex flex-col overflow-hidden"
+    >
+      {/* Resize Handles (Desktop only) */}
+      {canDrag && (
+        <>
           <div
-            className="flex items-center justify-between bg-black/50 border-b border-white/10 select-none h-10 shrink-0"
-            onPointerDown={(e) => {
-              if (canDrag) dragControls.start(e);
-            }}
-            onDoubleClick={() => setIsFullscreen((prev) => !prev)}
-            style={{ cursor: canDrag ? 'grab' : 'default' }}
-          >
-            <div className="flex gap-2.5 items-center px-3.5 flex-1 overflow-hidden">
-              <div className="flex items-center justify-center w-5 h-5 rounded bg-white/5 border border-white/10 shrink-0">
-                <span className="text-accent text-[10px] font-bold">λ</span>
-              </div>
-              <div className="text-gray-300 text-xs tracking-wider font-semibold truncate">
-                TERMINAL // GELBY_OS
-              </div>
-            </div>
-
-            {/* Minimalist Controls */}
-            <div className="flex h-full px-2 gap-1 items-center">
-              <button
-                type="button"
-                onClick={() => setIsFullscreen((prev) => !prev)}
-                className="w-7 h-7 rounded flex items-center justify-center hover:bg-white/10 text-gray-400 transition-colors"
-                title={effectiveFullscreen ? 'Restore Down' : 'Maximize'}
-              >
-                <div
-                  className={
-                    effectiveFullscreen
-                      ? "w-2.5 h-2.5 border-2 border-current relative after:content-[''] after:absolute after:-top-1.5 after:-right-1.5 after:w-2.5 after:h-2.5 after:border-t-2 after:border-r-2 after:border-current"
-                      : 'w-3 h-3 border-2 border-current rounded-sm'
-                  }
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="w-7 h-7 rounded flex items-center justify-center hover:bg-red-500/80 hover:text-white text-gray-400 transition-colors"
-                title="Close"
-              >
-                <FiX size={16} strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
-
-          {/* Terminal Body */}
+            className="absolute top-0 right-0 w-2 h-full cursor-e-resize z-50"
+            onPointerDown={(e) => handleResizeStart(e, 'right')}
+          />
           <div
-            ref={scrollContainerRef}
-            className="flex-1 p-3.5 sm:p-5 overflow-y-auto overscroll-contain text-gray-300 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/15 [&::-webkit-scrollbar-track]:bg-transparent"
-            onClick={() => inputRef.current?.focus({ preventScroll: true })}
-          >
-            {/* Language Selection Header */}
-            {isSelectingLang && (
-              <div className="mb-4 pb-3.5 border-b border-white/10">
-                <div className="text-accent font-bold tracking-wide text-xs mb-2.5">
-                  Set Language // Pilih Bahasa:
-                </div>
-                <div className="flex flex-wrap gap-2.5 mb-2">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      selectLanguage('en');
-                    }}
-                    className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-colors text-xs flex items-center gap-2 cursor-pointer active:scale-95"
-                  >
-                    <span className="text-accent font-bold font-mono">[1]</span>
-                    <span>English (EN)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      selectLanguage('id');
-                    }}
-                    className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-colors text-xs flex items-center gap-2 cursor-pointer active:scale-95"
-                  >
-                    <span className="text-accent font-bold font-mono">[2]</span>
-                    <span>Indonesia (ID)</span>
-                  </button>
-                </div>
-                <div className="text-gray-500 text-[11px] font-mono">
-                  Type 1 or 2, or tap an option above
-                </div>
-              </div>
-            )}
-
-            {history.map((line, i) => (
-              <HistoryRow key={i} line={line} onRunCommand={handleQuickExecute} />
-            ))}
-
-            <div className="flex items-center mt-2">
-              <span className="text-accent mr-2 shrink-0">λ</span>
-              <span className="text-gray-400 mr-2 shrink-0">
-                {isSelectingLang ? 'setup ~' : 'guest ~'}
-              </span>
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleCommand}
-                placeholder={isSelectingLang ? 'Select 1 or 2...' : ''}
-                className="flex-1 min-w-0 bg-transparent outline-none text-gray-100 placeholder-gray-600 border-none focus:ring-0 p-0 shadow-none font-mono text-[16px] sm:text-sm selection:bg-accent/30"
-                autoFocus
-                spellCheck={false}
-                autoComplete="off"
-                autoCapitalize="off"
-                autoCorrect="off"
-              />
-            </div>
-            <div className="h-3" />
-          </div>
-        </motion.div>
+            className="absolute bottom-0 left-0 w-full h-2 cursor-s-resize z-50"
+            onPointerDown={(e) => handleResizeStart(e, 'bottom')}
+          />
+          <div
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-50"
+            onPointerDown={(e) => handleResizeStart(e, 'br')}
+          />
+        </>
       )}
-    </AnimatePresence>
+
+      {/* Elegant Custom Header */}
+      <div
+        className="flex items-center justify-between bg-[#0d0f17] border-b border-white/10 select-none h-10 shrink-0"
+        onPointerDown={handleHeaderDragStart}
+        onDoubleClick={() => setIsFullscreen((prev) => !prev)}
+        style={{ cursor: canDrag ? 'grab' : 'default', touchAction: 'none' }}
+      >
+        <div className="flex gap-2.5 items-center px-3.5 flex-1 overflow-hidden">
+          <div className="flex items-center justify-center w-5 h-5 rounded bg-white/5 border border-white/10 shrink-0">
+            <span className="text-accent text-[10px] font-bold">λ</span>
+          </div>
+          <div className="text-gray-300 text-xs tracking-wider font-semibold truncate">
+            TERMINAL // GELBY_OS
+          </div>
+        </div>
+
+        {/* Minimalist Controls */}
+        <div className="flex h-full px-2 gap-1 items-center">
+          <button
+            type="button"
+            onClick={() => setIsFullscreen((prev) => !prev)}
+            className="w-7 h-7 rounded flex items-center justify-center hover:bg-white/10 text-gray-400 transition-colors"
+            title={isFullscreen ? 'Restore Down' : 'Maximize'}
+          >
+            <div
+              className={
+                isFullscreen
+                  ? "w-2.5 h-2.5 border-2 border-current relative after:content-[''] after:absolute after:-top-1.5 after:-right-1.5 after:w-2.5 after:h-2.5 after:border-t-2 after:border-r-2 after:border-current"
+                  : 'w-3 h-3 border-2 border-current rounded-sm'
+              }
+            />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="w-7 h-7 rounded flex items-center justify-center hover:bg-red-500/80 hover:text-white text-gray-400 transition-colors"
+            title="Close"
+          >
+            <FiX size={16} strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
+
+      {/* Terminal Body — 100% Opaque + GPU Tiled Scroll Layer */}
+      <div
+        ref={scrollContainerRef}
+        onClick={handleBodyClick}
+        style={{
+          contain: 'content',
+          willChange: 'scroll-position',
+          transform: 'translateZ(0)',
+          WebkitOverflowScrolling: 'touch',
+        }}
+        className="flex-1 p-3.5 sm:p-5 bg-[#08090d] overflow-y-auto overscroll-contain text-gray-300 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-track]:bg-[#08090d]"
+      >
+        {/* Language Selection Header */}
+        {isSelectingLang && (
+          <div className="mb-4 pb-3.5 border-b border-white/10">
+            <div className="text-accent font-bold tracking-wide text-xs mb-2.5">
+              Set Language // Pilih Bahasa:
+            </div>
+            <div className="flex flex-wrap gap-2.5 mb-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectLanguage('en');
+                }}
+                className="px-3.5 py-1.5 rounded-lg bg-[#141720] hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-colors text-xs flex items-center gap-2 cursor-pointer"
+              >
+                <span className="text-accent font-bold font-mono">[1]</span>
+                <span>English (EN)</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectLanguage('id');
+                }}
+                className="px-3.5 py-1.5 rounded-lg bg-[#141720] hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-gray-200 hover:text-accent transition-colors text-xs flex items-center gap-2 cursor-pointer"
+              >
+                <span className="text-accent font-bold font-mono">[2]</span>
+                <span>Indonesia (ID)</span>
+              </button>
+            </div>
+            <div className="text-gray-500 text-[11px] font-mono">
+              Type 1 or 2, or tap an option above
+            </div>
+          </div>
+        )}
+
+        {history.map((line, i) => (
+          <HistoryRow key={i} line={line} onRunCommand={handleQuickExecute} />
+        ))}
+
+        <div className="flex items-center mt-2">
+          <span className="text-accent mr-2 shrink-0">λ</span>
+          <span className="text-gray-400 mr-2 shrink-0">
+            {isSelectingLang ? 'setup ~' : 'guest ~'}
+          </span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleCommand}
+            placeholder={isSelectingLang ? 'Select 1 or 2...' : ''}
+            className="flex-1 min-w-0 bg-transparent outline-none text-gray-100 placeholder-gray-600 border-none focus:ring-0 p-0 shadow-none font-mono text-[16px] sm:text-sm selection:bg-accent/30"
+            autoFocus
+            spellCheck={false}
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+          />
+        </div>
+        <div className="h-3" />
+      </div>
+    </div>
   );
 }
