@@ -282,6 +282,7 @@ export default function HiddenTerminal({ onHireMe }) {
             { type: 'system', text: t.helpHeader },
             { type: 'system', text: t.helpAbout },
             { type: 'system', text: t.helpSkills },
+            { type: 'system', text: t.helpProjects },
             { type: 'system', text: t.helpExperience },
             { type: 'system', text: t.helpEducation },
             { type: 'system', text: t.helpLangId },
@@ -297,6 +298,13 @@ export default function HiddenTerminal({ onHireMe }) {
           break;
         case 'skills':
           next.push({ type: 'system', text: t.skillsMsg });
+          break;
+        case 'projects':
+        case 'project':
+        case 'proj':
+          t.projectsLines.forEach((lineText) => {
+            next.push({ type: 'system', text: lineText });
+          });
           break;
         case 'experience':
         case 'exp':
