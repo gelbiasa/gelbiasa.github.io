@@ -53,17 +53,18 @@ export const translations = {
       cert: 'Cert',
       points: {
         spunindo: [
-          'Designed and developed a Bill of Materials (BOM) data integration system to optimize production efficiency across Jumbo, Slitter, and Meltblown lines.',
-          "Implemented business logic using Laravel and MSJ Framework (the company's proprietary in-house framework) to standardize application modules.",
-          'Integrated SAP APIs to perform real-time automated validation on resource and material data, ensuring all selected data is registered in SAP and minimizing manual data entry risks.',
-          'Authored system user manuals and other technical documentation to facilitate smooth deployment and end-user operations.'
+          'Designed UI/UX interfaces and formulated comprehensive system architecture blueprints, including Flowcharts, Activity Diagrams, and Entity Relationship Diagrams (ERD) for Jumbo, Slitter, and Meltblown modules.',
+          'Engineered dynamic BOM transaction features (Create, Update, Show, List) using Laravel and MSJ Framework, featuring automated mathematical calculations (Comp QTY, Product QTY, Target Value) and automated error handling validations.',
+          'Built an integrated Report Dashboard generating visual data charts and custom Excel export functionality filtered by specific parameters such as production year.',
+          'Integrated SAP APIs for real-time resource and material validation, featuring unlisted data alerts and autofill capabilities to ensure data consistency and eliminate manual typographical errors.',
+          'Authored comprehensive technical documentation and detailed system user manual books to facilitate seamless operational onboarding for end-users (PPIC Role).'
         ],
         upatik: [
-          'Designed the Physical Database Model (PDM) using MySQL Workbench for Information Systems, User Access Management, and Log Tables.',
-          'Successfully implemented system database structures and schemas using MySQL.',
-          'Created modular JavaScript templates for Summernote Editor integration, including secure image upload and deletion features.',
-          'Developed reusable code components utilizing Laravel Traits to streamline common functions across models and controllers, such as soft deletes, user action logging, file handling, and response formatting.',
-          'Designed and architected the official PPID (Information and Documentation Management Officer) Website.'
+          'Architected relational database systems and Physical Data Models (PDM) from scratch, covering multi-level permission schemes, dynamic menus, user management, activity logs, and E-Form workflows.',
+          'Engineered system backends by implementing Single Sign-On (SSO) and dynamic Role-Based Access Control (RBAC) architectures for granular multi-level access control.',
+          'Implemented a centralized template for the Summernote Editor module with customized text features, making the codebase modular and readily reusable across all content input interfaces.',
+          'Developed reusable starter code utilizing Laravel Traits across Model and Controller layers to streamline core database operations, activity logging, session handling, and pagination.',
+          'Developed dynamic E-Form workflows integrated with timeline tracking, submission verification, and automated notification delivery via Email and WhatsApp.'
         ]
       }
     },
@@ -249,17 +250,18 @@ export const translations = {
       cert: 'Sertifikat',
       points: {
         spunindo: [
-          'Merancang dan mengembangkan sistem integrasi data Bill of Materials (BOM) untuk mengoptimalkan efisiensi produksi di lini Jumbo, Slitter, dan Meltblown.',
-          'Menerapkan logika bisnis menggunakan Laravel dan MSJ Framework (framework internal perusahaan) untuk menstandardisasi modul aplikasi.',
-          'Mengintegrasikan SAP API untuk melakukan validasi otomatis secara real-time pada data sumber daya dan material, memastikan seluruh data yang dipilih terdaftar di SAP dan meminimalkan risiko input data manual.',
-          'Menyusun buku panduan pengguna sistem dan dokumentasi teknis lainnya untuk memfasilitasi kelancaran deployment dan operasional pengguna akhir.'
+          'Merancang desain antarmuka pengguna (UI/UX) dan menyusun blueprint arsitektur sistem secara menyeluruh, mencakup Flowchart, Activity Diagram, dan Entity Relationship Diagram (ERD) untuk modul Jumbo, Slitter, dan Meltblown.',
+          'Mengembangkan fitur transaksi BOM dinamis (Create, Update, Show, List) menggunakan Laravel dan framework internal perusahaan (MSJ Framework), lengkap dengan kalkulasi matematis (Comp QTY, Product QTY, Target Value) dan validasi error handling secara otomatis pada sistem.',
+          'Membangun dasbor pelaporan (Report Dashboard) terintegrasi yang mampu menghasilkan grafik visual data (generate chart) dan fitur export laporan ke format Excel berdasarkan filter spesifik seperti tahun.',
+          'Mengintegrasikan API SAP untuk validasi resource dan material secara real-time, dilengkapi alert data tidak terdaftar serta fitur autofill inputan terkait guna menjamin konsistensi dan mencegah kesalahan ketik.',
+          'Menyusun dokumentasi teknis dan manual book penggunaan sistem secara mendetail untuk memfasilitasi kelancaran operasional pengguna (Role PPIC).'
         ],
         upatik: [
-          'Merancang Physical Database Model (PDM) menggunakan MySQL Workbench untuk Sistem Informasi, Manajemen Akses Pengguna, dan Tabel Log.',
-          'Berhasil mengimplementasikan struktur dan skema database sistem menggunakan MySQL.',
-          'Membuat template JavaScript modular untuk integrasi Summernote Editor, termasuk fitur unggah dan hapus gambar yang aman.',
-          'Mengembangkan komponen kode yang dapat digunakan kembali menggunakan Laravel Traits untuk merampingkan fungsi umum di seluruh model dan controller, seperti soft delete, pencatatan aktivitas pengguna, manajemen file, dan pemformatan respons.',
-          'Merancang dan mengarsiteki Website resmi PPID (Pejabat Pengelola Informasi dan Dokumentasi).'
+          'Merancang arsitektur database relasional dan Physical Data Model (PDM) dari awal, mencakup skema hak akses multi-level, menu dinamis, manajemen pengguna, log aktivitas, serta alur E-Form.',
+          'Mengembangkan backend sistem dengan mengimplementasikan Single Sign-On (SSO) dan arsitektur Role Based Access Control (RBAC) dinamis untuk pembatasan manajemen hak akses multi-level.',
+          'Mengimplementasikan template terpusat untuk modul Summernote Editor dengan tambahan kustomisasi fitur teks, sehingga kode menjadi modular dan siap digunakan ulang (reusable) pada berbagai menu yang membutuhkan input konten.',
+          'Mengembangkan reusable starter code menggunakan Laravel Traits pada tingkat Model dan Controller untuk efisiensi fungsi dasar database, pencatatan log, session, serta pagination.',
+          'Mengembangkan alur E-Form dinamis yang terintegrasi dengan pelacakan timeline, verifikasi pengajuan, serta notifikasi hasil otomatis via Email dan WhatsApp.'
         ]
       }
     },
