@@ -8,28 +8,24 @@ import Experience from '../sections/Experience';
 import Education from '../sections/Education';
 import CV from '../sections/CV';
 import Contact from '../sections/Contact';
-import { useLanguage } from '../../context/LanguageContext';
+
+const variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 }
+};
 
 const ContentArea = ({ activeTab, setActiveTab }) => {
-  const { t } = useLanguage();
-
-  // Animation variants
-  const variants = {
-    initial: { opacity: 0, scale: 0.98 },
-    animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.98 }
-  };
-
   return (
     <div className="w-full flex-1 relative z-10 pb-24 grid grid-cols-1 grid-rows-1">
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
           variants={variants}
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={{ duration: 0.4, ease: "easeInOut" }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
           className="col-start-1 row-start-1 w-full"
           onAnimationStart={() => {
             window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
