@@ -4,6 +4,7 @@ import { FiX, FiArrowUpRight, FiSun, FiMoon } from 'react-icons/fi';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import MagneticButton from '../ui/MagneticButton';
+
 const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -21,8 +22,19 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
   ];
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const isScrolled = window.scrollY > 20;
+          setScrolled((prev) => (prev === isScrolled ? prev : isScrolled));
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -33,22 +45,19 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -60, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 transition-all duration-500 ${
+      <header
+        style={{ transform: 'translateZ(0)' }}
+        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 transition-[height,background-color,border-color,box-shadow] duration-300 ${
           scrolled
-            ? 'h-16 bg-[var(--glass)] backdrop-blur-xl border-b border-border shadow-2xl'
+            ? 'h-16 bg-[var(--glass)] border-b border-border shadow-xl'
             : 'h-20 bg-transparent'
         }`}
       >
-        {/* SVG filter defs — spray stencil effect */}
-        <svg className="w-0 h-0 absolute pointer-events-none">
+        {/* SVG filter defs — spray stencil effect (cached on static GPU layer) */}
+        <svg className="w-0 h-0 absolute pointer-events-none" aria-hidden="true">
           <defs>
-            {/* Sparse scattered spray (for edges) */}
             <filter id="spray-edge" x="-50%" y="-50%" width="200%" height="200%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="5" result="noise" />
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="5" result="noise" />
               <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 18 -8" in="noise" result="mask" />
               <feComposite operator="in" in="SourceGraphic" in2="mask" />
             </filter>
@@ -80,47 +89,44 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className="relative px-4 py-3 text-xs font-bold tracking-widest uppercase transition-all duration-300 rounded-full group"
+                className="relative px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors duration-200 rounded-full group"
               >
-                {/* Active spray stencil effect — matches reference */}
+                {/* Active spray stencil effect — isolated on static GPU texture so it never re-rasterizes on scroll */}
                 {isActive && (
-                  <>
-                    {/* Scattered spray halo (outermost, speckled) */}
-                    <motion.div
-                      layoutId="navSprayHalo"
-                      className="absolute -inset-[60%] pointer-events-none z-[-1]"
+                  <span
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ transform: 'translateZ(0)', contain: 'layout paint' }}
+                  >
+                    {/* Scattered spray halo */}
+                    <span
+                      className="absolute -inset-[60%] pointer-events-none z-[-1] block"
                       style={{
                         background:
                           'radial-gradient(ellipse 60% 55% at 50% 50%, rgb(var(--accent-rgb)/0.5) 0%, rgb(var(--accent-rgb)/0.5) 45%, transparent 75%)',
                         filter: 'url(#spray-edge)',
                       }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                     />
                     {/* Medium density ring */}
-                    <motion.div
-                      layoutId="navSprayMid"
-                      className="absolute -inset-[25%] pointer-events-none z-[-1]"
+                    <span
+                      className="absolute -inset-[25%] pointer-events-none z-[-1] block"
                       style={{
                         background:
                           'radial-gradient(ellipse 60% 55% at 50% 50%, rgb(var(--accent-rgb)/0.5) 0%, rgb(var(--accent-rgb)/0.5) 55%, transparent 80%)',
                         filter: 'url(#spray-edge)',
                       }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                     />
                     {/* Solid dark core — text reads clearly on top */}
-                    <motion.div
-                      layoutId="navSprayCore"
-                      className="absolute inset-[4px] pointer-events-none z-[1] rounded-full"
+                    <span
+                      className="absolute inset-[4px] pointer-events-none z-[1] rounded-full block"
                       style={{
                         background: 'var(--bg-primary)',
                         boxShadow: 'inset 0 0 0 1.5px rgb(var(--accent-rgb)/0.5)',
                       }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                     />
-                  </>
+                  </span>
                 )}
                 <span
-                  className={`relative z-[2] transition-all duration-300 ${
+                  className={`relative z-[2] transition-colors duration-200 ${
                     isActive
                       ? 'text-accent font-black'
                       : 'text-slate-400 group-hover:text-[var(--text-primary)]'
@@ -158,7 +164,7 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
 
             <button
               onClick={toggleTheme}
-              className={`p-1.5 rounded-full transition-all duration-300 ${isDark ? 'text-accent bg-surface-2' : 'text-[var(--text-primary)] hover:bg-[var(--border)]'}`}
+              className={`p-1.5 rounded-full transition-colors duration-200 ${isDark ? 'text-accent bg-surface-2' : 'text-[var(--text-primary)] hover:bg-[var(--border)]'}`}
               title="Toggle Dark/Light Mode"
             >
               {isDark ? <FiMoon size={14} /> : <FiSun size={14} />}
@@ -184,7 +190,7 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
           {/* Hire Me CTA */}
           <MagneticButton
             onClick={onHireMeClick}
-            className="hidden sm:flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent text-text-on-accent text-xs font-black tracking-wider uppercase hover:bg-accent-light transition-all duration-300 shadow-[0_0_20px_var(--accent-glow)] hover:shadow-[0_0_30px_var(--accent-glow)]"
+            className="hidden sm:flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent text-text-on-accent text-xs font-black tracking-wider uppercase hover:bg-accent-light transition-colors duration-200 shadow-[0_0_20px_var(--accent-glow)]"
           >
             {t('nav.hireMe')} <FiArrowUpRight size={14} />
           </MagneticButton>
@@ -195,12 +201,12 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
             className="lg:hidden flex flex-col gap-1.5 w-8 h-8 items-center justify-center"
             aria-label="Toggle menu"
           >
-            <span className={`block h-0.5 bg-[var(--text-primary)] transition-all duration-300 ${mobileOpen ? 'w-5 rotate-45 translate-y-2' : 'w-5'}`} />
-            <span className={`block h-0.5 bg-accent transition-all duration-300 ${mobileOpen ? 'opacity-0 w-0' : 'w-4'}`} />
-            <span className={`block h-0.5 bg-[var(--text-primary)] transition-all duration-300 ${mobileOpen ? 'w-5 -rotate-45 -translate-y-2' : 'w-6'}`} />
+            <span className={`block h-0.5 bg-[var(--text-primary)] transition-transform duration-300 ${mobileOpen ? 'w-5 rotate-45 translate-y-2' : 'w-5'}`} />
+            <span className={`block h-0.5 bg-accent transition-opacity duration-300 ${mobileOpen ? 'opacity-0 w-0' : 'w-4'}`} />
+            <span className={`block h-0.5 bg-[var(--text-primary)] transition-transform duration-300 ${mobileOpen ? 'w-5 -rotate-45 -translate-y-2' : 'w-6'}`} />
           </button>
         </div>
-      </motion.header>
+      </header>
 
       {/* === MOBILE DRAWER === */}
       <AnimatePresence>
@@ -210,7 +216,7 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-y-0 right-0 z-40 w-72 bg-[var(--glass)] backdrop-blur-2xl border-l border-[var(--border)] flex flex-col pt-24 pb-10 px-8"
+            className="fixed inset-y-0 right-0 z-40 w-72 bg-[var(--glass)] border-l border-[var(--border)] flex flex-col pt-24 pb-10 px-8 shadow-2xl"
           >
             <button
               onClick={() => setMobileOpen(false)}
@@ -228,7 +234,7 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.06 }}
                     onClick={() => handleTabClick(tab.id)}
-                    className={`relative text-left py-3 px-4 rounded-xl text-sm font-bold tracking-widest uppercase transition-all duration-200 overflow-hidden group ${
+                    className={`relative text-left py-3 px-4 rounded-xl text-sm font-bold tracking-widest uppercase transition-colors duration-200 overflow-hidden group ${
                       isActive
                         ? 'text-text-on-accent'
                         : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-transparent'
@@ -236,17 +242,14 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
                   >
                     {isActive && (
                       <>
-                        <motion.div
-                          layoutId="mobileNavSpray"
+                        <div
                           className="absolute inset-[-30%] z-0 pointer-events-none"
                           style={{
                             background: 'radial-gradient(ellipse at left, var(--accent) 25%, transparent 80%)',
-                            filter: 'url(#spray-splatter)',
                             opacity: 0.9,
                           }}
                         />
-                        <motion.div
-                          layoutId="mobileNavSprayCore"
+                        <div
                           className="absolute inset-y-0 left-0 w-3/4 z-0 pointer-events-none"
                           style={{
                             background: 'linear-gradient(to right, var(--accent) 10%, transparent 100%)',
