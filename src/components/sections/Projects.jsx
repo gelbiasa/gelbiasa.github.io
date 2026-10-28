@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect, useRef, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiGithub, FiFigma, FiExternalLink, FiDownload, FiClock, FiStar, FiFolder, FiMonitor, FiUser, FiX, FiArrowRight, FiChevronRight, FiChevronLeft, FiGrid } from 'react-icons/fi'
-import Tilt from 'react-parallax-tilt'
 import { projects } from '../../data/projects'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -66,12 +65,12 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
       onClick={handlePrev}
       className={`${
         isOutside 
-          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 mr-3 md:mr-6 rounded-full bg-black/80 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]' 
+          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 mr-3 md:mr-6 rounded-full bg-black/80 border border-white/20 shadow-xl' 
           : 'absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/80 z-20 border border-white/20 shadow-xl'
-      } hover:bg-accent hover:text-black flex items-center justify-center text-white transition-all duration-300 hover:border-accent hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] hover:scale-110 group/btn`}
+      } hover:bg-accent hover:text-black flex items-center justify-center text-white transition-colors duration-200 hover:border-accent group/btn`}
       aria-label="Previous image"
     >
-      <FiChevronLeft className={`${isOutside ? 'w-5 h-5 md:w-6 md:h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} transition-transform duration-300 group-hover/btn:-translate-x-1`} />
+      <FiChevronLeft className={`${isOutside ? 'w-5 h-5 md:w-6 md:h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} transition-transform duration-200 group-hover/btn:-translate-x-0.5`} />
     </button>
   );
 
@@ -80,12 +79,12 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
       onClick={handleNext}
       className={`${
         isOutside 
-          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 ml-3 md:ml-6 rounded-full bg-black/80 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]' 
+          ? 'w-8 h-8 md:w-12 md:h-12 shrink-0 ml-3 md:ml-6 rounded-full bg-black/80 border border-white/20 shadow-xl' 
           : 'absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/80 z-20 border border-white/20 shadow-xl'
-      } hover:bg-accent hover:text-black flex items-center justify-center text-white transition-all duration-300 hover:border-accent hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] hover:scale-110 group/btn`}
+      } hover:bg-accent hover:text-black flex items-center justify-center text-white transition-colors duration-200 hover:border-accent group/btn`}
       aria-label="Next image"
     >
-      <FiChevronRight className={`${isOutside ? 'w-5 h-5 md:w-6 md:h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} transition-transform duration-300 group-hover/btn:translate-x-1`} />
+      <FiChevronRight className={`${isOutside ? 'w-5 h-5 md:w-6 md:h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} transition-transform duration-200 group-hover/btn:translate-x-0.5`} />
     </button>
   );
 
@@ -105,24 +104,19 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
               ? 'top-4 left-4 md:top-6 md:left-6 z-30 bg-black/80 text-xs px-4 py-2'
               : 'top-3 left-3 z-30 bg-black/80 text-[10px] px-3 py-1.5'
           }`}>
-            <div className={`${arrowsOutside ? 'w-2 h-2' : 'w-1.5 h-1.5'} rounded-full bg-accent animate-pulse`} />
+            <div className={`${arrowsOutside ? 'w-2 h-2' : 'w-1.5 h-1.5'} rounded-full bg-accent`} />
             {currentIndex + 1} / {imageArray.length}
           </div>
         )}
 
-        {/* Image with smooth crossfade */}
-        <AnimatePresence mode="popLayout">
-          <motion.img
-            key={currentIndex}
-            src={imageArray[currentIndex]}
-            alt={`${alt} - ${currentIndex + 1}`}
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className={`w-full h-full object-${objectFit} opacity-95 group-hover:opacity-100 ${imageClassName}`}
-          />
-        </AnimatePresence>
+        {/* Lightweight decoded image */}
+        <img
+          src={imageArray[currentIndex]}
+          alt={`${alt} - ${currentIndex + 1}`}
+          loading="lazy"
+          decoding="async"
+          className={`w-full h-full object-${objectFit} opacity-95 group-hover:opacity-100 ${imageClassName}`}
+        />
 
         {/* Inside Arrows */}
         {hasMultiple && !arrowsOutside && (
@@ -136,15 +130,15 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
         {hasMultiple && (
           <div className={`absolute left-1/2 -translate-x-1/2 flex pointer-events-none rounded-full border border-white/10 ${
             arrowsOutside
-              ? 'bottom-4 md:bottom-6 gap-2 z-30 bg-black/80 px-4 py-2.5 shadow-[0_8px_20px_rgba(0,0,0,0.5)]'
-              : 'bottom-3 gap-1.5 z-20 bg-black/80 px-3 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.5)]'
+              ? 'bottom-4 md:bottom-6 gap-2 z-30 bg-black/80 px-4 py-2.5 shadow-lg'
+              : 'bottom-3 gap-1.5 z-20 bg-black/80 px-3 py-2 shadow-md'
           }`}>
             {imageArray.map((_, idx) => (
               <div 
                 key={idx} 
-                className={`rounded-full transition-all duration-500 ease-out ${
+                className={`rounded-full transition-all duration-300 ease-out ${
                   idx === currentIndex 
-                    ? `bg-accent shadow-[0_0_12px_var(--accent)] ${arrowsOutside ? 'w-6 md:w-8' : 'w-5'}` 
+                    ? `bg-accent ${arrowsOutside ? 'w-6 md:w-8' : 'w-5'}` 
                     : `bg-white/40 ${arrowsOutside ? 'w-2 md:w-2.5' : 'w-1.5'}`
                 } ${arrowsOutside ? 'h-2 md:h-2.5' : 'h-1.5'}`}
               />
@@ -183,7 +177,7 @@ function DragScroll({ children, className }) {
 
   useEffect(() => {
     checkScroll()
-    window.addEventListener('resize', checkScroll)
+    window.addEventListener('resize', checkScroll, { passive: true })
     return () => window.removeEventListener('resize', checkScroll)
   }, [children])
 
@@ -202,7 +196,7 @@ function DragScroll({ children, className }) {
     e.preventDefault()
     if (!dragged) setDragged(true)
     const x = e.pageX - scrollRef.current.offsetLeft
-    const walk = (x - startX) * 1.5 // Scroll speed multiplier
+    const walk = (x - startX) * 1.5
     scrollRef.current.scrollLeft = scrollLeft - walk
   }
 
@@ -227,7 +221,7 @@ function DragScroll({ children, className }) {
         <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-surface via-surface/90 to-transparent flex justify-start items-center z-10 pointer-events-none">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); scrollBy(-150); }}
-            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-border backdrop-blur-md shadow-lg"
+            className="w-6 h-6 rounded-full bg-surface-2 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-border shadow-lg"
           >
             <FiChevronLeft className="w-4 h-4" />
           </button>
@@ -252,7 +246,7 @@ function DragScroll({ children, className }) {
         <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-surface via-surface/90 to-transparent flex justify-end items-center z-10 pointer-events-none">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); scrollBy(150); }}
-            className="w-6 h-6 rounded-full bg-white/10 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-border backdrop-blur-md shadow-lg"
+            className="w-6 h-6 rounded-full bg-surface-2 hover:bg-accent hover:text-black flex items-center justify-center pointer-events-auto border border-border shadow-lg"
           >
             <FiChevronRight className="w-4 h-4" />
           </button>
@@ -284,40 +278,29 @@ function ProjectModal({ project, onClose }) {
       onClick={onClose}
     >
       <motion.div
-        initial={{ y: 50, opacity: 0, scale: 0.95 }}
+        initial={{ y: 30, opacity: 0, scale: 0.97 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: 20, opacity: 0, scale: 0.95 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        exit={{ y: 20, opacity: 0, scale: 0.97 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
         onClick={(e) => e.stopPropagation()}
         className="relative mx-auto w-full max-w-[1400px] bg-surface rounded-2xl md:rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Close Button - Always visible at top right of the modal */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/80 border border-white/10 flex items-center justify-center text-white hover:bg-accent hover:text-black hover:scale-110 transition-all duration-300 shadow-lg"
+          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/80 border border-white/10 flex items-center justify-center text-white hover:bg-accent hover:text-black transition-colors duration-200 shadow-lg"
         >
           <FiX className="w-5 h-5" />
         </button>
 
         {/* Top: Image Banner */}
         <div className="w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] bg-[#0a0e14] relative flex-shrink-0 group/banner">
-          
-          {/* Decorative background blur (adds ambiance based on the image) */}
-          <div className="absolute inset-0 opacity-50 overflow-hidden pointer-events-none" style={{ transform: 'translateZ(0)' }}>
-            <img 
-              src={Array.isArray(project.image) ? project.image[0] : project.image} 
-              alt="blur" 
-              className="w-full h-full object-cover blur-3xl scale-125 opacity-80" 
-              loading="lazy"
-            />
-          </div>
-
           <ImageCarousel 
             images={project.image} 
             alt={project.title} 
             className="relative z-10 px-4 pt-16 pb-12 md:px-8 md:pt-20 md:pb-16" 
             objectFit="contain"
-            imageClassName="rounded-2xl border border-accent shadow-[0_0_30px_rgb(var(--accent-rgb)/0.3)] bg-accent p-[2px] md:p-1"
+            imageClassName="rounded-2xl border border-accent shadow-[0_0_25px_rgb(var(--accent-rgb)/0.25)] bg-accent p-[2px] md:p-1"
             arrowsOutside={true}
           />
           
@@ -328,7 +311,7 @@ function ProjectModal({ project, onClose }) {
         {/* Bottom: Content Details */}
         <div className="px-4 pb-6 md:px-10 md:pb-10 lg:px-12 lg:pb-12 relative z-30 -mt-6 md:-mt-8">
           
-          <div className="flex flex-col gap-6 w-full mx-auto bg-gradient-to-b from-surface-2/95 to-background/95 border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] rounded-3xl p-6 md:p-10">
+          <div className="flex flex-col gap-6 w-full mx-auto bg-gradient-to-b from-surface-2/95 to-background/95 border border-white/5 shadow-2xl rounded-3xl p-6 md:p-10">
             
             {/* Badges */}
             <div className="flex flex-wrap gap-2 items-center">
@@ -380,7 +363,7 @@ function ProjectModal({ project, onClose }) {
                         href={url}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-2 border border-border text-text-secondary hover:text-accent hover:border-border hover:bg-accent/10 transition-all duration-300"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-2 border border-border text-text-secondary hover:text-accent hover:border-border hover:bg-accent/10 transition-colors duration-200"
                       >
                         <Icon className="w-4 h-4" />
                         <span className="text-sm font-medium">{transKey ? t(`projects.${transKey}`) || label : label}</span>
@@ -399,37 +382,25 @@ function ProjectModal({ project, onClose }) {
   )
 }
 
-const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
+const ProjectCard = memo(function ProjectCard({ project, onClick }) {
   const { t } = useLanguage()
 
   return (
-    <Tilt
-      tiltMaxAngleX={5}
-      tiltMaxAngleY={5}
-      scale={1.02}
-      transitionSpeed={2500}
-      className="h-full"
-      perspective={1000}
+    <div
+      onClick={(e) => {
+        if (!e.target.closest('a') && !e.target.closest('button')) {
+          onClick(project)
+        }
+      }}
+      className="project-card bg-surface rounded-2xl overflow-hidden border border-border hover:-translate-y-1 transition-transform duration-200 cursor-pointer flex flex-col h-full group shadow-lg"
+      style={{ borderColor: 'var(--border)' }}
     >
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
-        onClick={(e) => {
-          // Prevent modal if clicking links or buttons
-          if (!e.target.closest('a') && !e.target.closest('button')) {
-            onClick(project)
-          }
-        }}
-        className="project-card bg-surface rounded-2xl overflow-hidden border border-border hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:border-border transition-all duration-500 cursor-pointer flex flex-col h-full group"
-        style={{ borderColor: 'var(--border)' }}
-      >
-      {/* 100% Clean Image Container (No overlays blocking the content) */}
+      {/* 100% Clean Image Container */}
       <div className="project-img-wrapper relative overflow-hidden aspect-video bg-background">
         <ImageCarousel 
           images={project.image} 
           alt={project.title} 
-          imageClassName="object-left-top group-hover:scale-105" 
+          imageClassName="object-left-top" 
           objectFit="cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-40 pointer-events-none" />
@@ -460,7 +431,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
           <p className="text-accent text-[10px] md:text-xs font-mono tracking-widest uppercase mb-1.5 line-clamp-1">
             {project.subtitle}
           </p>
-          <h3 className="font-display font-bold text-lg md:text-xl leading-snug text-text-primary group-hover:text-accent transition-colors duration-300 line-clamp-2">
+          <h3 className="font-display font-bold text-lg md:text-xl leading-snug text-text-primary group-hover:text-accent transition-colors duration-200 line-clamp-2">
             {project.title}
           </h3>
         </div>
@@ -481,7 +452,7 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
                   href={url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 border border-border text-text-primary hover:text-accent hover:border-border hover:bg-accent/10 transition-all duration-300 shadow-sm"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 border border-border text-text-primary hover:text-accent hover:bg-accent/10 transition-colors duration-200 shadow-sm"
                   title={transKey ? t(`projects.${transKey}`) || label : label}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -493,17 +464,16 @@ const ProjectCard = memo(function ProjectCard({ project, index, onClick }) {
         )}
 
         {/* Footer Action */}
-        <div className="mt-auto pt-5 border-t border-border flex items-center justify-between group-hover:border-border transition-colors">
+        <div className="mt-auto pt-5 border-t border-border flex items-center justify-between">
           <span className="text-xs font-semibold text-text-secondary group-hover:text-text-primary transition-colors">
             {t('projects.readCaseStudy') || 'Read Full Case Study'}
           </span>
-          <div className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-all duration-300 text-text-secondary group-hover:text-black">
-            <FiArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
+          <div className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-colors duration-200 text-text-secondary group-hover:text-black">
+            <FiArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-200" />
           </div>
         </div>
       </div>
-      </motion.div>
-    </Tilt>
+    </div>
   )
 })
 
@@ -512,16 +482,15 @@ function EmptyState() {
   
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className="col-span-full py-24 flex flex-col items-center justify-center text-center px-4 glass rounded-3xl border border-dashed border-border"
     >
       <div className="relative w-32 h-32 mb-8 flex items-center justify-center">
-        {/* Glowing rings */}
         <div className="absolute inset-0 rounded-full border-2 border-border animate-[spin_8s_linear_infinite]" />
         <div className="absolute inset-2 rounded-full border-2 border-dashed border-border animate-[spin_12s_linear_infinite_reverse]" />
-        <div className="absolute inset-4 rounded-full border border-border bg-accent/5 backdrop-blur-sm" />
+        <div className="absolute inset-4 rounded-full border border-border bg-accent/5" />
         
         <FiClock className="w-10 h-10 text-accent relative z-10" />
       </div>
@@ -553,10 +522,9 @@ export default function Projects() {
       {/* Header */}
       <motion.div
         className="mb-12"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
       >
         <h2
           className="font-display font-black text-4xl md:text-5xl tracking-tight mb-4"
@@ -576,62 +544,58 @@ export default function Projects() {
         {/* Left Sidebar for Tabs */}
         <aside className="w-fit max-w-full lg:w-64 shrink-0 sticky top-[88px] lg:top-32 z-40 mb-8 lg:mb-0">
           <div className="flex items-stretch gap-2 lg:block w-full">
-            {/* Tabs Container (Red Box) */}
-            <div className="p-1.5 lg:p-0 bg-background/95 backdrop-blur-md lg:bg-transparent border border-border lg:border-none rounded-2xl lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300 overflow-hidden flex-1 min-w-0">
+            {/* Tabs Container */}
+            <div className="p-1.5 lg:p-0 bg-[var(--glass)] lg:bg-transparent border border-border lg:border-none rounded-2xl lg:rounded-none shadow-xl lg:shadow-none overflow-hidden flex-1 min-w-0">
               <DragScroll className="flex lg:flex-col items-center lg:items-stretch gap-2">
-            {CATEGORIES.map((cat) => {
-              const isActive = activeTab === cat
-              const Icon = categoryIcons[cat]
-              
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setActiveTab(cat)}
-                  className={`relative flex items-center gap-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl text-left transition-all duration-300 whitespace-nowrap lg:whitespace-normal group border ${
-                    isTabsExpanded ? 'px-4 py-2' : 'p-2'
-                  } ${
-                    isActive 
-                      ? 'bg-accent/15 border-border shadow-[0_0_20px_rgb(var(--accent-rgb)/0.5)]' 
-                      : 'bg-transparent border-transparent hover:bg-white/10'
-                  }`}
-                  title={cat}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeSidebarIndicator"
-                      className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)] hidden lg:block"
-                      initial={false}
-                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    />
-                  )}
+                {CATEGORIES.map((cat) => {
+                  const isActive = activeTab === cat
+                  const Icon = categoryIcons[cat]
                   
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                    isActive ? 'bg-accent/20 text-accent' : 'bg-surface-2 text-text-secondary group-hover:text-text-primary'
-                  }`}>
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  
-                  <div className={`${isTabsExpanded ? 'block' : 'hidden lg:block'} transition-all`}>
-                    <span className={`block font-bold tracking-wide transition-colors ${
-                      isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
-                    }`}>
-                      {cat === 'All' ? (t('projects.allTab') || 'All') : (t(`projects.${cat.toLowerCase()}Tab`) || cat)}
-                    </span>
-                    <span className="text-[10px] font-bold tracking-widest text-text-muted mt-1 uppercase">
-                    {cat === 'All' ? projects.length : projects.filter(p => p.category === cat).length} {t('projects.projectsCount') || 'Projects'}
-                  </span>
-                  </div>
-                </button>
-              )
-            })}
-
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveTab(cat)}
+                      className={`relative flex items-center gap-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl text-left transition-colors duration-200 whitespace-nowrap lg:whitespace-normal group border ${
+                        isTabsExpanded ? 'px-4 py-2' : 'p-2'
+                      } ${
+                        isActive 
+                          ? 'bg-accent/15 border-border shadow-[0_0_20px_rgb(var(--accent-rgb)/0.3)]' 
+                          : 'bg-transparent border-transparent hover:bg-white/10'
+                      }`}
+                      title={cat}
+                    >
+                      {isActive && (
+                        <div
+                          className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)] hidden lg:block"
+                        />
+                      )}
+                      
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                        isActive ? 'bg-accent/20 text-accent' : 'bg-surface-2 text-text-secondary group-hover:text-text-primary'
+                      }`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      
+                      <div className={`${isTabsExpanded ? 'block' : 'hidden lg:block'}`}>
+                        <span className={`block font-bold tracking-wide transition-colors ${
+                          isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
+                        }`}>
+                          {cat === 'All' ? (t('projects.allTab') || 'All') : (t(`projects.${cat.toLowerCase()}Tab`) || cat)}
+                        </span>
+                        <span className="text-[10px] font-bold tracking-widest text-text-muted mt-1 uppercase">
+                          {cat === 'All' ? projects.length : projects.filter(p => p.category === cat).length} {t('projects.projectsCount') || 'Projects'}
+                        </span>
+                      </div>
+                    </button>
+                  )
+                })}
               </DragScroll>
             </div>
 
-            {/* Mobile Toggle Button (Yellow Box) */}
+            {/* Mobile Toggle Button */}
             <button
               onClick={() => setIsTabsExpanded(!isTabsExpanded)}
-              className="lg:hidden shrink-0 flex items-center justify-center w-11 rounded-2xl bg-background/95 backdrop-blur-md border border-border shadow-2xl text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all"
+              className="lg:hidden shrink-0 flex items-center justify-center w-11 rounded-2xl bg-[var(--glass)] border border-border shadow-xl text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
               aria-label="Toggle Category Labels"
             >
               <FiChevronRight className={`w-5 h-5 transition-transform duration-300 ${isTabsExpanded ? 'rotate-180' : ''}`} />
@@ -641,15 +605,15 @@ export default function Projects() {
 
         {/* Right Content Area: Project Grid */}
         <div className="flex-1 w-full min-h-[500px] grid grid-cols-1 grid-rows-1">
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {activeTab === 'All' ? (
               <motion.div
                 key="all"
                 className="col-start-1 row-start-1 flex flex-col gap-12 pb-12 w-full"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 {['Intern', 'Academic', 'Personal'].map((category) => {
                   const catProjects = projects.filter(p => p.category === category);
@@ -665,11 +629,10 @@ export default function Projects() {
                       {/* Projects Grid or Coming Soon */}
                       {catProjects.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                          {catProjects.map((project, i) => (
+                          {catProjects.map((project) => (
                             <ProjectCard 
                               key={project.id} 
                               project={project} 
-                              index={i} 
                               onClick={setSelectedProject}
                             />
                           ))}
@@ -687,16 +650,15 @@ export default function Projects() {
               <motion.div
                 key={activeTab}
                 className="col-start-1 row-start-1 grid grid-cols-1 md:grid-cols-2 gap-8 w-full"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                {filteredProjects.map((project, i) => (
+                {filteredProjects.map((project) => (
                   <ProjectCard 
                     key={project.id} 
                     project={project} 
-                    index={i} 
                     onClick={setSelectedProject}
                   />
                 ))}
