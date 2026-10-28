@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { FiBriefcase, FiCalendar, FiTool, FiAward } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
 import ImageModal from '../ui/ImageModal';
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
+  hidden: { opacity: 0, y: 20 },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, delay: i * 0.18, ease: 'easeOut' },
+    transition: { duration: 0.4, delay: i * 0.1, ease: 'easeOut' },
   }),
 };
 
@@ -58,8 +58,7 @@ export default function Experience() {
         className="text-center mb-16"
         variants={fadeUp}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+        animate="visible"
       >
         <h2
           className="font-display font-bold text-3xl md:text-4xl"
@@ -85,9 +84,8 @@ export default function Experience() {
               className="relative pl-16 md:pl-24"
               variants={fadeUp}
               initial="hidden"
-              whileInView="visible"
-              custom={i}
-              viewport={{ once: true, margin: '-60px' }}
+              animate="visible"
+              custom={i + 1}
             >
               {/* Timeline dot */}
               <div className="absolute left-[18px] md:left-[26px] top-2 flex items-center justify-center">
@@ -97,7 +95,7 @@ export default function Experience() {
               </div>
 
               {/* Card */}
-              <div className="glass border border-border hover:border-border transition-all duration-300 p-6 md:p-8 rounded-2xl shadow-xl group">
+              <div className="glass border border-border p-6 md:p-8 rounded-2xl shadow-xl group">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
                   <div>
@@ -153,7 +151,7 @@ export default function Experience() {
                   {exp.certificate && (
                     <button
                       onClick={() => setSelectedCertId(exp.id)}
-                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-[11px] font-black tracking-wider uppercase text-text-on-accent bg-accent rounded-full hover:bg-accent-light transition-all duration-300 flex-shrink-0 self-start sm:self-auto shadow-[0_0_15px_var(--accent-glow)] hover:shadow-[0_0_25px_var(--accent-glow)]"
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-[11px] font-black tracking-wider uppercase text-text-on-accent bg-accent rounded-full hover:bg-accent-light transition-colors duration-200 flex-shrink-0 self-start sm:self-auto shadow-[0_0_15px_var(--accent-glow)]"
                     >
                       <FiAward size={13} className="mb-[1px]" />
                       {exp.certificate.label}

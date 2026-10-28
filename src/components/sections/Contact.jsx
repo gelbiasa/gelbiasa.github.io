@@ -194,7 +194,7 @@ export default function Contact() {
             {/* Bottom info area */}
             <div
               className="flex-1 flex flex-col items-center text-center pt-24 pb-8 px-6 gap-5"
-              style={{ background: 'var(--glass)', backdropFilter: 'blur(16px)' }}
+              style={{ background: 'var(--glass)' }}
             >
               {/* Name */}
               <div>

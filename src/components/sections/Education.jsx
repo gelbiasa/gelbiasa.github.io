@@ -5,47 +5,44 @@ import { useLanguage } from '../../context/LanguageContext'
 
 const CustomPdfViewer = lazy(() => import('../ui/CustomPdfViewer'));
 
+const semesters = [
+  { term: '1', gpa: 3.55, file: '/file/khs/KHS_1.pdf' },
+  { term: '2', gpa: 3.53, file: '/file/khs/KHS_2.pdf' },
+  { term: '3', gpa: 3.67, file: '/file/khs/KHS_3.pdf' },
+  { term: '4', gpa: 3.68, file: '/file/khs/KHS_4.pdf' },
+  { term: '5', gpa: 3.92, file: '/file/khs/KHS_5.pdf' },
+  { term: '6', gpa: 4.00, file: '/file/khs/KHS_6.pdf' },
+  { term: '7', gpa: 4.00, file: '/file/khs/KHS_7.pdf' },
+  { term: '8', gpa: 4.00, file: null },
+]
+
+// Chart Dimensions
+const width = 800
+const height = 260
+const paddingTop = 40
+const paddingBottom = 40
+const chartStartX = 80
+const chartEndX = width - 40
+const chartWidth = chartEndX - chartStartX
+const minGpa = 3.4
+const maxGpa = 4.0
+const gpaRange = maxGpa - minGpa
+
+const points = semesters.map((item, index) => {
+  const x = chartStartX + (index / (semesters.length - 1)) * chartWidth
+  const y = height - paddingBottom - ((item.gpa - minGpa) / gpaRange) * (height - paddingTop - paddingBottom)
+  return { x, y, ...item }
+})
+
+const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+const firstX = points[0].x
+const lastX = points[points.length - 1].x
+const areaPath = `${linePath} L ${lastX} ${height} L ${firstX} ${height} Z`
+
 export default function Education() {
   const { t } = useLanguage()
-  const [hoveredPoint, setHoveredPoint] = useState(null)
   const [selectedKhs, setSelectedKhs] = useState(null)
   const [showTranscript, setShowTranscript] = useState(false)
-
-  const semesters = [
-    { term: '1', gpa: 3.55, file: '/file/khs/KHS_1.pdf' },
-    { term: '2', gpa: 3.53, file: '/file/khs/KHS_2.pdf' },
-    { term: '3', gpa: 3.67, file: '/file/khs/KHS_3.pdf' },
-    { term: '4', gpa: 3.68, file: '/file/khs/KHS_4.pdf' },
-    { term: '5', gpa: 3.92, file: '/file/khs/KHS_5.pdf' },
-    { term: '6', gpa: 4.00, file: '/file/khs/KHS_6.pdf' },
-    { term: '7', gpa: 4.00, file: '/file/khs/KHS_7.pdf' },
-    { term: '8', gpa: 4.00, file: null },
-  ]
-
-  // Chart Dimensions
-  const width = 800
-  const height = 260
-  const paddingTop = 40
-  const paddingBottom = 40
-  const chartStartX = 80 // Start data points far away from Y-axis labels
-  const chartEndX = width - 40 // End data points before right edge
-  const chartWidth = chartEndX - chartStartX
-  const minGpa = 3.4
-  const maxGpa = 4.0
-  const gpaRange = maxGpa - minGpa
-
-  // Calculate coordinates
-  const points = semesters.map((item, index) => {
-    const x = chartStartX + (index / (semesters.length - 1)) * chartWidth
-    const y = height - paddingBottom - ((item.gpa - minGpa) / gpaRange) * (height - paddingTop - paddingBottom)
-    return { x, y, ...item }
-  })
-
-  // SVG Paths
-  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
-  const firstX = points[0].x
-  const lastX = points[points.length - 1].x
-  const areaPath = `${linePath} L ${lastX} ${height} L ${firstX} ${height} Z`
 
   return (
     <section id="education" className="pt-32 pb-24 relative min-h-screen">
@@ -54,10 +51,9 @@ export default function Education() {
         {/* Header */}
         <motion.div
           className="text-center mb-14"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
         >
           <h2 className="font-display font-bold text-3xl md:text-4xl" style={{ color: 'var(--text-primary)' }}>
             {t('education.title1')} <span className="gradient-text">{t('education.title2')}</span>
@@ -71,10 +67,9 @@ export default function Education() {
         <motion.div
           className="glass border rounded-3xl p-6 md:p-10 mb-12 flex flex-col md:flex-row gap-8 items-center"
           style={{ borderColor: 'var(--border)' }}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
         >
           <div className="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl flex items-center justify-center p-4 shadow-inner relative overflow-hidden group">
             <div className="absolute inset-0 bg-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -95,10 +90,9 @@ export default function Education() {
           <motion.div
             className="lg:col-span-3 glass border rounded-3xl p-6 md:p-10 relative overflow-hidden"
             style={{ borderColor: 'var(--border)' }}
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
           >
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
               <div>
@@ -111,7 +105,7 @@ export default function Education() {
               </div>
             </div>
 
-            {/* SVG Chart */}
+            {/* SVG Chart — Pure CSS hover states so scrolling over chart triggers 0 React re-renders */}
             <div className="relative w-full overflow-x-auto custom-scrollbar pb-4">
               <div className="min-w-[500px] w-full relative" style={{ height }}>
                 <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="overflow-visible">
@@ -135,69 +129,45 @@ export default function Education() {
                     </linearGradient>
                   </defs>
 
-                  <motion.path
-                    d={areaPath}
-                    fill="url(#gradientArea)"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  />
+                  <path d={areaPath} fill="url(#gradientArea)" />
 
                   {/* Line */}
-                  <motion.path
+                  <path
                     d={linePath}
                     fill="none"
                     stroke="rgb(var(--accent-rgb))"
                     strokeWidth="3"
-                    initial={{ pathLength: 0 }}
-                    whileInView={{ pathLength: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.5, ease: "easeInOut", delay: 0.5 }}
                   />
 
                   {/* Data Points */}
                   {points.map((p, i) => (
-                    <g 
-                      key={i} 
-                      className="cursor-pointer transition-all duration-300"
-                      onMouseEnter={() => setHoveredPoint(i)}
-                      onMouseLeave={() => setHoveredPoint(null)}
-                    >
+                    <g key={i} className="cursor-pointer group/pt">
                       {/* Interactive invisible circle for better hover area */}
                       <circle cx={p.x} cy={p.y} r="20" fill="transparent" />
                       
                       {/* Inner dot */}
-                      <motion.circle
+                      <circle
                         cx={p.x}
                         cy={p.y}
-                        r={hoveredPoint === i ? 6 : 4}
+                        r="4.5"
                         fill="var(--bg-primary)"
                         stroke="rgb(var(--accent-rgb))"
                         strokeWidth="3"
-                        initial={{ scale: 0 }}
-                        whileInView={{ scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: 0.8 + i * 0.1, type: "spring" }}
-                        style={{ filter: hoveredPoint === i ? 'drop-shadow(0 0 8px rgb(var(--accent-rgb)))' : 'none' }}
+                        className="transition-transform duration-200 group-hover/pt:scale-125"
+                        style={{ transformOrigin: `${p.x}px ${p.y}px` }}
                       />
 
-                      {/* Always show value near the point, or show on hover? Let's show always but highlight on hover */}
-                      <motion.text
+                      {/* Value label */}
+                      <text
                         x={p.x}
                         y={p.y - 15}
                         textAnchor="middle"
                         fontSize="12"
                         fontWeight="bold"
-                        fill={hoveredPoint === i ? "rgb(var(--accent-rgb))" : "var(--text-secondary)"}
-                        className="font-mono transition-colors duration-300"
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: 1 + i * 0.1 }}
+                        className="font-mono fill-[var(--text-secondary)] group-hover/pt:fill-[rgb(var(--accent-rgb))] transition-colors duration-200"
                       >
                         {p.gpa.toFixed(2)}
-                      </motion.text>
+                      </text>
                       
                       {/* X Axis Label */}
                       <text x={p.x} y={height - 10} textAnchor="middle" fontSize="12" fill="var(--text-muted)" className="font-semibold">
@@ -215,7 +185,7 @@ export default function Education() {
                 <button
                   key={s.term}
                   onClick={() => setSelectedKhs(s)}
-                  className="flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border transition-all duration-300 hover:scale-[1.03] border-[var(--border)] hover:border-accent bg-[var(--bg-primary)] hover:bg-accent/10 shadow-sm group"
+                  className="flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border transition-[transform,border-color,background-color] duration-200 hover:scale-[1.03] border-[var(--border)] hover:border-accent bg-[var(--bg-primary)] hover:bg-accent/10 shadow-sm group"
                 >
                   <FiFileText className={`w-4 h-4 transition-colors ${s.file ? 'text-accent' : 'text-slate-500 group-hover:text-accent-light'}`} />
                   <span className={`text-[11px] font-bold whitespace-nowrap transition-colors ${s.file ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>
@@ -231,10 +201,9 @@ export default function Education() {
             <motion.div
               className="glass border rounded-3xl p-8 flex-1 flex flex-col items-center justify-center text-center relative overflow-hidden"
               style={{ borderColor: 'var(--border)' }}
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none" />
               <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-4 border border-accent/20">
@@ -251,10 +220,9 @@ export default function Education() {
               {/* Transcript Button */}
               <button
                 onClick={() => setShowTranscript(true)}
-                className="w-full group relative flex items-center justify-center gap-2.5 py-3.5 px-4 mt-2 rounded-2xl bg-accent text-white font-semibold hover:-translate-y-1 hover:shadow-[0_8px_25px_rgb(var(--accent-rgb)/0.4)] active:scale-95 transition-all duration-300"
+                className="w-full group relative flex items-center justify-center gap-2.5 py-3.5 px-4 mt-2 rounded-2xl bg-accent text-white font-semibold hover:-translate-y-1 active:scale-95 transition-transform duration-200 shadow-[0_6px_20px_rgb(var(--accent-rgb)/0.35)]"
               >
-                {/* Subtle highlight effect on hover */}
-                <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 
                 <FiFileText className="w-5 h-5 relative z-10 flex-shrink-0" />
                 <span className="relative z-10 whitespace-nowrap text-sm md:text-[15px] tracking-wide">
@@ -270,10 +238,9 @@ export default function Education() {
         <motion.div
           className="bg-[var(--bg-secondary)] border rounded-2xl p-6 md:p-8 relative overflow-hidden"
           style={{ borderColor: 'var(--border)' }}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.5 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.25 }}
         >
           <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-accent rounded-l-2xl" />
           <p className="text-sm md:text-base leading-relaxed pl-4" style={{ color: 'var(--text-secondary)' }}>
