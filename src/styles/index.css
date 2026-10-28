@@ -15,7 +15,7 @@
   --text-muted: #64748b;
   --text-on-accent: #0b0c10;
   --border: rgba(16, 185, 129, 0.4);
-  --glass: rgba(6, 44, 34, 0.7);
+  --glass: #09241d;
   --glass-border: rgba(16, 185, 129, 0.4);
   --shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
   --accent: #10B981;
@@ -37,7 +37,7 @@ html.light {
   --text-muted: #94a3b8;
   --text-on-accent: #FFFFFF;
   --border: rgba(5, 150, 105, 0.3);
-  --glass: rgba(236, 253, 245, 0.7);
+  --glass: #f0fdf7;
   --glass-border: rgba(5, 150, 105, 0.3);
   --shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
   --accent: #059669;
@@ -54,7 +54,7 @@ html.theme-blue {
   --bg-secondary: #0f172a;
   --bg-tertiary: #1e293b;
   --border: rgba(59, 130, 246, 0.4);
-  --glass: rgba(15, 23, 42, 0.7);
+  --glass: #101522;
   --glass-border: rgba(59, 130, 246, 0.4);
   --accent: #3B82F6;
   --accent-rgb: 59 130 246;
@@ -70,7 +70,7 @@ html.light.theme-blue {
   --bg-secondary: #eff6ff;
   --bg-tertiary: #dbeafe;
   --border: rgba(37, 99, 235, 0.3);
-  --glass: rgba(239, 246, 255, 0.7);
+  --glass: #f2f7fe;
   --glass-border: rgba(37, 99, 235, 0.3);
   --accent: #2563EB;
   --accent-rgb: 37 99 235;
@@ -86,7 +86,7 @@ html.theme-amber {
   --bg-secondary: #1e1b15;
   --bg-tertiary: #29251c;
   --border: rgba(245, 158, 11, 0.4);
-  --glass: rgba(30, 27, 21, 0.7);
+  --glass: #1a1814;
   --glass-border: rgba(245, 158, 11, 0.4);
   --accent: #F59E0B;
   --accent-rgb: 245 158 11;
@@ -102,7 +102,7 @@ html.light.theme-amber {
   --bg-secondary: #fffbeb;
   --bg-tertiary: #fef3c7;
   --border: rgba(217, 119, 6, 0.3);
-  --glass: rgba(255, 251, 235, 0.7);
+  --glass: #fdfbf0;
   --glass-border: rgba(217, 119, 6, 0.3);
   --accent: #D97706;
   --accent-rgb: 217 119 6;
@@ -120,10 +120,6 @@ html.light.theme-amber {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 body {
@@ -178,11 +174,9 @@ body {
    UTILITY CLASSES
    ============================================================ */
 @layer components {
-  /* Glass card */
+  /* Glass card (Opaque pre-blended surface for zero-cost scroll compositing) */
   .glass {
     background: var(--glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
   }
 
