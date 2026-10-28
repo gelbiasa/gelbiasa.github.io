@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
+import { AnimatePresence, motion, useScroll } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import TopNav from './components/layout/TopNav';
@@ -15,13 +15,9 @@ function App() {
   });
   const [showOverlay, setShowOverlay] = useState(false);
   
-  // Setup Framer Motion Scroll Progress
+  // Direct scroll progress without spring main-thread physics overhead
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+
   // Show terminal intro once per browser session
   const [showIntro, setShowIntro] = useState(() => {
     return !sessionStorage.getItem('gelby_intro_shown');
@@ -52,21 +48,21 @@ function App() {
         */}
         <div className="relative min-h-screen w-full flex flex-col selection:bg-accent-glow selection:text-text-primary bg-[var(--bg-primary)]">
           
-          {/* Scroll Progress Bar */}
+          {/* Scroll Progress Bar — GPU-composited scaleX without shadow repaint */}
           <motion.div
-            className="fixed top-0 left-0 right-0 h-1 bg-accent origin-left z-[9999] shadow-[0_0_10px_rgb(var(--accent-rgb))]"
-            style={{ scaleX }}
+            className="fixed top-0 left-0 right-0 h-1 bg-accent origin-left z-[9999] pointer-events-none"
+            style={{ scaleX: scrollYProgress, willChange: 'transform' }}
           />
 
-          {/* BACKGROUND 3D (Always mounted to prevent WebGL lag on tab switch) */}
-          <div className={`fixed z-0 pointer-events-none transition-opacity duration-700 ${activeTab === 'home' ? 'opacity-25' : 'opacity-0'}
+          {/* BACKGROUND 3D (Mounted once, paused & hidden from compositor when not on Home tab) */}
+          <div className={`fixed z-0 pointer-events-none transition-opacity duration-500 ${activeTab === 'home' ? 'opacity-25 visible' : 'opacity-0 invisible'}
             top-0 left-0 w-full h-[50vh] 
             md:top-[-5%] md:left-[-5%] md:w-[600px] md:h-[600px] 
             lg:top-[-10%] lg:left-[-10%] lg:w-[800px] lg:h-[800px] 
             flex items-center justify-center`}
           >
             {/* Defer WebGL init until intro is done to avoid main-thread stalls during typing */}
-            {!showIntro && <Hero3D />}
+            {!showIntro && <Hero3D isActive={activeTab === 'home'} />}
           </div>
           {/* Full-screen terminal intro (once per session) */}
           {showIntro && <TerminalIntro onDone={() => setShowIntro(false)} />}
