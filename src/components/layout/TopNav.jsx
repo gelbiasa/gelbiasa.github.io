@@ -57,7 +57,7 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
         <svg className="w-0 h-0 absolute pointer-events-none" aria-hidden="true">
           <defs>
             <filter id="spray-edge" x="-50%" y="-50%" width="200%" height="200%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="5" result="noise" />
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="5" result="noise" />
               <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 18 -8" in="noise" result="mask" />
               <feComposite operator="in" in="SourceGraphic" in2="mask" />
             </filter>
@@ -91,13 +91,13 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
                 onClick={() => handleTabClick(tab.id)}
                 className="relative px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors duration-200 rounded-full group"
               >
-                {/* Active spray stencil effect — isolated on static GPU texture so it never re-rasterizes on scroll */}
+                {/* Active spray stencil effect — unclipped organic halo on static GPU layer */}
                 {isActive && (
                   <span
                     className="absolute inset-0 pointer-events-none"
-                    style={{ transform: 'translateZ(0)', contain: 'layout paint' }}
+                    style={{ transform: 'translateZ(0)' }}
                   >
-                    {/* Scattered spray halo */}
+                    {/* Scattered spray halo (outermost, speckled) */}
                     <span
                       className="absolute -inset-[60%] pointer-events-none z-[-1] block"
                       style={{
@@ -120,7 +120,7 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
                       className="absolute inset-[4px] pointer-events-none z-[1] rounded-full block"
                       style={{
                         background: 'var(--bg-primary)',
-                        boxShadow: 'inset 0 0 0 1.5px rgb(var(--accent-rgb)/0.5)',
+                        boxShadow: 'inset 0 0 0 1.5px rgb(var(--accent-rgb)/0.6), 0 0 14px rgb(var(--accent-rgb)/0.25)',
                       }}
                     />
                   </span>
