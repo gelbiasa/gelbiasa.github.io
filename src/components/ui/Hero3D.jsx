@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, ContactShadows, Environment, MeshDistortMaterial } from '@react-three/drei';
+import { Float, Environment } from '@react-three/drei';
 import { useTheme } from '../../context/ThemeContext';
 
 function FloatingObject() {
@@ -9,6 +9,7 @@ function FloatingObject() {
   
   // Rotate the object slowly
   useFrame((state, delta) => {
+    if (!meshRef.current) return;
     meshRef.current.rotation.x -= delta * 0.15;
     meshRef.current.rotation.y += delta * 0.2;
   });
@@ -56,12 +57,14 @@ function FloatingObject() {
   );
 }
 
-export default function Hero3D() {
+export default function Hero3D({ isActive = true }) {
   return (
     <div className="w-full h-full pointer-events-none">
       <Canvas 
+        frameloop={isActive ? 'always' : 'never'}
+        dpr={[1, 1.5]}
         camera={{ position: [0, 0, 6], fov: 45 }}
-        gl={{ alpha: true, antialias: true }}
+        gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
         style={{ width: '100%', height: '100%' }}
       >
         <ambientLight intensity={0.5} />
