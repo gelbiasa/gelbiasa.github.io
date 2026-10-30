@@ -283,7 +283,7 @@ function ProjectModal({ project, onClose }) {
         exit={{ y: 20, opacity: 0, scale: 0.97 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
         onClick={(e) => e.stopPropagation()}
-        className="relative mx-auto w-full max-w-[1400px] bg-surface rounded-2xl md:rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
+        className="relative mx-auto w-full max-w-6xl bg-surface rounded-2xl md:rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Close Button - Always visible at top right of the modal */}
         <button
@@ -295,11 +295,28 @@ function ProjectModal({ project, onClose }) {
 
         {/* Top: Image Banner */}
         <div className="w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] bg-[#0a0e14] relative flex-shrink-0 group/banner">
+          
+          {/* Decorative background blur (adds ambiance based on the image — cached once on GPU texture) */}
+          {(Array.isArray(project.image) ? project.image[0] : project.image) && (
+            <div
+              className="absolute inset-0 opacity-50 overflow-hidden pointer-events-none"
+              style={{ transform: 'translateZ(0)' }}
+            >
+              <img 
+                src={Array.isArray(project.image) ? project.image[0] : project.image} 
+                alt="" 
+                aria-hidden="true"
+                decoding="async"
+                className="w-full h-full object-cover blur-3xl scale-125 opacity-80" 
+              />
+            </div>
+          )}
+
           <ImageCarousel 
             images={project.image} 
             alt={project.title} 
             className="relative z-10 px-4 pt-16 pb-12 md:px-8 md:pt-20 md:pb-16" 
-            objectFit="contain"
+            objectFit="fill"
             imageClassName="rounded-2xl border border-accent shadow-[0_0_25px_rgb(var(--accent-rgb)/0.25)] bg-accent p-[2px] md:p-1"
             arrowsOutside={true}
           />
