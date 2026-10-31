@@ -338,13 +338,14 @@ export default function Education() {
               </div>
 
               <div className="flex-1 bg-background rounded-xl overflow-hidden border border-border flex relative">
-                <div className="w-full h-full flex flex-col items-center justify-center text-center px-6 py-12">
-                  <FiClock className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                  <h4 className="text-lg font-bold text-text-primary mb-2">Coming Soon</h4>
-                  <p className="text-sm text-text-secondary max-w-md mx-auto">
-                    {t('education.transcriptComingSoon')}
-                  </p>
-                </div>
+                <Suspense fallback={
+                  <div className="flex flex-col items-center justify-center w-full h-full gap-3">
+                    <div className="animate-spin w-8 h-8 border-4 border-accent border-t-transparent rounded-full" />
+                    <span className="text-text-muted text-sm animate-pulse">Loading PDF Engine...</span>
+                  </div>
+                }>
+                  <CustomPdfViewer fileUrl="/file/transkrip/transkrip_nilai.pdf" />
+                </Suspense>
               </div>
             </motion.div>
           </motion.div>
