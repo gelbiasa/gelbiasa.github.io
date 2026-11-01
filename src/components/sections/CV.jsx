@@ -4,9 +4,15 @@ import { FiClock, FiExternalLink } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
 
 const CV = () => {
-  const { t } = useLanguage();
-  const [cvLang, setCvLang] = useState('en'); // 'en' or 'id'
+  const { language, t } = useLanguage();
+  const [cvLang, setCvLang] = useState(language); // Defaults to system language ('en' or 'id')
   const [cvStatus, setCvStatus] = useState('checking');
+
+  // Sync CV language whenever the global system language changes (parent -> child hierarchy),
+  // while still allowing local CV language toggle without affecting system language.
+  useEffect(() => {
+    setCvLang(language);
+  }, [language]);
 
   const currentPath = cvLang === 'en' ? '/file/inggris/CV_Inggris.pdf' : '/file/indonesia/CV_Indonesia.pdf';
   const currentFilename = cvLang === 'en' ? 'CV_Inggris.pdf' : 'CV_Indonesia.pdf';
