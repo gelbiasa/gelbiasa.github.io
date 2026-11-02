@@ -6,6 +6,7 @@ import Projects from '../sections/Projects';
 import Skills from '../sections/Skills';
 import Experience from '../sections/Experience';
 import Education from '../sections/Education';
+import Certificates from '../sections/Certificates';
 import CV from '../sections/CV';
 import Contact from '../sections/Contact';
 
@@ -36,6 +37,7 @@ const ContentArea = ({ activeTab, setActiveTab }) => {
           {activeTab === 'skills' && <Skills />}
           {activeTab === 'experience' && <Experience />}
           {activeTab === 'education' && <Education />}
+          {activeTab === 'certificates' && <Certificates />}
           {activeTab === 'cv' && <CV />}
           {activeTab === 'contact' && <Contact />}
         </motion.div>
