@@ -17,6 +17,7 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
     { id: 'skills', label: 'Skills' },
     { id: 'experience', label: 'Experience' },
     { id: 'education', label: 'Education' },
+    { id: 'certificates', label: 'Certifications' },
     { id: 'cv', label: 'CV' },
     { id: 'contact', label: 'Contact' },
   ];
@@ -82,14 +83,14 @@ const TopNav = ({ activeTab, setActiveTab, onHireMeClick }) => {
         </button>
 
         {/* === CENTER NAV (Desktop) === */}
-        <nav className="hidden lg:flex items-center gap-2 px-2 py-1.5">
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-2 px-1 xl:px-2 py-1.5">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className="relative px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors duration-200 rounded-full group"
+                className="relative px-2.5 xl:px-3.5 py-2.5 text-[11px] xl:text-xs font-bold tracking-wider xl:tracking-widest uppercase transition-colors duration-200 rounded-full group whitespace-nowrap"
               >
                 {/* Active spray stencil effect — unclipped organic halo on static GPU layer */}
                 {isActive && (
