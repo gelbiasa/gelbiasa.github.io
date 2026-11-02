@@ -285,6 +285,7 @@ export default function HiddenTerminal({ onHireMe }) {
             { type: 'system', text: t.helpProjects },
             { type: 'system', text: t.helpExperience },
             { type: 'system', text: t.helpEducation },
+            { type: 'system', text: t.helpCertificates },
             { type: 'system', text: t.helpLangId },
             { type: 'system', text: t.helpLangEn },
             { type: 'system', text: t.helpClear },
@@ -315,6 +316,17 @@ export default function HiddenTerminal({ onHireMe }) {
         case 'education':
         case 'edu':
           t.educationLines.forEach((lineText) => {
+            next.push({ type: 'system', text: lineText });
+          });
+          break;
+        case 'certificates':
+        case 'certificate':
+        case 'certs':
+        case 'cert':
+        case 'sertifikat':
+        case 'sertifikasi':
+        case 'sertif':
+          t.certificateLines.forEach((lineText) => {
             next.push({ type: 'system', text: lineText });
           });
           break;
