@@ -156,7 +156,7 @@ function ImageCarousel({ images, alt, className = "", imageClassName = "", objec
 }
 
 // Custom Hook/Component for click-and-drag to scroll with smart arrows
-function DragScroll({ children, className }) {
+export function DragScroll({ children, className }) {
   const scrollRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
