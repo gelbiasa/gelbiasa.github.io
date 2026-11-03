@@ -1,573 +1,583 @@
-import React, { useState, useMemo, Suspense, lazy } from 'react';
+import React, { useState, useMemo, Suspense, lazy, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FiAward, 
-  FiShield, 
-  FiCheckCircle, 
-  FiClock, 
-  FiFileText, 
-  FiExternalLink, 
-  FiDownload, 
-  FiSearch, 
-  FiX, 
-  FiGlobe, 
-  FiCode, 
-  FiTerminal, 
-  FiDatabase, 
+import {
+  FiAward,
+  FiShield,
+  FiClock,
+  FiFileText,
+  FiExternalLink,
+  FiDownload,
+  FiSearch,
+  FiX,
+  FiGlobe,
+  FiCode,
+  FiTerminal,
+  FiDatabase,
   FiCheck,
   FiInfo,
-  FiLayers
+  FiGrid,
+  FiChevronRight,
+  FiArrowRight,
+  FiCalendar,
+  FiHash,
 } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
-import { certificatesData, certificateCategories } from '../../data/certificates';
+import { certificatesData } from '../../data/certificates';
+import { DragScroll } from './Projects';
 
 // Lazy load CustomPdfViewer for smooth bundle splitting
 const CustomPdfViewer = lazy(() => import('../ui/CustomPdfViewer'));
 
-const getCategoryIcon = (category) => {
-  switch (category) {
-    case 'national':
-      return <FiShield className="w-4 h-4 text-emerald-400" />;
-    case 'course':
-      return <FiCode className="w-4 h-4 text-blue-400" />;
-    case 'language':
-      return <FiGlobe className="w-4 h-4 text-amber-400" />;
-    default:
-      return <FiAward className="w-4 h-4 text-accent" />;
-  }
+const CATEGORIES = ['all', 'national', 'course', 'language'];
+const GROUP_ORDER = ['national', 'course', 'language'];
+
+const categoryIcons = {
+  all: FiGrid,
+  national: FiShield,
+  course: FiCode,
+  language: FiGlobe,
 };
 
-const getIssuerIcon = (iconType) => {
-  switch (iconType) {
-    case 'shield':
-      return <FiShield className="w-6 h-6 text-accent" />;
-    case 'globe':
-      return <FiGlobe className="w-6 h-6 text-accent" />;
-    case 'terminal':
-      return <FiTerminal className="w-6 h-6 text-accent" />;
-    case 'database':
-      return <FiDatabase className="w-6 h-6 text-accent" />;
-    case 'code':
-      return <FiCode className="w-6 h-6 text-accent" />;
-    default:
-      return <FiAward className="w-6 h-6 text-accent" />;
-  }
+const issuerIcons = {
+  shield: FiShield,
+  globe: FiGlobe,
+  terminal: FiTerminal,
+  database: FiDatabase,
+  code: FiCode,
+  award: FiAward,
 };
 
-export default function Certificates() {
-  const { language, t } = useLanguage();
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCert, setSelectedCert] = useState(null);
+const pick = (obj, language) => (obj && typeof obj === 'object' ? obj[language] || obj.en : obj);
 
-  // Counters for Top Stats Row
-  const stats = useMemo(() => {
-    return {
-      total: certificatesData.length,
-      national: certificatesData.filter(c => c.category === 'national').length,
-      course: certificatesData.filter(c => c.category === 'course').length,
-      language: certificatesData.filter(c => c.category === 'language').length,
-    };
-  }, []);
-
-  // Filtered Certificates
-  const filteredCertificates = useMemo(() => {
-    return certificatesData.filter((cert) => {
-      const matchesCategory = activeCategory === 'all' || cert.category === activeCategory;
-      if (!matchesCategory) return false;
-
-      if (!searchQuery.trim()) return true;
-      const query = searchQuery.toLowerCase();
-
-      const title = (cert.title[language] || cert.title.en || '').toLowerCase();
-      const issuer = (cert.issuer[language] || cert.issuer.en || '').toLowerCase();
-      const scheme = (cert.scheme[language] || cert.scheme.en || '').toLowerCase();
-      const skills = cert.skills.join(' ').toLowerCase();
-      const credId = (cert.credentialId || '').toLowerCase();
-
-      return (
-        title.includes(query) ||
-        issuer.includes(query) ||
-        scheme.includes(query) ||
-        skills.includes(query) ||
-        credId.includes(query)
-      );
-    });
-  }, [activeCategory, searchQuery, language]);
+/* ---------------------------------------------------------------- */
+/* Certificate Card                                                  */
+/* ---------------------------------------------------------------- */
+const CertificateCard = memo(function CertificateCard({ cert, language, onOpen }) {
+  const { t } = useLanguage();
+  const isAvailable = cert.status === 'available';
+  const Icon = issuerIcons[cert.iconType] || FiAward;
+  const validity = pick(cert.expiryDate, language);
 
   return (
-    <section id="certificates" className="pt-32 pb-24 relative min-h-screen">
-      <div className="section-container relative px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto">
-        
-        {/* === SECTION HEADER === */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-        >
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="w-8 h-1 bg-accent rounded-full" />
-            <p className="text-accent text-xs md:text-sm font-mono tracking-widest uppercase">
-              {t('certificates.kicker')}
-            </p>
-            <div className="w-8 h-1 bg-accent rounded-full" />
+    <div
+      onClick={(e) => {
+        if (!e.target.closest('a') && !e.target.closest('button')) onOpen(cert);
+      }}
+      className="project-card bg-surface rounded-2xl overflow-hidden border border-border hover:-translate-y-1 transition-transform duration-200 cursor-pointer flex flex-col h-full group shadow-lg"
+    >
+      {/* Certificate Preview Banner */}
+      <div className="relative overflow-hidden aspect-[16/9] bg-background">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(circle at 20% 15%, rgb(var(--accent-rgb)/0.28) 0%, transparent 55%), radial-gradient(circle at 85% 90%, rgb(var(--accent-rgb)/0.14) 0%, transparent 50%)',
+          }}
+        />
+        {/* Decorative certificate frame */}
+        <div className="absolute inset-4 md:inset-5 rounded-xl border border-dashed border-accent/30" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-surface-2 border border-border flex items-center justify-center shadow-xl group-hover:border-accent/50 group-hover:scale-105 transition-all duration-200">
+            <Icon className="w-8 h-8 md:w-10 md:h-10 text-accent" />
           </div>
-          <h2 className="font-display font-extrabold text-3xl md:text-5xl tracking-tight" style={{ color: 'var(--text-primary)' }}>
-            {t('certificates.title1')} <span className="text-accent">{t('certificates.title2')}</span>
-          </h2>
-          <p className="mt-4 text-xs md:text-sm max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            {t('certificates.subtitle')}
+          <span className="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold">
+            {isAvailable ? t('certificates.previewReady') : t('certificates.previewSoon')}
+          </span>
+        </div>
+
+        {/* Badge (top-left) */}
+        <span className="absolute top-3 left-3 inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono tracking-wider uppercase bg-background/90 border border-border text-accent">
+          {cert.badge}
+        </span>
+
+        {/* Status (top-right) */}
+        <span
+          className={`absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border bg-background/90 ${
+            isAvailable ? 'text-emerald-400 border-emerald-500/30' : 'text-accent border-accent/30'
+          }`}
+        >
+          <span className={`w-1.5 h-1.5 rounded-full ${isAvailable ? 'bg-emerald-400' : 'bg-accent'}`} />
+          {isAvailable ? t('certificates.status.verified') : t('certificates.status.upcoming')}
+        </span>
+
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-40 pointer-events-none" />
+      </div>
+
+      {/* Content */}
+      <div className="p-5 md:p-7 flex flex-col flex-1 gap-4 relative z-10">
+        {/* Skill chips (drag scroll, like Projects) */}
+        <div className="w-full">
+          <DragScroll className="flex gap-2 items-center px-1 py-1">
+            {cert.skills.map((skill) => (
+              <span
+                key={skill}
+                className="flex-shrink-0 badge bg-surface-2 border-border text-text-primary px-2 py-0.5 text-[10px]"
+              >
+                {skill}
+              </span>
+            ))}
+          </DragScroll>
+        </div>
+
+        {/* Issuer + Title */}
+        <div>
+          <p className="text-accent text-[10px] md:text-xs font-mono tracking-widest uppercase mb-1.5 line-clamp-1">
+            {pick(cert.issuer, language)}
           </p>
-        </motion.div>
+          <h3 className="font-display font-bold text-lg md:text-xl leading-snug text-text-primary group-hover:text-accent transition-colors duration-200 line-clamp-2">
+            {pick(cert.title, language)}
+          </h3>
+        </div>
 
-        {/* === TOP STATS ROW === */}
-        <motion.div
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10"
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.05 }}
-        >
-          {/* Card 1: Total */}
-          <div className="p-4 md:p-5 rounded-2xl bg-surface border border-border flex items-center gap-3.5 shadow-sm">
-            <div className="w-11 h-11 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-              <FiLayers className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <p className="text-xl md:text-2xl font-black text-text-primary leading-tight font-display">
-                {stats.total}
-              </p>
-              <p className="text-[11px] md:text-xs text-text-secondary font-medium">
-                {t('certificates.stats.total')}
-              </p>
+        {/* Scheme */}
+        <p className="text-sm text-text-secondary leading-relaxed line-clamp-2">
+          {pick(cert.scheme, language)}
+        </p>
+
+        {/* Meta */}
+        <div className="grid grid-cols-2 gap-2 text-[11px]">
+          <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-2 border border-border min-w-0">
+            <FiCalendar className="w-3.5 h-3.5 text-accent shrink-0" />
+            <div className="min-w-0">
+              <span className="block text-[9px] uppercase tracking-wider text-text-muted">
+                {t('certificates.card.validityLabel')}
+              </span>
+              <span className="block font-semibold text-text-primary truncate">
+                {cert.issueDate} · {validity}
+              </span>
             </div>
           </div>
-
-          {/* Card 2: National Standards */}
-          <div className="p-4 md:p-5 rounded-2xl bg-surface border border-border flex items-center gap-3.5 shadow-sm">
-            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-              <FiShield className="w-5 h-5 text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-xl md:text-2xl font-black text-text-primary leading-tight font-display">
-                {stats.national}
-              </p>
-              <p className="text-[11px] md:text-xs text-text-secondary font-medium">
-                {t('certificates.stats.national')}
-              </p>
+          <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-2 border border-border min-w-0">
+            <FiHash className="w-3.5 h-3.5 text-accent shrink-0" />
+            <div className="min-w-0">
+              <span className="block text-[9px] uppercase tracking-wider text-text-muted">
+                {t('certificates.card.regLabel')}
+              </span>
+              <span className="block font-semibold font-mono text-text-primary truncate" title={cert.credentialId}>
+                {cert.credentialId}
+              </span>
             </div>
           </div>
+        </div>
 
-          {/* Card 3: Industry Courses */}
-          <div className="p-4 md:p-5 rounded-2xl bg-surface border border-border flex items-center gap-3.5 shadow-sm">
-            <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-              <FiCode className="w-5 h-5 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-xl md:text-2xl font-black text-text-primary leading-tight font-display">
-                {stats.course}
-              </p>
-              <p className="text-[11px] md:text-xs text-text-secondary font-medium">
-                {t('certificates.stats.course')}
-              </p>
+        {/* Footer */}
+        <div className="mt-auto pt-5 border-t border-border flex items-center justify-between gap-3">
+          <span className="text-xs font-semibold text-text-secondary group-hover:text-text-primary transition-colors">
+            {t('certificates.actions.viewCert')}
+          </span>
+          <div className="flex items-center gap-2">
+            {cert.credentialUrl && (
+              <a
+                href={cert.credentialUrl}
+                target="_blank"
+                rel="noreferrer"
+                title={t('certificates.actions.verifyOnline')}
+                className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text-secondary hover:text-accent hover:bg-accent/10 transition-colors"
+              >
+                <FiExternalLink className="w-4 h-4" />
+              </a>
+            )}
+            {cert.file && (
+              <a
+                href={cert.file}
+                download
+                title={t('certificates.actions.download')}
+                className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text-secondary hover:text-accent hover:bg-accent/10 transition-colors"
+              >
+                <FiDownload className="w-4 h-4" />
+              </a>
+            )}
+            <div className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-colors duration-200 text-text-secondary group-hover:text-black">
+              <FiArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-200" />
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+});
 
-          {/* Card 4: Language Tests */}
-          <div className="p-4 md:p-5 rounded-2xl bg-surface border border-border flex items-center gap-3.5 shadow-sm">
-            <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-              <FiGlobe className="w-5 h-5 text-amber-400" />
+/* ---------------------------------------------------------------- */
+/* Detail Modal                                                      */
+/* ---------------------------------------------------------------- */
+function CertificateModal({ cert, language, onClose }) {
+  const { t } = useLanguage();
+  const Icon = issuerIcons[cert.iconType] || FiAward;
+
+  const infoBox = (label, value, mono = false) => (
+    <div className="p-4 rounded-xl bg-surface border border-border">
+      <span className="text-[11px] font-mono text-text-muted uppercase block mb-1">{label}</span>
+      <span className={`text-xs md:text-sm font-bold block ${mono ? 'font-mono text-accent' : 'text-text-primary'}`}>
+        {value}
+      </span>
+    </div>
+  );
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center px-4 pb-4 pt-24 md:px-8 md:pb-8 md:pt-28 bg-background/95"
+    >
+      <div className="absolute inset-0" onClick={onClose} />
+
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+        className="relative w-full max-w-4xl bg-surface border border-border rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-2xl flex flex-col h-full max-h-[90vh] pointer-events-auto"
+      >
+        <div className="flex items-center justify-between gap-3 pb-4 border-b border-border mb-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+              <Icon className="w-5 h-5 text-accent" />
             </div>
-            <div>
-              <p className="text-xl md:text-2xl font-black text-text-primary leading-tight font-display">
-                {stats.language}
-              </p>
-              <p className="text-[11px] md:text-xs text-text-secondary font-medium">
-                {t('certificates.stats.language')}
-              </p>
+            <div className="min-w-0">
+              <h3 className="text-sm md:text-lg font-bold text-text-primary leading-tight line-clamp-2">
+                {pick(cert.title, language)}
+              </h3>
+              <p className="text-xs text-text-secondary font-medium truncate">{pick(cert.issuer, language)}</p>
             </div>
           </div>
-        </motion.div>
+          <button
+            onClick={onClose}
+            className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-full transition-colors shrink-0"
+            title={t('certificates.actions.close')}
+          >
+            <FiX size={20} />
+          </button>
+        </div>
 
-        {/* === FILTER TABS & SEARCH BAR === */}
-        <motion.div
-          className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-8 bg-surface-2/60 p-2 md:p-3 rounded-2xl border border-border backdrop-blur-sm"
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.1 }}
-        >
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
-            {certificateCategories.map((cat) => {
-              const isActive = activeCategory === cat.id;
-              const count = cat.id === 'all' ? stats.total : stats[cat.id] || 0;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                    isActive
-                      ? 'bg-accent text-background shadow-md shadow-accent/20 scale-[1.02]'
-                      : 'bg-surface text-text-secondary hover:text-text-primary hover:bg-surface-2 border border-border'
-                  }`}
-                >
-                  {getCategoryIcon(cat.id)}
-                  <span>{t(cat.labelKey)}</span>
-                  <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                      isActive ? 'bg-background/25 text-background font-bold' : 'bg-surface-2 text-text-muted'
-                    }`}
-                  >
-                    {count}
+        <div className="flex-1 bg-background rounded-xl overflow-hidden border border-border flex flex-col relative">
+          {cert.file ? (
+            <Suspense
+              fallback={
+                <div className="flex flex-col items-center justify-center w-full h-full gap-3">
+                  <div className="animate-spin w-8 h-8 border-4 border-accent border-t-transparent rounded-full" />
+                  <span className="text-text-muted text-sm animate-pulse">Loading Certificate...</span>
+                </div>
+              }
+            >
+              <CustomPdfViewer fileUrl={cert.file} />
+            </Suspense>
+          ) : (
+            <div className="w-full h-full overflow-y-auto custom-scrollbar p-5 md:p-8 flex flex-col justify-between gap-6">
+              <div>
+                <div className="p-4 md:p-5 rounded-2xl bg-surface border border-accent/30 flex items-start gap-4 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+                    <FiClock className="w-5 h-5 text-accent" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm md:text-base font-bold text-text-primary mb-1">
+                      {t('certificates.modal.fileNoticeTitle')}
+                    </h4>
+                    <p className="text-xs md:text-sm text-text-secondary leading-relaxed">
+                      {t('certificates.modal.fileNoticeDesc')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-6">
+                  {infoBox(t('certificates.modal.issuer'), pick(cert.issuer, language))}
+                  {infoBox(t('certificates.modal.regNumber'), cert.credentialId, true)}
+                  {infoBox(t('certificates.modal.schemeLabel'), pick(cert.scheme, language))}
+                  {infoBox(t('certificates.modal.validity'), `${cert.issueDate} · ${pick(cert.expiryDate, language)}`)}
+                </div>
+
+                <div className="p-4 rounded-xl bg-surface border border-border mb-6">
+                  <span className="text-[11px] font-mono text-text-muted uppercase block mb-1">
+                    {t('certificates.modal.summaryLabel')}
                   </span>
-                </button>
-              );
-            })}
-          </div>
+                  <p className="text-xs md:text-sm text-text-secondary leading-relaxed">
+                    {pick(cert.description, language)}
+                  </p>
+                </div>
 
-          {/* Search Input */}
-          <div className="relative min-w-[260px] lg:w-80">
-            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4 pointer-events-none" />
+                <span className="text-[11px] font-mono text-text-muted uppercase block mb-2">
+                  {t('certificates.modal.skillsAcquired')}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {cert.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-3 py-1 rounded-lg bg-surface border border-border text-xs font-mono text-text-primary flex items-center gap-1.5"
+                    >
+                      <FiCheck className="text-emerald-400 w-3 h-3" />
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-surface-2/80 border border-border/80 flex items-center gap-3 text-[11px] text-text-muted">
+                <FiInfo className="w-4 h-4 text-accent shrink-0" />
+                <span>{t('certificates.modal.uploadHint')}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* Main Section                                                      */
+/* ---------------------------------------------------------------- */
+export default function Certificates() {
+  const { language, t } = useLanguage();
+  const [activeTab, setActiveTab] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCert, setSelectedCert] = useState(null);
+  const [isTabsExpanded, setIsTabsExpanded] = useState(false);
+
+  const counts = useMemo(() => {
+    const c = { all: certificatesData.length };
+    GROUP_ORDER.forEach((g) => {
+      c[g] = certificatesData.filter((x) => x.category === g).length;
+    });
+    return c;
+  }, []);
+
+  const matchesSearch = (cert) => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return true;
+    const haystack = [
+      pick(cert.title, language),
+      pick(cert.issuer, language),
+      pick(cert.scheme, language),
+      cert.skills.join(' '),
+      cert.credentialId,
+      cert.badge,
+    ]
+      .join(' ')
+      .toLowerCase();
+    return haystack.includes(q);
+  };
+
+  const visible = useMemo(
+    () =>
+      certificatesData.filter(
+        (c) => (activeTab === 'all' || c.category === activeTab) && matchesSearch(c)
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeTab, searchQuery, language]
+  );
+
+  const resetFilters = () => {
+    setActiveTab('all');
+    setSearchQuery('');
+  };
+
+  const isSearching = searchQuery.trim() !== '';
+
+  return (
+    <section
+      id="certificates"
+      className="relative pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto min-h-screen"
+    >
+      {/* Header */}
+      <motion.div
+        className="mb-12"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h2
+          className="font-display font-black text-4xl md:text-5xl tracking-tight mb-4"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {t('certificates.title1')} <span className="gradient-text">{t('certificates.title2')}</span>
+        </h2>
+        <p className="mt-4 text-sm md:text-base max-w-2xl" style={{ color: 'var(--text-secondary)' }}>
+          {t('certificates.subtitle')}
+        </p>
+      </motion.div>
+
+      {/* Main Layout: Sticky Sidebar on Left, Content on Right */}
+      <div className="flex flex-col lg:flex-row gap-10 items-start">
+        {/* Left Sidebar for Tabs */}
+        <aside className="w-fit max-w-full lg:w-64 shrink-0 sticky top-[88px] lg:top-32 z-40 mb-8 lg:mb-0">
+          <div className="flex items-stretch gap-2 lg:block w-full">
+            <div className="p-1.5 lg:p-0 bg-[var(--glass)] lg:bg-transparent border border-border lg:border-none rounded-2xl lg:rounded-none shadow-xl lg:shadow-none overflow-hidden flex-1 min-w-0">
+              <DragScroll className="flex lg:flex-col items-center lg:items-stretch gap-2">
+                {CATEGORIES.map((cat) => {
+                  const isActive = activeTab === cat;
+                  const Icon = categoryIcons[cat];
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveTab(cat)}
+                      title={t(`certificates.tabs.${cat}`)}
+                      className={`relative flex items-center gap-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl text-left transition-colors duration-200 whitespace-nowrap lg:whitespace-normal group border ${
+                        isTabsExpanded ? 'px-4 py-2' : 'p-2'
+                      } ${
+                        isActive
+                          ? 'bg-accent/15 border-border shadow-[0_0_20px_rgb(var(--accent-rgb)/0.3)]'
+                          : 'bg-transparent border-transparent hover:bg-white/10'
+                      }`}
+                    >
+                      {isActive && (
+                        <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)] hidden lg:block" />
+                      )}
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                          isActive
+                            ? 'bg-accent/20 text-accent'
+                            : 'bg-surface-2 text-text-secondary group-hover:text-text-primary'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div className={`${isTabsExpanded ? 'block' : 'hidden lg:block'}`}>
+                        <span
+                          className={`block font-bold tracking-wide transition-colors ${
+                            isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
+                          }`}
+                        >
+                          {t(`certificates.tabs.${cat}`)}
+                        </span>
+                        <span className="text-[10px] font-bold tracking-widest text-text-muted mt-1 uppercase">
+                          {counts[cat]} {t('certificates.countLabel')}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </DragScroll>
+            </div>
+
+            {/* Mobile Toggle Button */}
+            <button
+              onClick={() => setIsTabsExpanded(!isTabsExpanded)}
+              className="lg:hidden shrink-0 flex items-center justify-center w-11 rounded-2xl bg-[var(--glass)] border border-border shadow-xl text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+              aria-label="Toggle Category Labels"
+            >
+              <FiChevronRight
+                className={`w-5 h-5 transition-transform duration-300 ${isTabsExpanded ? 'rotate-180' : ''}`}
+              />
+            </button>
+          </div>
+        </aside>
+
+        {/* Right Content */}
+        <div className="flex-1 w-full min-w-0 min-h-[500px]">
+          {/* Search bar */}
+          <div className="relative mb-8">
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('certificates.searchPlaceholder')}
-              className="w-full pl-10 pr-9 py-2 rounded-xl bg-surface border border-border text-xs md:text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+              className="w-full pl-11 pr-24 py-3 rounded-2xl bg-surface border border-border text-xs md:text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
             />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
-                title="Clear Search"
-              >
-                <FiX size={14} />
-              </button>
-            )}
-          </div>
-        </motion.div>
-
-        {/* === CERTIFICATES GRID === */}
-        {filteredCertificates.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredCertificates.map((cert, index) => {
-              const isAvailable = cert.status === 'available';
-              const titleText = cert.title[language] || cert.title.en;
-              const issuerText = cert.issuer[language] || cert.issuer.en;
-              const schemeText = cert.scheme[language] || cert.scheme.en;
-              const descText = cert.description[language] || cert.description.en;
-              const validityText = typeof cert.expiryDate === 'object' ? (cert.expiryDate[language] || cert.expiryDate.en) : cert.expiryDate;
-
-              return (
-                <motion.div
-                  key={cert.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.25) }}
-                  className="group relative flex flex-col justify-between bg-surface border border-border hover:border-accent/50 rounded-2xl p-5 md:p-6 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5"
-                >
-                  <div>
-                    {/* Header: Badge & Status */}
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono tracking-wider uppercase bg-surface-2 border border-border text-accent">
-                        {cert.badge}
-                      </span>
-
-                      {/* Status indicator */}
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border ${
-                          isAvailable
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                            : 'bg-accent/10 text-accent border-accent/20'
-                        }`}
-                      >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            isAvailable ? 'bg-emerald-400' : 'bg-accent animate-pulse'
-                          }`}
-                        />
-                        {isAvailable ? t('certificates.status.verified') : t('certificates.status.upcoming')}
-                      </span>
-                    </div>
-
-                    {/* Issuer Avatar & Title */}
-                    <div className="flex items-start gap-3.5 mb-3">
-                      <div className="w-12 h-12 rounded-xl bg-surface-2 border border-border flex items-center justify-center shrink-0 group-hover:border-accent/40 transition-colors shadow-inner">
-                        {getIssuerIcon(cert.iconType)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-semibold text-text-secondary truncate">
-                          {issuerText}
-                        </p>
-                        <h3 className="text-base md:text-lg font-bold text-text-primary leading-snug group-hover:text-accent transition-colors">
-                          {titleText}
-                        </h3>
-                      </div>
-                    </div>
-
-                    {/* Scheme Info */}
-                    <p className="text-xs text-text-muted mb-4 line-clamp-2">
-                      <span className="font-semibold text-text-secondary">{t('certificates.card.schemeLabel')} </span>
-                      {schemeText}
-                    </p>
-
-                    {/* Metadata Specs Box */}
-                    <div className="grid grid-cols-2 gap-2 p-3 rounded-xl bg-surface-2/60 border border-border/80 text-[11px] mb-4 font-mono">
-                      <div>
-                        <span className="block text-text-muted text-[10px] uppercase font-sans">
-                          {t('certificates.card.validityLabel')}
-                        </span>
-                        <span className="font-semibold text-text-primary">
-                          {cert.issueDate} • {validityText}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="block text-text-muted text-[10px] uppercase font-sans">
-                          {t('certificates.card.regLabel')}
-                        </span>
-                        <span className="font-semibold text-text-primary truncate block" title={cert.credentialId}>
-                          {cert.credentialId}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Skills Chips */}
-                    <div className="flex flex-wrap gap-1.5 mb-5">
-                      {cert.skills.map((skill, sIdx) => (
-                        <span
-                          key={sIdx}
-                          className="px-2 py-0.5 rounded-md bg-surface-2 text-[10px] font-mono text-text-secondary border border-border/60"
-                        >
-                          #{skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Actions Footer */}
-                  <div className="pt-4 border-t border-border flex items-center justify-between gap-2 mt-auto">
-                    <button
-                      onClick={() => setSelectedCert(cert)}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-surface-2 hover:bg-surface border border-border text-text-primary hover:text-accent text-xs font-bold transition-all shadow-sm group/btn"
-                    >
-                      <FiFileText className="w-3.5 h-3.5 group-hover/btn:text-accent transition-colors" />
-                      <span>{t('certificates.actions.viewCert')}</span>
-                    </button>
-
-                    {cert.credentialUrl && (
-                      <a
-                        href={cert.credentialUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 rounded-xl bg-surface-2 hover:bg-surface border border-border text-text-secondary hover:text-text-primary transition-colors"
-                        title={t('certificates.actions.verifyOnline')}
-                      >
-                        <FiExternalLink size={16} />
-                      </a>
-                    )}
-
-                    {cert.file && (
-                      <a
-                        href={cert.file}
-                        download
-                        className="p-2 rounded-xl bg-accent text-background hover:brightness-110 shadow-md shadow-accent/20 transition-all font-bold"
-                        title={t('certificates.actions.download')}
-                      >
-                        <FiDownload size={16} />
-                      </a>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        ) : (
-          /* Empty State */
-          <motion.div
-            className="flex flex-col items-center justify-center text-center p-12 bg-surface border border-border rounded-3xl"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-          >
-            <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-border flex items-center justify-center mb-4">
-              <FiSearch className="w-8 h-8 text-text-muted" />
-            </div>
-            <h3 className="text-lg font-bold text-text-primary mb-2">
-              {t('certificates.emptyTitle')}
-            </h3>
-            <p className="text-xs md:text-sm text-text-secondary max-w-md mb-6">
-              {t('certificates.emptyDesc')}
-            </p>
-            <button
-              onClick={() => {
-                setActiveCategory('all');
-                setSearchQuery('');
-              }}
-              className="px-4 py-2 rounded-xl bg-accent text-background text-xs font-bold hover:brightness-110 transition-all shadow-md shadow-accent/20"
-            >
-              {t('certificates.resetFilter')}
-            </button>
-          </motion.div>
-        )}
-
-        {/* === CERTIFICATE DETAIL / PREVIEW MODAL === */}
-        <AnimatePresence>
-          {selectedCert && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] flex items-center justify-center px-4 pb-4 pt-24 md:px-8 md:pb-8 md:pt-28 bg-background/95"
-            >
-              <div className="absolute inset-0" onClick={() => setSelectedCert(null)} />
-
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                transition={{ duration: 0.3 }}
-                className="relative w-full max-w-4xl bg-surface border border-border rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-2xl flex flex-col h-full max-h-[90vh] pointer-events-auto"
-              >
-                {/* Modal Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-                      {getIssuerIcon(selectedCert.iconType)}
-                    </div>
-                    <div>
-                      <h3 className="text-base md:text-lg font-bold text-text-primary leading-tight">
-                        {selectedCert.title[language] || selectedCert.title.en}
-                      </h3>
-                      <p className="text-xs text-text-secondary font-medium">
-                        {selectedCert.issuer[language] || selectedCert.issuer.en}
-                      </p>
-                    </div>
-                  </div>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {isSearching && (
+                <>
+                  <span className="hidden sm:block text-[10px] font-mono text-text-muted uppercase">
+                    {visible.length} {t('certificates.resultsFound')}
+                  </span>
                   <button
-                    onClick={() => setSelectedCert(null)}
-                    className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-full transition-colors"
-                    title={t('certificates.actions.close')}
+                    onClick={() => setSearchQuery('')}
+                    className="p-1 text-text-muted hover:text-text-primary rounded-full hover:bg-surface-2"
+                    aria-label="Clear search"
                   >
-                    <FiX size={20} />
+                    <FiX size={14} />
                   </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {visible.length === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="py-20 flex flex-col items-center justify-center text-center px-4 glass rounded-3xl border border-dashed border-border"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-border flex items-center justify-center mb-4">
+                  <FiSearch className="w-8 h-8 text-text-muted" />
                 </div>
-
-                {/* Modal Body */}
-                <div className="flex-1 bg-background rounded-xl overflow-hidden border border-border flex flex-col relative">
-                  {selectedCert.file ? (
-                    /* PDF Document Preview */
-                    <Suspense
-                      fallback={
-                        <div className="flex flex-col items-center justify-center w-full h-full gap-3">
-                          <div className="animate-spin w-8 h-8 border-4 border-accent border-t-transparent rounded-full" />
-                          <span className="text-text-muted text-sm animate-pulse">Loading Certificate...</span>
-                        </div>
-                      }
-                    >
-                      <CustomPdfViewer fileUrl={selectedCert.file} />
-                    </Suspense>
-                  ) : (
-                    /* Elegant Slot Prepared / Coming Soon Container */
-                    <div className="w-full h-full overflow-y-auto custom-scrollbar p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        {/* Notice Banner */}
-                        <div className="p-4 md:p-5 rounded-2xl bg-surface border border-accent/30 flex items-start gap-4 mb-6 shadow-sm">
-                          <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-                            <FiClock className="w-5 h-5 text-accent animate-pulse" />
-                          </div>
-                          <div>
-                            <h4 className="text-sm md:text-base font-bold text-text-primary mb-1">
-                              {t('certificates.modal.fileNoticeTitle')}
-                            </h4>
-                            <p className="text-xs md:text-sm text-text-secondary leading-relaxed">
-                              {t('certificates.modal.fileNoticeDesc')}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Full Metadata Overview */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                          <div className="p-4 rounded-xl bg-surface border border-border">
-                            <span className="text-[11px] font-mono text-text-muted uppercase block mb-1">
-                              {t('certificates.modal.issuer')}
-                            </span>
-                            <span className="text-sm font-bold text-text-primary block">
-                              {selectedCert.issuer[language] || selectedCert.issuer.en}
-                            </span>
-                          </div>
-
-                          <div className="p-4 rounded-xl bg-surface border border-border">
-                            <span className="text-[11px] font-mono text-text-muted uppercase block mb-1">
-                              {t('certificates.modal.regNumber')}
-                            </span>
-                            <span className="text-sm font-bold font-mono text-accent block">
-                              {selectedCert.credentialId}
-                            </span>
-                          </div>
-
-                          <div className="p-4 rounded-xl bg-surface border border-border">
-                            <span className="text-[11px] font-mono text-text-muted uppercase block mb-1">
-                              {t('certificates.modal.schemeLabel')}
-                            </span>
-                            <span className="text-xs md:text-sm font-semibold text-text-primary block">
-                              {selectedCert.scheme[language] || selectedCert.scheme.en}
-                            </span>
-                          </div>
-
-                          <div className="p-4 rounded-xl bg-surface border border-border">
-                            <span className="text-[11px] font-mono text-text-muted uppercase block mb-1">
-                              {t('certificates.modal.validity')}
-                            </span>
-                            <span className="text-xs md:text-sm font-semibold text-text-primary block">
-                              {selectedCert.issueDate} • {typeof selectedCert.expiryDate === 'object' ? (selectedCert.expiryDate[language] || selectedCert.expiryDate.en) : selectedCert.expiryDate}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Assessment Description */}
-                        <div className="p-4 rounded-xl bg-surface border border-border mb-6">
-                          <span className="text-[11px] font-mono text-text-muted uppercase block mb-1">
-                            {t('certificates.modal.summaryLabel')}
-                          </span>
-                          <p className="text-xs md:text-sm text-text-secondary leading-relaxed">
-                            {selectedCert.description[language] || selectedCert.description.en}
-                          </p>
-                        </div>
-
-                        {/* Tested Skills */}
-                        <div className="mb-6">
-                          <span className="text-[11px] font-mono text-text-muted uppercase block mb-2">
-                            {t('certificates.modal.skillsAcquired')}
-                          </span>
-                          <div className="flex flex-wrap gap-2">
-                            {selectedCert.skills.map((skill, sIdx) => (
-                              <span
-                                key={sIdx}
-                                className="px-3 py-1 rounded-lg bg-surface border border-border text-xs font-mono text-text-primary flex items-center gap-1.5"
-                              >
-                                <FiCheck className="text-emerald-400 w-3 h-3" />
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Developer Integration Tip */}
-                      <div className="p-3.5 rounded-xl bg-surface-2/80 border border-border/80 flex items-center gap-3 text-[11px] text-text-muted">
-                        <FiInfo className="w-4 h-4 text-accent shrink-0" />
-                        <span>{t('certificates.modal.uploadHint')}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <h3 className="font-display text-xl font-bold text-text-primary mb-2">
+                  {t('certificates.emptyTitle')}
+                </h3>
+                <p className="text-text-secondary max-w-md mx-auto text-sm mb-6">{t('certificates.emptyDesc')}</p>
+                <button
+                  onClick={resetFilters}
+                  className="px-5 py-2.5 rounded-xl bg-accent text-background text-xs font-bold hover:brightness-110 transition-all"
+                >
+                  {t('certificates.resetFilter')}
+                </button>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            ) : activeTab === 'all' ? (
+              <motion.div
+                key={`all-${isSearching}`}
+                className="flex flex-col gap-12 pb-12 w-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {GROUP_ORDER.map((group) => {
+                  const items = visible.filter((c) => c.category === group);
+                  if (items.length === 0 && isSearching) return null;
+                  return (
+                    <div key={group} className="flex flex-col gap-6">
+                      {/* Divider */}
+                      <div className="flex items-center gap-4">
+                        <div className="h-[1px] flex-1 bg-border" />
+                        <span className="text-xs font-bold uppercase tracking-widest text-text-muted text-center">
+                          {t(`certificates.groupTitles.${group}`)}
+                        </span>
+                        <div className="h-[1px] flex-1 bg-border" />
+                      </div>
 
+                      {items.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                          {items.map((cert) => (
+                            <CertificateCard key={cert.id} cert={cert} language={language} onOpen={setSelectedCert} />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="w-full py-12 flex flex-col items-center justify-center border border-dashed border-border rounded-2xl bg-surface-2/30">
+                          <span className="text-sm font-medium text-text-muted tracking-widest uppercase text-center px-4">
+                            {t('certificates.slotEmpty')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`${activeTab}-${isSearching}`}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 w-full pb-12"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {visible.map((cert) => (
+                  <CertificateCard key={cert.id} cert={cert} language={language} onOpen={setSelectedCert} />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {selectedCert && (
+          <CertificateModal cert={selectedCert} language={language} onClose={() => setSelectedCert(null)} />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
