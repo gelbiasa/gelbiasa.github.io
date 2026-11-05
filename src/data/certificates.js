@@ -71,7 +71,7 @@ export const certificatesData = [
     },
     credentialId: 'SKKTI022017 / FR.AK.02',
     credentialUrl: 'https://ujian.lsp.polinema.ac.id/sertifikasi/proses_sertifikasi/3ce6d3c8830d27ec2e6a1936ecbaa514',
-    file: '/file/sertifikat/nasional/LSP Polinema.pdf',
+    file: '/file/sertifikat/nasional/LSP_Polinema.pdf',
     status: 'available',
     badge: 'LSP P1',
     iconType: 'award',
