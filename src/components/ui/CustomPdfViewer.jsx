@@ -4,8 +4,10 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import { FiZoomIn, FiZoomOut, FiDownload, FiMaximize, FiMinimize, FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
 
-// Set PDF.js worker from CDN to avoid build configuration issues in Vite
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Use local worker for guaranteed version match, offline capability, and 0ms loading
+pdfjs.GlobalWorkerOptions.workerSrc = typeof window !== 'undefined'
+  ? `${window.location.origin}/pdf.worker.min.mjs`
+  : `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function CustomPdfViewer({ fileUrl }) {
   const { t } = useLanguage();
@@ -234,7 +236,7 @@ export default function CustomPdfViewer({ fileUrl }) {
       >
         <div className="inline-block text-left min-w-min">
           <Document
-            file={fileUrl}
+            file={encodeURI(fileUrl)}
             onLoadSuccess={onDocumentLoadSuccess}
             loading={
               <div className="flex flex-col items-center justify-center py-24 gap-4">
