@@ -63,135 +63,118 @@ const CertificateCard = memo(function CertificateCard({ cert, language, onOpen }
       onClick={(e) => {
         if (!e.target.closest('a') && !e.target.closest('button')) onOpen(cert);
       }}
-      className="project-card bg-surface rounded-2xl overflow-hidden border border-border hover:-translate-y-1 transition-transform duration-200 cursor-pointer flex flex-col h-full group shadow-lg"
+      className="project-card bg-surface rounded-2xl border border-border hover:-translate-y-1 transition-transform duration-200 cursor-pointer flex flex-col h-full group shadow-lg p-5 md:p-7 relative"
     >
-      {/* Certificate Preview Banner */}
-      <div className="relative overflow-hidden aspect-[16/9] bg-background">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at 20% 15%, rgb(var(--accent-rgb)/0.28) 0%, transparent 55%), radial-gradient(circle at 85% 90%, rgb(var(--accent-rgb)/0.14) 0%, transparent 50%)',
-          }}
-        />
-        {/* Decorative certificate frame */}
-        <div className="absolute inset-4 md:inset-5 rounded-xl border border-dashed border-accent/30" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-surface-2 border border-border flex items-center justify-center shadow-xl group-hover:border-accent/50 group-hover:scale-105 transition-all duration-200">
-            <Icon className="w-8 h-8 md:w-10 md:h-10 text-accent" />
-          </div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold">
-            {isAvailable ? t('certificates.previewReady') : t('certificates.previewSoon')}
-          </span>
-        </div>
-
-        {/* Badge (top-left) */}
-        <span className="absolute top-3 left-3 inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono tracking-wider uppercase bg-background/90 border border-border text-accent">
+      {/* Top Header Row: Badge & Status */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono tracking-wider uppercase bg-surface-2 border border-border text-accent">
           {cert.badge}
         </span>
 
-        {/* Status (top-right) */}
         <span
-          className={`absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border bg-background/90 ${
-            isAvailable ? 'text-emerald-400 border-emerald-500/30' : 'text-accent border-accent/30'
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border ${
+            isAvailable
+              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+              : 'bg-accent/10 text-accent border-accent/20'
           }`}
         >
           <span className={`w-1.5 h-1.5 rounded-full ${isAvailable ? 'bg-emerald-400' : 'bg-accent'}`} />
           {isAvailable ? t('certificates.status.verified') : t('certificates.status.upcoming')}
         </span>
-
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-40 pointer-events-none" />
       </div>
 
-      {/* Content */}
-      <div className="p-5 md:p-7 flex flex-col flex-1 gap-4 relative z-10">
-        {/* Skill chips (drag scroll, like Projects) */}
-        <div className="w-full">
-          <DragScroll className="flex gap-2 items-center px-1 py-1">
-            {cert.skills.map((skill) => (
-              <span
-                key={skill}
-                className="flex-shrink-0 badge bg-surface-2 border-border text-text-primary px-2 py-0.5 text-[10px]"
-              >
-                {skill}
-              </span>
-            ))}
-          </DragScroll>
+      {/* Issuer & Title with Icon */}
+      <div className="flex items-start gap-3.5 mb-3.5">
+        <div className="w-12 h-12 rounded-xl bg-surface-2 border border-border flex items-center justify-center shrink-0 group-hover:border-accent/50 group-hover:scale-105 transition-all duration-200 shadow-sm">
+          <Icon className="w-6 h-6 text-accent" />
         </div>
-
-        {/* Issuer + Title */}
-        <div>
-          <p className="text-accent text-[10px] md:text-xs font-mono tracking-widest uppercase mb-1.5 line-clamp-1">
+        <div className="flex-1 min-w-0">
+          <p className="text-accent text-[10px] md:text-xs font-mono tracking-widest uppercase mb-1 line-clamp-1">
             {pick(cert.issuer, language)}
           </p>
           <h3 className="font-display font-bold text-lg md:text-xl leading-snug text-text-primary group-hover:text-accent transition-colors duration-200 line-clamp-2">
             {pick(cert.title, language)}
           </h3>
         </div>
+      </div>
 
-        {/* Scheme */}
-        <p className="text-sm text-text-secondary leading-relaxed line-clamp-2">
-          {pick(cert.scheme, language)}
-        </p>
+      {/* Scheme Description */}
+      <p className="text-sm text-text-secondary leading-relaxed line-clamp-2 mb-4">
+        {pick(cert.scheme, language)}
+      </p>
 
-        {/* Meta */}
-        <div className="grid grid-cols-2 gap-2 text-[11px]">
-          <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-2 border border-border min-w-0">
-            <FiCalendar className="w-3.5 h-3.5 text-accent shrink-0" />
-            <div className="min-w-0">
-              <span className="block text-[9px] uppercase tracking-wider text-text-muted">
-                {t('certificates.card.validityLabel')}
-              </span>
-              <span className="block font-semibold text-text-primary truncate">
-                {cert.issueDate} · {validity}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-2 border border-border min-w-0">
-            <FiHash className="w-3.5 h-3.5 text-accent shrink-0" />
-            <div className="min-w-0">
-              <span className="block text-[9px] uppercase tracking-wider text-text-muted">
-                {t('certificates.card.regLabel')}
-              </span>
-              <span className="block font-semibold font-mono text-text-primary truncate" title={cert.credentialId}>
-                {cert.credentialId}
-              </span>
-            </div>
+      {/* Metadata Box (Masa Berlaku & No. Reg) */}
+      <div className="grid grid-cols-2 gap-2 text-[11px] mb-4">
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-2 border border-border min-w-0">
+          <FiCalendar className="w-3.5 h-3.5 text-accent shrink-0" />
+          <div className="min-w-0">
+            <span className="block text-[9px] uppercase tracking-wider text-text-muted">
+              {t('certificates.card.validityLabel')}
+            </span>
+            <span className="block font-semibold text-text-primary truncate">
+              {cert.issueDate} · {validity}
+            </span>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="mt-auto pt-5 border-t border-border flex items-center justify-between gap-3">
-          <span className="text-xs font-semibold text-text-secondary group-hover:text-text-primary transition-colors">
-            {t('certificates.actions.viewCert')}
-          </span>
-          <div className="flex items-center gap-2">
-            {cert.credentialUrl && (
-              <a
-                href={cert.credentialUrl}
-                target="_blank"
-                rel="noreferrer"
-                title={t('certificates.actions.verifyOnline')}
-                className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text-secondary hover:text-accent hover:bg-accent/10 transition-colors"
-              >
-                <FiExternalLink className="w-4 h-4" />
-              </a>
-            )}
-            {cert.file && (
-              <a
-                href={cert.file}
-                download
-                title={t('certificates.actions.download')}
-                className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center text-text-secondary hover:text-accent hover:bg-accent/10 transition-colors"
-              >
-                <FiDownload className="w-4 h-4" />
-              </a>
-            )}
-            <div className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-colors duration-200 text-text-secondary group-hover:text-black">
-              <FiArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-200" />
-            </div>
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-surface-2 border border-border min-w-0">
+          <FiHash className="w-3.5 h-3.5 text-accent shrink-0" />
+          <div className="min-w-0">
+            <span className="block text-[9px] uppercase tracking-wider text-text-muted">
+              {t('certificates.card.regLabel')}
+            </span>
+            <span className="block font-semibold font-mono text-text-primary truncate" title={cert.credentialId}>
+              {cert.credentialId}
+            </span>
           </div>
         </div>
+      </div>
+
+      {/* Skill chips */}
+      <div className="w-full mb-6">
+        <DragScroll className="flex gap-2 items-center px-1 py-1">
+          {cert.skills.map((skill) => (
+            <span
+              key={skill}
+              className="flex-shrink-0 badge bg-surface-2 border-border text-text-primary px-2.5 py-0.5 text-[10px]"
+            >
+              #{skill}
+            </span>
+          ))}
+        </DragScroll>
+      </div>
+
+      {/* Action Footer */}
+      <div className="mt-auto pt-4 border-t border-border flex items-center justify-between gap-3">
+        <button
+          onClick={() => onOpen(cert)}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-background font-bold text-xs hover:brightness-110 shadow-md shadow-accent/20 transition-all"
+        >
+          <FiFileText className="w-4 h-4" />
+          <span>{t('certificates.actions.viewCert')}</span>
+        </button>
+
+        {cert.credentialUrl && (
+          <a
+            href={cert.credentialUrl}
+            target="_blank"
+            rel="noreferrer"
+            title={t('certificates.actions.verifyOnline')}
+            className="w-9 h-9 rounded-xl bg-surface-2 border border-border flex items-center justify-center text-text-secondary hover:text-accent hover:bg-accent/10 transition-colors"
+          >
+            <FiExternalLink className="w-4 h-4" />
+          </a>
+        )}
+
+        {cert.file && (
+          <a
+            href={cert.file}
+            download
+            title={t('certificates.actions.download')}
+            className="w-9 h-9 rounded-xl bg-surface-2 border border-border flex items-center justify-center text-text-secondary hover:text-accent hover:bg-accent/10 transition-colors"
+          >
+            <FiDownload className="w-4 h-4" />
+          </a>
+        )}
       </div>
     </div>
   );
