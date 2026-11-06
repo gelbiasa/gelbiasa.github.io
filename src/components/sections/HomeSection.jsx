@@ -37,9 +37,9 @@ const HomeSection = ({ setActiveTab }) => {
         >
           <p className="text-text-secondary text-sm lg:text-base leading-relaxed text-justify w-full mb-4">
             {language === 'en' ? (
-              <>D-IV Business Information Systems student at <span className="text-text-primary font-semibold">Politeknik Negeri Malang</span>. I specialize as a Laravel Expert and Database Engineer, focusing on writing standardized code and designing robust, scalable enterprise architectures.</>
+              <>D-IV Business Information Systems student at <span className="text-text-primary font-semibold">Politeknik Negeri Malang</span>. I specialize in Laravel, JavaScript, RESTful APIs, and Database Engineering, focusing on writing standardized code and designing robust, scalable enterprise architectures.</>
             ) : (
-              <>Mahasiswa D-IV Sistem Informasi Bisnis di <span className="text-text-primary font-semibold">Politeknik Negeri Malang</span>. Saya berfokus sebagai Laravel Expert dan Database Engineer, dengan spesialisasi dalam menulis kode terstandardisasi dan merancang arsitektur sistem tingkat <em className="text-text-primary font-semibold">enterprise</em> yang tangguh dan terukur.</>
+              <>Mahasiswa D-IV Sistem Informasi Bisnis di <span className="text-text-primary font-semibold">Politeknik Negeri Malang</span>. Saya berfokus pada Laravel, JavaScript, RESTful API, dan Database Engineer, dengan spesialisasi dalam menulis kode terstandardisasi dan merancang arsitektur sistem tingkat <em className="text-text-primary font-semibold">enterprise</em> yang tangguh dan terukur.</>
             )}
           </p>
           <button
@@ -108,58 +108,92 @@ const HomeSection = ({ setActiveTab }) => {
           ))}
         </motion.div>
 
-        {/* Action Bar — segmented, no radius */}
+        {/* Action Bar — Responsive: Structured grid on mobile, segmented bar on desktop */}
         <motion.div
-          className="flex flex-wrap items-stretch border border-border bg-surface overflow-hidden mt-8 shadow-2xl"
-          style={{ borderRadius: '4px' }}
+          className="w-full border border-border bg-surface overflow-hidden mt-6 md:mt-8 shadow-2xl rounded-2xl"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.9 }}
         >
-          {/* 1. Preview CV */}
-          <button
-            onClick={() => setActiveTab('cv')}
-            className="flex items-center gap-2.5 px-6 py-3.5 bg-accent hover:bg-accent-light text-text-on-accent font-black text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_rgb(var(--accent-rgb)/0.5)] hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] flex-shrink-0"
-          >
-            <FiEye size={15} /> {t('home.previewCv')}
-          </button>
+          {/* Mobile Layout (< md) */}
+          <div className="flex flex-col md:hidden divide-y divide-border">
+            {/* 1. Primary: Preview CV (Full width) */}
+            <button
+              onClick={() => setActiveTab('cv')}
+              className="flex items-center justify-center gap-2.5 w-full py-3.5 px-4 bg-accent hover:bg-accent-light text-text-on-accent font-bold text-sm tracking-wide transition-all shadow-[0_0_20px_rgb(var(--accent-rgb)/0.4)]"
+            >
+              <FiEye size={16} /> {t('home.previewCv')}
+            </button>
 
-          {/* Divider */}
-          <div className="w-px bg-border flex-shrink-0" />
+            {/* 2. Grid 2 Columns: GitHub & LinkedIn (50% / 50%) */}
+            <div className="grid grid-cols-2 divide-x divide-border">
+              <a
+                href="https://github.com/gelbiasa"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 py-3 px-3 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-xs sm:text-sm font-semibold tracking-wide transition-colors"
+              >
+                <FiGithub size={15} /> {t('home.viewGithub')}
+              </a>
 
-          {/* 2. View GitHub */}
-          <a
-            href="https://github.com/gelbiasa"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0"
-          >
-            <FiGithub size={16} /> {t('home.viewGithub')}
-          </a>
+              <a
+                href="https://www.linkedin.com/in/gelbifirmansyah/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 py-3 px-3 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-xs sm:text-sm font-semibold tracking-wide transition-colors"
+              >
+                <FiLinkedin size={15} /> {t('home.viewLinkedin')}
+              </a>
+            </div>
 
-          {/* Divider */}
-          <div className="w-px bg-border flex-shrink-0" />
+            {/* 3. Explore: View Projects (Full width with arrow) */}
+            <button
+              onClick={() => setActiveTab('projects')}
+              className="flex items-center justify-between w-full py-3 px-4 text-text-secondary hover:text-accent hover:bg-accent/5 text-sm font-semibold tracking-wide transition-colors group"
+            >
+              <span>{t('home.viewProjects')}</span>
+              <FiArrowRight size={15} className="text-accent group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
 
-          {/* 3. View LinkedIn */}
-          <a
-            href="https://www.linkedin.com/in/gelbifirmansyah/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0"
-          >
-            <FiLinkedin size={16} /> {t('home.viewLinkedin')}
-          </a>
+          {/* Desktop Layout (>= md) — Full-width Segmented Bar matching Experience card */}
+          <div className="hidden md:flex items-stretch divide-x divide-border w-full">
+            {/* 1. Preview CV */}
+            <button
+              onClick={() => setActiveTab('cv')}
+              className="flex items-center gap-2.5 px-5 lg:px-6 py-3.5 bg-accent hover:bg-accent-light text-text-on-accent font-bold text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_rgb(var(--accent-rgb)/0.4)] hover:shadow-[0_0_30px_rgb(var(--accent-rgb)/0.5)] flex-shrink-0 whitespace-nowrap"
+            >
+              <FiEye size={15} /> {t('home.previewCv')}
+            </button>
 
-          {/* Divider */}
-          <div className="w-px bg-border flex-shrink-0" />
+            {/* 2. View GitHub */}
+            <a
+              href="https://github.com/gelbiasa"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 lg:px-6 py-3.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0 whitespace-nowrap"
+            >
+              <FiGithub size={16} /> {t('home.viewGithub')}
+            </a>
 
-          {/* 4. View Projects */}
-          <button
-            onClick={() => setActiveTab('projects')}
-            className="flex items-center gap-2 px-6 py-3.5 text-text-secondary hover:text-accent hover:bg-accent/6 text-sm font-semibold tracking-wide transition-all duration-200 group flex-shrink-0"
-          >
-            {t('home.viewProjects')} <FiArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+            {/* 3. View LinkedIn */}
+            <a
+              href="https://www.linkedin.com/in/gelbifirmansyah/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 lg:px-6 py-3.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 text-sm font-semibold tracking-wide transition-all duration-200 flex-shrink-0 whitespace-nowrap"
+            >
+              <FiLinkedin size={16} /> {t('home.viewLinkedin')}
+            </a>
+
+            {/* 4. View Projects — flex-1 stretches to match the Experience card's full width */}
+            <button
+              onClick={() => setActiveTab('projects')}
+              className="flex-1 flex items-center gap-2 px-5 lg:px-6 py-3.5 text-text-secondary hover:text-accent hover:bg-accent/5 text-sm font-semibold tracking-wide transition-all duration-200 group whitespace-nowrap"
+            >
+              {t('home.viewProjects')} <FiArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </motion.div>
 
       </motion.div>
@@ -307,32 +341,53 @@ const HomeSection = ({ setActiveTab }) => {
           </motion.div>
 
           {/* Floating Skill Badges (Optimized without blur) */}
+          {/* Left Badges */}
           <motion.div
-            className="absolute top-1/4 -left-12 lg:-left-24 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-[18%] -left-7 lg:-left-12 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 4.6, repeat: Infinity, ease: 'easeInOut' }}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">Laravel Expert</span>
+            <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">Laravel</span>
           </motion.div>
 
           <motion.div
-            className="absolute top-1/2 -right-14 lg:-right-28 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+            className="absolute top-[29%] -left-10 lg:-left-20 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">JavaScript</span>
+          </motion.div>
+
+          <motion.div
+            className="absolute top-[40%] -left-10 lg:-left-19 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut', delay: 1.0 }}
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">RESTful API</span>
+          </motion.div>
+
+          {/* Right Badges */}
+          <motion.div
+            className="absolute top-[42%] -right-10 lg:-right-20 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
             <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">Database Engineer</span>
           </motion.div>
 
           <motion.div
-            className="absolute bottom-1/4 -right-10 lg:-right-24 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+            className="absolute top-[58%] -right-8 lg:-right-16 bg-surface border border-border rounded-xl px-3 py-1.5 shadow-lg z-20 flex items-center gap-2"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 5.4, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
             <span className="text-text-primary text-[10px] font-bold whitespace-nowrap">Standardized Code</span>
-          </motion.div>          {/* XP badge */}
+          </motion.div>
+          {/* XP badge */}
           <motion.div
             className="absolute -top-3 -right-1 bg-accent text-text-on-accent rounded-xl px-3 py-2 shadow-[0_0_18px_rgb(var(--accent-rgb)/0.5)] z-20"
             animate={{ rotate: [0, 2, 0, -2, 0] }}
