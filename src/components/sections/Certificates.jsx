@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiAward,
   FiShield,
-  FiClock,
   FiFileText,
   FiExternalLink,
   FiDownload,
@@ -17,7 +16,6 @@ import {
   FiInfo,
   FiGrid,
   FiChevronRight,
-  FiArrowRight,
   FiCalendar,
   FiHash,
 } from 'react-icons/fi';
@@ -28,15 +26,8 @@ import { DragScroll } from './Projects';
 // Lazy load CustomPdfViewer for smooth bundle splitting
 const CustomPdfViewer = lazy(() => import('../ui/CustomPdfViewer'));
 
-const CATEGORIES = ['all', 'national', 'course', 'language'];
-const GROUP_ORDER = ['national', 'course', 'language'];
-
-const categoryIcons = {
-  all: FiGrid,
-  national: FiShield,
-  course: FiCode,
-  language: FiGlobe,
-};
+const ALL_GROUPS = ['national', 'general', 'course'];
+const CERT_GROUPS = ['national', 'general'];
 
 const issuerIcons = {
   shield: FiShield,
@@ -250,7 +241,7 @@ function CertificateModal({ cert, language, onClose }) {
               <div>
                 <div className="p-4 md:p-5 rounded-2xl bg-surface border border-accent/30 flex items-start gap-4 mb-6">
                   <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-                    <FiClock className="w-5 h-5 text-accent" />
+                    <FiAward className="w-5 h-5 text-accent" />
                   </div>
                   <div>
                     <h4 className="text-sm md:text-base font-bold text-text-primary mb-1">
@@ -316,12 +307,21 @@ export default function Certificates() {
   const [selectedCert, setSelectedCert] = useState(null);
   const [isTabsExpanded, setIsTabsExpanded] = useState(false);
 
+  // Accurate counts calculation
   const counts = useMemo(() => {
-    const c = { all: certificatesData.length };
-    GROUP_ORDER.forEach((g) => {
-      c[g] = certificatesData.filter((x) => x.category === g).length;
-    });
-    return c;
+    const all = certificatesData.length;
+    const course = certificatesData.filter((x) => x.category === 'course').length;
+    const certNational = certificatesData.filter((x) => x.category === 'national').length;
+    const certGeneral = certificatesData.filter((x) => x.category === 'general').length;
+    const certAll = certNational + certGeneral;
+    return {
+      all,
+      course,
+      'cert-parent': certAll,
+      'cert-all': certAll,
+      'cert-national': certNational,
+      'cert-general': certGeneral,
+    };
   }, []);
 
   const matchesSearch = (cert) => {
@@ -340,14 +340,24 @@ export default function Certificates() {
     return haystack.includes(q);
   };
 
-  const visible = useMemo(
-    () =>
-      certificatesData.filter(
-        (c) => (activeTab === 'all' || c.category === activeTab) && matchesSearch(c)
-      ),
+  const visible = useMemo(() => {
+    return certificatesData.filter((c) => {
+      let matchesTab = false;
+      if (activeTab === 'all') {
+        matchesTab = true;
+      } else if (activeTab === 'course') {
+        matchesTab = c.category === 'course';
+      } else if (activeTab === 'cert-all' || activeTab === 'cert-parent') {
+        matchesTab = c.category === 'national' || c.category === 'general';
+      } else if (activeTab === 'cert-national') {
+        matchesTab = c.category === 'national';
+      } else if (activeTab === 'cert-general') {
+        matchesTab = c.category === 'general';
+      }
+      return matchesTab && matchesSearch(c);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeTab, searchQuery, language]
-  );
+  }, [activeTab, searchQuery, language]);
 
   const resetFilters = () => {
     setActiveTab('all');
@@ -355,6 +365,15 @@ export default function Certificates() {
   };
 
   const isSearching = searchQuery.trim() !== '';
+
+  // Mobile flat tab options
+  const mobileTabs = [
+    { id: 'all', label: t('certificates.tabs.all'), count: counts.all, icon: FiGrid },
+    { id: 'course', label: t('certificates.tabs.course'), count: counts.course, icon: FiCode },
+    { id: 'cert-all', label: `${t('certificates.tabs.certParent')}: ${t('certificates.tabs.certAll')}`, count: counts['cert-all'], icon: FiAward },
+    { id: 'cert-national', label: `${t('certificates.tabs.certParent')}: ${t('certificates.tabs.certNational')}`, count: counts['cert-national'], icon: FiShield },
+    { id: 'cert-general', label: `${t('certificates.tabs.certParent')}: ${t('certificates.tabs.certGeneral')}`, count: counts['cert-general'], icon: FiGlobe },
+  ];
 
   return (
     <section
@@ -385,51 +404,211 @@ export default function Certificates() {
         <aside className="w-fit max-w-full lg:w-64 shrink-0 sticky top-[88px] lg:top-32 z-40 mb-8 lg:mb-0">
           <div className="flex items-stretch gap-2 lg:block w-full">
             <div className="p-1.5 lg:p-0 bg-[var(--glass)] lg:bg-transparent border border-border lg:border-none rounded-2xl lg:rounded-none shadow-xl lg:shadow-none overflow-hidden flex-1 min-w-0">
-              <DragScroll className="flex lg:flex-col items-center lg:items-stretch gap-2">
-                {CATEGORIES.map((cat) => {
-                  const isActive = activeTab === cat;
-                  const Icon = categoryIcons[cat];
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => setActiveTab(cat)}
-                      title={t(`certificates.tabs.${cat}`)}
-                      className={`relative flex items-center gap-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl text-left transition-colors duration-200 whitespace-nowrap lg:whitespace-normal group border ${
-                        isTabsExpanded ? 'px-4 py-2' : 'p-2'
-                      } ${
-                        isActive
-                          ? 'bg-accent/15 border-border shadow-[0_0_20px_rgb(var(--accent-rgb)/0.3)]'
-                          : 'bg-transparent border-transparent hover:bg-white/10'
-                      }`}
-                    >
-                      {isActive && (
-                        <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)] hidden lg:block" />
-                      )}
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+              
+              {/* === MOBILE DRAG SCROLL (Flat list) === */}
+              <div className="lg:hidden">
+                <DragScroll className="flex items-center gap-2">
+                  {mobileTabs.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`relative flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-colors whitespace-nowrap border text-xs font-bold ${
                           isActive
-                            ? 'bg-accent/20 text-accent'
-                            : 'bg-surface-2 text-text-secondary group-hover:text-text-primary'
+                            ? 'bg-accent/15 border-border text-accent shadow-[0_0_15px_rgb(var(--accent-rgb)/0.3)]'
+                            : 'bg-transparent border-transparent text-text-secondary hover:bg-white/10'
                         }`}
                       >
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div className={`${isTabsExpanded ? 'block' : 'hidden lg:block'}`}>
-                        <span
-                          className={`block font-bold tracking-wide transition-colors ${
-                            isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
-                          }`}
-                        >
-                          {t(`certificates.tabs.${cat}`)}
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{tab.label}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-surface-2 text-text-muted">
+                          {tab.count}
                         </span>
-                        <span className="text-[10px] font-bold tracking-widest text-text-muted mt-1 uppercase">
-                          {counts[cat]} {t('certificates.countLabel')}
-                        </span>
+                      </button>
+                    );
+                  })}
+                </DragScroll>
+              </div>
+
+              {/* === DESKTOP HIERARCHICAL TREE SIDEBAR === */}
+              <div className="hidden lg:flex flex-col gap-2">
+                {/* 1. SEMUA */}
+                <button
+                  onClick={() => setActiveTab('all')}
+                  className={`relative flex items-center gap-3 px-6 py-4 rounded-2xl text-left transition-colors duration-200 border ${
+                    activeTab === 'all'
+                      ? 'bg-accent/15 border-border shadow-[0_0_20px_rgb(var(--accent-rgb)/0.3)]'
+                      : 'bg-transparent border-transparent hover:bg-white/10'
+                  }`}
+                >
+                  {activeTab === 'all' && (
+                    <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)]" />
+                  )}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                      activeTab === 'all'
+                        ? 'bg-accent/20 text-accent'
+                        : 'bg-surface-2 text-text-secondary group-hover:text-text-primary'
+                    }`}
+                  >
+                    <FiGrid className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span
+                      className={`block font-bold tracking-wide transition-colors ${
+                        activeTab === 'all' ? 'text-accent' : 'text-text-secondary'
+                      }`}
+                    >
+                      {t('certificates.tabs.all')}
+                    </span>
+                    <span className="text-[10px] font-bold tracking-widest text-text-muted mt-1 uppercase">
+                      {counts.all} {t('certificates.countLabel')}
+                    </span>
+                  </div>
+                </button>
+
+                {/* 2. PELATIHAN */}
+                <button
+                  onClick={() => setActiveTab('course')}
+                  className={`relative flex items-center gap-3 px-6 py-4 rounded-2xl text-left transition-colors duration-200 border ${
+                    activeTab === 'course'
+                      ? 'bg-accent/15 border-border shadow-[0_0_20px_rgb(var(--accent-rgb)/0.3)]'
+                      : 'bg-transparent border-transparent hover:bg-white/10'
+                  }`}
+                >
+                  {activeTab === 'course' && (
+                    <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-accent rounded-r-full shadow-[0_0_10px_rgb(var(--accent-rgb)/0.5)]" />
+                  )}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                      activeTab === 'course'
+                        ? 'bg-accent/20 text-accent'
+                        : 'bg-surface-2 text-text-secondary'
+                    }`}
+                  >
+                    <FiCode className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span
+                      className={`block font-bold tracking-wide transition-colors ${
+                        activeTab === 'course' ? 'text-accent' : 'text-text-secondary'
+                      }`}
+                    >
+                      {t('certificates.tabs.course')}
+                    </span>
+                    <span className="text-[10px] font-bold tracking-widest text-text-muted mt-1 uppercase">
+                      {counts.course} {t('certificates.countLabel')}
+                    </span>
+                  </div>
+                </button>
+
+                {/* 3. SERTIFIKASI (PARENT + HIERARCHICAL BRANCHES) */}
+                <div className="flex flex-col">
+                  {/* Parent Button */}
+                  <button
+                    onClick={() => setActiveTab('cert-all')}
+                    className={`relative flex items-center gap-3 px-6 py-3.5 rounded-2xl text-left transition-colors duration-200 border ${
+                      activeTab.startsWith('cert-')
+                        ? 'bg-surface-2/80 border-border/80'
+                        : 'bg-transparent border-transparent hover:bg-white/10'
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                        activeTab.startsWith('cert-')
+                          ? 'bg-accent/20 text-accent'
+                          : 'bg-surface-2 text-text-secondary'
+                      }`}
+                    >
+                      <FiAward className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span
+                        className={`block font-bold tracking-wide transition-colors ${
+                          activeTab.startsWith('cert-') ? 'text-accent' : 'text-text-secondary'
+                        }`}
+                      >
+                        {t('certificates.tabs.certParent')}
+                      </span>
+                      <span className="text-[10px] font-bold tracking-widest text-text-muted mt-0.5 uppercase">
+                        {counts['cert-parent']} {t('certificates.countLabel')}
+                      </span>
+                    </div>
+                  </button>
+
+                  {/* Hierarchical Sub-items (|__ Semua, |__ Nasional, |__ Umum) */}
+                  <div className="ml-7 pl-3 border-l-2 border-border/70 my-1.5 flex flex-col gap-1">
+                    {/* Sub 1: Semua Sertifikasi */}
+                    <button
+                      onClick={() => setActiveTab('cert-all')}
+                      className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all ${
+                        activeTab === 'cert-all'
+                          ? 'bg-accent/15 text-accent font-bold border border-border shadow-[0_0_15px_rgb(var(--accent-rgb)/0.25)]'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-text-muted font-mono text-xs select-none">└──</span>
+                        <span className="text-xs truncate">{t('certificates.tabs.certAll')}</span>
                       </div>
+                      <span
+                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ml-2 shrink-0 ${
+                          activeTab === 'cert-all' ? 'bg-accent/25 text-accent' : 'bg-surface-2 text-text-muted'
+                        }`}
+                      >
+                        {counts['cert-all']}
+                      </span>
                     </button>
-                  );
-                })}
-              </DragScroll>
+
+                    {/* Sub 2: Nasional */}
+                    <button
+                      onClick={() => setActiveTab('cert-national')}
+                      className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all ${
+                        activeTab === 'cert-national'
+                          ? 'bg-accent/15 text-accent font-bold border border-border shadow-[0_0_15px_rgb(var(--accent-rgb)/0.25)]'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-text-muted font-mono text-xs select-none">└──</span>
+                        <span className="text-xs truncate">{t('certificates.tabs.certNational')}</span>
+                      </div>
+                      <span
+                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ml-2 shrink-0 ${
+                          activeTab === 'cert-national' ? 'bg-accent/25 text-accent' : 'bg-surface-2 text-text-muted'
+                        }`}
+                      >
+                        {counts['cert-national']}
+                      </span>
+                    </button>
+
+                    {/* Sub 3: Umum & Internasional */}
+                    <button
+                      onClick={() => setActiveTab('cert-general')}
+                      className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all ${
+                        activeTab === 'cert-general'
+                          ? 'bg-accent/15 text-accent font-bold border border-border shadow-[0_0_15px_rgb(var(--accent-rgb)/0.25)]'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-text-muted font-mono text-xs select-none">└──</span>
+                        <span className="text-xs truncate">{t('certificates.tabs.certGeneral')}</span>
+                      </div>
+                      <span
+                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ml-2 shrink-0 ${
+                          activeTab === 'cert-general' ? 'bg-accent/25 text-accent' : 'bg-surface-2 text-text-muted'
+                        }`}
+                      >
+                        {counts['cert-general']}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
             </div>
 
             {/* Mobile Toggle Button */}
@@ -498,16 +677,16 @@ export default function Certificates() {
                   {t('certificates.resetFilter')}
                 </button>
               </motion.div>
-            ) : activeTab === 'all' ? (
+            ) : activeTab === 'all' || activeTab === 'cert-all' ? (
               <motion.div
-                key={`all-${isSearching}`}
+                key={`${activeTab}-${isSearching}`}
                 className="flex flex-col gap-12 pb-12 w-full"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                {GROUP_ORDER.map((group) => {
+                {(activeTab === 'all' ? ALL_GROUPS : CERT_GROUPS).map((group) => {
                   const items = visible.filter((c) => c.category === group);
                   if (items.length === 0 && isSearching) return null;
                   return (
