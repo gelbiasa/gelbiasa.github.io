@@ -235,34 +235,42 @@ export default function Skills() {
               {filtered.length > 0 ? (
                 <motion.div
                   key={activeCategory}
-                  className="flex flex-col gap-10 w-full pb-8"
+                  className="w-full pb-8"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  {['main', 'additional'].map((type) => {
-                    const typeSkills = filtered.filter(s => s.type === type);
-                    if (typeSkills.length === 0) return null;
-                    return (
-                      <div key={type} className="flex flex-col gap-6">
-                        {/* Divider */}
-                        <div className="flex items-center gap-4">
-                          <div className="h-[1px] flex-1 bg-border"></div>
-                          <span className="text-xs font-bold uppercase tracking-widest text-text-muted">
-                            {t(`skills.${type}`) || type}
-                          </span>
-                          <div className="h-[1px] flex-1 bg-border"></div>
-                        </div>
+                  {/* Single Unified Grid (Pengelompokan Utama & Tambahan dinonaktifkan) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                    {filtered.map((skill) => (
+                      <SkillCard key={skill.id} skill={skill} />
+                    ))}
+                  </div>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                          {typeSkills.map((skill) => (
-                            <SkillCard key={skill.id} skill={skill} />
-                          ))}
+                  {/*
+                    CATATAN: Pemisahan 'main' dan 'additional' dinonaktifkan sementara sesuai permintaan:
+                    {['main', 'additional'].map((type) => {
+                      const typeSkills = filtered.filter(s => s.type === type);
+                      if (typeSkills.length === 0) return null;
+                      return (
+                        <div key={type} className="flex flex-col gap-6">
+                          <div className="flex items-center gap-4">
+                            <div className="h-[1px] flex-1 bg-border"></div>
+                            <span className="text-xs font-bold uppercase tracking-widest text-text-muted">
+                              {t(`skills.${type}`) || type}
+                            </span>
+                            <div className="h-[1px] flex-1 bg-border"></div>
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                            {typeSkills.map((skill) => (
+                              <SkillCard key={skill.id} skill={skill} />
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  */}
                 </motion.div>
               ) : (
                 <motion.div

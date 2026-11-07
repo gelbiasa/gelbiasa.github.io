@@ -1,11 +1,17 @@
 import {
   FaHtml5, FaCss3Alt, FaJs, FaPhp, FaLaravel, FaFigma, FaReact, FaGithub, FaTools
 } from 'react-icons/fa'
-import { SiMysql, SiFlutter, SiTailwindcss, SiNotion, SiMongodb, SiPostgresql, SiDbeaver } from 'react-icons/si'
+import {
+  SiMysql, SiFlutter, SiTailwindcss, SiNotion, SiMongodb, SiPostgresql, SiDbeaver,
+  SiNodedotjs, SiDiagramsdotnet, SiPostman, SiBootstrap, SiVite, SiGitlab
+} from 'react-icons/si'
+import { VscVscode } from 'react-icons/vsc'
 import { FiCpu, FiCode, FiGrid } from 'react-icons/fi'
 
 export const skills = [
-  // Languages & Stack
+  // =========================================================================
+  // 1. Languages & Stack
+  // =========================================================================
   {
     id: 'laravel',
     name: 'Laravel',
@@ -27,6 +33,14 @@ export const skills = [
     name: 'JavaScript',
     Icon: FaJs,
     color: '#F7DF1E',
+    category: 'language-stack',
+    type: 'main',
+  },
+  {
+    id: 'nodejs',
+    name: 'Node.js',
+    Icon: SiNodedotjs,
+    color: '#5FA04E',
     category: 'language-stack',
     type: 'main',
   },
@@ -79,6 +93,22 @@ export const skills = [
     type: 'main',
   },
   {
+    id: 'bootstrap',
+    name: 'Bootstrap',
+    Icon: SiBootstrap,
+    color: '#7952B3',
+    category: 'language-stack',
+    type: 'main',
+  },
+  {
+    id: 'vite',
+    name: 'Vite',
+    Icon: SiVite,
+    color: '#646CFF',
+    category: 'language-stack',
+    type: 'main',
+  },
+  {
     id: 'react',
     name: 'React.js',
     Icon: FaReact,
@@ -95,7 +125,9 @@ export const skills = [
     type: 'additional',
   },
 
-  // Tools
+  // =========================================================================
+  // 2. Tools & Development Environment
+  // =========================================================================
   {
     id: 'figma',
     name: 'Figma',
@@ -105,30 +137,34 @@ export const skills = [
     type: 'main',
   },
   {
-    id: 'notion',
-    name: 'Notion',
-    Icon: SiNotion,
-    color: '#FFFFFF',
-    colorDark: '#FFFFFF',
-    colorLight: '#1F2328',
+    id: 'mysql-workbench',
+    name: 'MySQL Workbench',
+    Icon: SiMysql,
+    color: '#00758F',
     category: 'tools',
     type: 'main',
   },
   {
-    id: 'github',
-    name: 'GitHub / CI-CD',
-    Icon: FaGithub,
-    color: '#FFFFFF',
-    colorDark: '#FFFFFF',
-    colorLight: '#1F2328',
+    id: 'drawio',
+    name: 'Draw.io',
+    Icon: SiDiagramsdotnet,
+    color: '#F08705',
     category: 'tools',
     type: 'main',
   },
   {
-    id: 'ai-tools',
-    name: 'AI Coding',
-    Icon: FiCpu,
-    color: '#A855F7',
+    id: 'vscode',
+    name: 'VS Code',
+    Icon: VscVscode,
+    color: '#007ACC',
+    category: 'tools',
+    type: 'main',
+  },
+  {
+    id: 'postman',
+    name: 'Postman',
+    Icon: SiPostman,
+    color: '#FF6C37',
     category: 'tools',
     type: 'main',
   },
@@ -147,6 +183,42 @@ export const skills = [
     name: 'MongoDB Compass',
     Icon: SiMongodb,
     color: '#47A248',
+    category: 'tools',
+    type: 'main',
+  },
+  {
+    id: 'github',
+    name: 'GitHub / CI-CD',
+    Icon: FaGithub,
+    color: '#FFFFFF',
+    colorDark: '#FFFFFF',
+    colorLight: '#1F2328',
+    category: 'tools',
+    type: 'main',
+  },
+  {
+    id: 'gitlab',
+    name: 'GitLab',
+    Icon: SiGitlab,
+    color: '#FC6D26',
+    category: 'tools',
+    type: 'main',
+  },
+  {
+    id: 'notion',
+    name: 'Notion',
+    Icon: SiNotion,
+    color: '#FFFFFF',
+    colorDark: '#FFFFFF',
+    colorLight: '#1F2328',
+    category: 'tools',
+    type: 'main',
+  },
+  {
+    id: 'ai-tools',
+    name: 'AI Coding',
+    Icon: FiCpu,
+    color: '#A855F7',
     category: 'tools',
     type: 'main',
   },
