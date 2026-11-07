@@ -415,17 +415,37 @@ export default function Certificates() {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`relative flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-colors whitespace-nowrap border text-xs font-bold ${
+                        className={`relative flex items-center gap-3 rounded-xl text-left transition-colors duration-200 whitespace-nowrap group border ${
+                          isTabsExpanded ? 'px-4 py-2' : 'p-2'
+                        } ${
                           isActive
-                            ? 'bg-accent/15 border-border text-accent shadow-[0_0_15px_rgb(var(--accent-rgb)/0.3)]'
-                            : 'bg-transparent border-transparent text-text-secondary hover:bg-white/10'
+                            ? 'bg-accent/15 border-border shadow-[0_0_20px_rgb(var(--accent-rgb)/0.3)]'
+                            : 'bg-transparent border-transparent hover:bg-white/10'
                         }`}
+                        title={tab.label}
                       >
-                        <Icon className="w-3.5 h-3.5" />
-                        <span>{tab.label}</span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-surface-2 text-text-muted">
-                          {tab.count}
-                        </span>
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                            isActive
+                              ? 'bg-accent/20 text-accent'
+                              : 'bg-surface-2 text-text-secondary group-hover:text-text-primary'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+
+                        <div className={`${isTabsExpanded ? 'block' : 'hidden'}`}>
+                          <span
+                            className={`block font-bold text-xs tracking-wide transition-colors ${
+                              isActive ? 'text-accent' : 'text-text-secondary group-hover:text-text-primary'
+                            }`}
+                          >
+                            {tab.label}
+                          </span>
+                          <span className="text-[10px] font-bold tracking-widest text-text-muted mt-0.5 uppercase block">
+                            {tab.count} {t('certificates.countLabel')}
+                          </span>
+                        </div>
                       </button>
                     );
                   })}
