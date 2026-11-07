@@ -29,7 +29,7 @@ export default function Experience() {
         images: ['/images/Intern/Spunindo/SPUNINDO_1.jpeg']
       },
       points: t('experience.points.spunindo'),
-      tools: ['Laravel', 'MSJ Framework', 'SAP API', 'MySQL', 'VsCode'],
+      tools: ['PHP', 'Laravel', 'MySQL', 'JavaScript', 'HTML5/CSS3', 'Bootstrap', 'jQuery', 'DataTables', 'RESTful API (SAP)', 'Git/GitLab', 'VS Code', 'Figma', 'Draw.io'],
     },
     {
       id: 'upatik',
@@ -47,12 +47,12 @@ export default function Experience() {
         ]
       },
       points: t('experience.points.upatik'),
-      tools: ['VsCode', 'MySQL Workbench', 'Summernote Editor', 'Bootstrap', 'Postman', 'Laravel'],
+      tools: ['PHP', 'Laravel', 'MySQL', 'JavaScript', 'Bootstrap 5', 'Blade', 'HTML5/SCSS', 'jQuery', 'DataTables', 'RESTful API', 'Laravel Modules', 'Vite', 'JWT Auth', 'WhatsApp Gateway (Foonte)', 'SMTP', 'Git', 'Postman', 'VS Code', 'Draw.io'],
     },
   ];
 
   return (
-    <section className="relative pt-28 lg:pt-36 px-6 md:px-12 lg:px-20 xl:px-28 pb-20">
+    <section className="relative pt-28 lg:pt-36 px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 max-w-[1400px] mx-auto pb-20">
       {/* Section header */}
       <motion.div
         className="text-center mb-16"
@@ -73,7 +73,7 @@ export default function Experience() {
       </motion.div>
 
       {/* Timeline */}
-      <div className="relative max-w-4xl mx-auto">
+      <div className="relative w-full max-w-6xl xl:max-w-7xl mx-auto">
         {/* Vertical line */}
         <div className="absolute left-6 md:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-accent/60 via-accent/20 to-transparent" />
 
@@ -119,28 +119,48 @@ export default function Experience() {
                   </div>
                 </div>
 
-                {/* Bullet points */}
-                <ul className="space-y-2.5 mb-5">
+                {/* Bullet points (Tanggung Jawab) */}
+                <ul className="space-y-3 mb-2">
                   {exp.points.map((point, j) => (
-                    <li key={j} className="flex gap-3 text-text-secondary text-sm leading-relaxed">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-slate-600 flex-shrink-0" />
-                      {point}
+                    <li key={j} className="flex gap-3 text-text-secondary text-sm md:text-[14.5px] leading-relaxed">
+                      <span className="mt-2 w-1.5 h-1.5 rounded-full bg-accent/70 flex-shrink-0 shadow-[0_0_6px_rgb(var(--accent-rgb)/0.5)]" />
+                      <span>{point}</span>
                     </li>
                   ))}
                 </ul>
 
+                {/* Sleek Tapered Laser Divider: Tebal di kiri, membentang panjang & menipis hingga memudar halus ke kanan */}
+                <div className="relative my-7 w-full overflow-hidden pointer-events-none select-none">
+                  {/* Glowing aura underlay */}
+                  <div 
+                    className="w-full h-[5px] bg-gradient-to-r from-accent via-accent/50 via-35% via-accent/15 via-70% to-transparent blur-[3px] opacity-75" 
+                    style={{
+                      clipPath: 'polygon(0% 0%, 100% 46%, 100% 54%, 0% 100%)'
+                    }}
+                  />
+                  {/* Core laser beam: 3.5px thick on left tapering to razor-thin on right */}
+                  <div 
+                    className="w-full -mt-[5px] h-[5px] bg-gradient-to-r from-accent via-accent/90 via-20% via-accent/40 via-60% to-transparent" 
+                    style={{
+                      clipPath: 'polygon(0% 10%, 100% 48%, 100% 52%, 0% 90%)'
+                    }}
+                  />
+                  {/* Subtle extended guide line that stretches across the whole card */}
+                  <div className="w-full h-px bg-gradient-to-r from-accent/50 via-border/40 to-transparent -mt-[1px]" />
+                </div>
+
                 {/* Footer (Tools & Certificate) */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   {/* Tools */}
-                  <div className="flex flex-wrap items-center gap-2 flex-1">
-                    <div className="flex items-center gap-1.5 text-slate-500 text-xs mr-1">
-                      <FiTool size={12} />
-                      <span className="font-semibold">{t('experience.tools')}</span>
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 flex-1">
+                    <div className="inline-flex items-center gap-1.5 text-text-secondary text-xs font-semibold mr-1.5 py-1">
+                      <FiTool size={13} className="text-accent" />
+                      <span>{t('experience.tools')}</span>
                     </div>
                     {exp.tools.map((tool) => (
                       <span
                         key={tool}
-                        className="px-2.5 py-1 text-[11px] font-medium bg-accent/8 border border-border text-accent/80 rounded-full"
+                        className="px-2.5 py-1 text-[11px] font-medium bg-surface-2 border border-border/70 text-text-primary rounded-lg hover:border-accent/50 hover:text-accent transition-colors duration-200"
                       >
                         {tool}
                       </span>
@@ -151,10 +171,10 @@ export default function Experience() {
                   {exp.certificate && (
                     <button
                       onClick={() => setSelectedCertId(exp.id)}
-                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-[11px] font-black tracking-wider uppercase text-text-on-accent bg-accent rounded-full hover:bg-accent-light transition-colors duration-200 flex-shrink-0 self-start sm:self-auto shadow-[0_0_15px_var(--accent-glow)]"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-black tracking-wider uppercase text-text-on-accent bg-accent rounded-xl hover:bg-accent-light transition-all duration-300 shadow-[0_0_16px_rgb(var(--accent-rgb)/0.4)] hover:shadow-[0_0_24px_rgb(var(--accent-rgb)/0.6)] flex-shrink-0 w-full sm:w-auto"
                     >
-                      <FiAward size={13} className="mb-[1px]" />
-                      {exp.certificate.label}
+                      <FiAward size={14} />
+                      <span>{exp.certificate.label}</span>
                     </button>
                   )}
                 </div>
