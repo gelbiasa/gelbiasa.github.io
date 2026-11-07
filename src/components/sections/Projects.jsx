@@ -19,7 +19,7 @@ const categoryIcons = {
   Personal: FiUser,
 }
 
-const CATEGORIES = ['All', 'Intern', 'Academic', 'Personal']
+const CATEGORIES = ['All', 'Intern', 'Personal', 'Academic']
 
 // Carousel Component for multiple images
 function ImageCarousel({ images, alt, className = "", imageClassName = "", objectFit = "cover", arrowsOutside = false }) {
@@ -529,8 +529,20 @@ export default function Projects() {
   const [isTabsExpanded, setIsTabsExpanded] = useState(false)
 
   const filteredProjects = useMemo(() => {
-    if (activeTab === 'All') return projects;
-    return projects.filter((p) => p.category === activeTab)
+    const list = activeTab === 'All' ? projects : projects.filter((p) => p.category === activeTab);
+    return [...list].sort((a, b) => {
+      // 1. Project unggulan (featured) otomatis selalu di atas
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+
+      // 2. Prioritas kategori: Intern > Personal > Academic
+      const categoryPriority = { Intern: 0, Personal: 1, Academic: 2 };
+      const prioA = categoryPriority[a.category] ?? 99;
+      const prioB = categoryPriority[b.category] ?? 99;
+      if (prioA !== prioB) return prioA - prioB;
+
+      return 0;
+    });
   }, [activeTab])
 
   return (
@@ -632,8 +644,14 @@ export default function Projects() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                {['Intern', 'Academic', 'Personal'].map((category) => {
-                  const catProjects = projects.filter(p => p.category === category);
+                {['Intern', 'Personal', 'Academic'].map((category) => {
+                  const catProjects = projects
+                    .filter(p => p.category === category)
+                    .sort((a, b) => {
+                      if (a.featured && !b.featured) return -1;
+                      if (!a.featured && b.featured) return 1;
+                      return 0;
+                    });
                   return (
                     <div key={category} className="flex flex-col gap-6">
                       {/* Divider */}
