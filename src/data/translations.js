@@ -44,7 +44,7 @@ export const translations = {
       title2: 'Journey',
       subtitle: 'Hands-on experience building real-world systems in fast-paced industry environments.',
       current: 'Current',
-      tools: 'Tools:',
+      tools: 'Tech Stack & Tools:',
       certLetter: 'Certificate Letter',
       internCert: 'Internship Certificate',
       comingSoon: 'Coming Soon',
@@ -235,12 +235,12 @@ export const translations = {
     },
     projectData: {
       1: {
-        description: 'Engineered a comprehensive manufacturing system with dedicated modules for Jumbo, Slitter, and Meltblown lines. Executed complex database migrations and authored detailed system manual books for production handover.',
-        detail: 'The system handles complex Bill of Materials structures tailored for industrial manufacturing lines. Focus was on accurate material tracking, minimizing waste, and seamless full-stack integration for factory operations.'
+        description: 'An enterprise Bill of Materials (BOM) manufacturing system for Jumbo, Slitter, and Meltblown production lines at PT Multi Spunindo Jaya Tbk, featuring real-time SAP API material validation, automated scrap & quantity calculations, and multi-tier approval workflows.',
+        detail: 'A Bill of Materials (BOM) serves as the definitive production blueprint specifying components, raw materials, and assembly ratios required by manufacturing, engineering, procurement, and QC teams. This Enterprise BOM Management System was engineered to manage integrated BOM structures across the Jumbo, Slitter, and Meltblown lines at PT Multi Spunindo Jaya Tbk. Key capabilities include multi-level version-controlled Master BOM management, real-time SAP API integration to validate material availability and prevent operational discrepancies, and automated calculation engines for precise material quantities, scrap factor adjustments, and production formula simulations. The platform also incorporates multi-tier approval workflows, dynamic analytical reporting with comprehensive filters, and standardized document export to ensure seamless factory operations and minimal material waste.'
       },
       2: {
-        description: 'Developing a web application for PPID Politeknik Negeri Malang using Laravel, PHP, MySQL, and JavaScript. The system includes Public Information, User Access Management, and Activity Log modules, with Summernote Editor integration.',
-        detail: 'The database is designed with MySQL Workbench to ensure data integrity and scalability. Development focuses on efficiency by implementing Laravel Traits for common functions such as soft delete, logging, file management, and response formatting.'
+        description: 'A digital public information service platform for Politeknik Negeri Malang, engineered with modular Laravel architecture, SSO integration, granular RBAC access control, dynamic e-forms, and automated notification workflows.',
+        detail: 'PPID Polinema serves as the official digital gateway for public information disclosure at Politeknik Negeri Malang, enabling students, faculty, and the public to access campus policies, request institutional documents, and track application progress transparently. The system adopts a modular Laravel architecture that cleanly segregates internal administrative operations (Sisfo module) from the public service portal (User module). Key engineering implementations include granular Role-Based Access Control (RBAC), institutional Single Sign-On (SSO) integration for academic credentials, and reusable Laravel Traits for activity logging, soft deletes, and standardized responses. The core business process automates the end-to-end e-form lifecycle: from public inquiry submission and automated data validation to internal disposition delegation and real-time response delivery via SMTP email and WhatsApp Gateway (Foonte).'
       },
       3: {
         description: 'A customer satisfaction survey web application using native technologies. Designed to help businesses efficiently collect, manage, and analyze customer feedback with visual reports.',
@@ -310,7 +310,7 @@ export const translations = {
       title2: 'Profesional',
       subtitle: 'Pengalaman langsung membangun sistem dunia nyata dalam lingkungan industri yang serba cepat.',
       current: 'Sekarang',
-      tools: 'Alat:',
+      tools: 'Tech Stack & Tools:',
       certLetter: 'Surat Keterangan',
       internCert: 'Sertifikat Magang',
       comingSoon: 'Segera Hadir',
@@ -501,12 +501,12 @@ export const translations = {
     },
     projectData: {
       1: {
-        description: 'Merekayasa sistem manufaktur komprehensif dengan modul khusus untuk lini Jumbo, Slitter, dan Meltblown. Melakukan migrasi database kompleks dan menyusun buku panduan sistem secara detail untuk serah terima produksi.',
-        detail: 'Sistem ini menangani struktur Bill of Materials yang kompleks yang disesuaikan untuk lini manufaktur industri. Fokusnya adalah pada pelacakan material yang akurat, meminimalkan pemborosan, dan integrasi full-stack yang mulus untuk operasi pabrik.'
+        description: 'Sistem manajemen Bill of Materials (BOM) manufaktur terintegrasi untuk lini produksi Jumbo, Slitter, dan Meltblown di PT Multi Spunindo Jaya Tbk, dilengkapi validasi material API SAP real-time, kalkulasi kebutuhan bahan otomatis, dan workflow approval produksi.',
+        detail: 'Bill of Materials (BOM) adalah blueprint produksi manufaktur yang memuat daftar lengkap komponen, spesifikasi material, dan rasio bahan baku sebagai acuan utama tim produksi, engineering, procurement, dan QC. Enterprise BOM Management System ini dibangun untuk mengelola arsitektur BOM terintegrasi pada lini produksi Jumbo, Slitter, dan Meltblown di PT Multi Spunindo Jaya Tbk. Sistem ini mencakup pengelolaan Master BOM multi-level berversi, integrasi langsung dengan API SAP untuk memvalidasi ketersediaan kode material secara real-time guna mencegah kesalahan input, serta mesin kalkulasi otomatis untuk kebutuhan bahan, toleransi susut (scrap), dan simulasi formula produksi. Dilengkapi dengan workflow verifikasi dan approval berjenjang antar-departemen, dasbor pelaporan analitik multi-filter, serta ekspor dokumen produksi terstandarisasi untuk menjamin kepatuhan operasional dan efisiensi material di lantai pabrik.'
       },
       2: {
-        description: 'Mengembangkan aplikasi web untuk PPID Politeknik Negeri Malang menggunakan Laravel, PHP, MySQL, dan JavaScript. Sistem ini mencakup modul Informasi Publik, Manajemen Akses Pengguna, dan Catatan Aktivitas, dengan integrasi Summernote Editor.',
-        detail: 'Database dirancang dengan MySQL Workbench untuk memastikan integritas dan skalabilitas data. Pengembangan berfokus pada efisiensi dengan mengimplementasikan Laravel Traits untuk fungsi umum seperti soft delete, logging, manajemen file, dan pemformatan respons.'
+        description: 'Platform layanan informasi publik digital bagi civitas akademika dan masyarakat luas di Politeknik Negeri Malang, dirancang dengan arsitektur modular berbasis Laravel, integrasi SSO, sistem RBAC, e-form permohonan informasi, dan notifikasi otomatis.',
+        detail: 'PPID Polinema adalah platform layanan informasi publik yang menjadi gerbang utama bagi masyarakat, mahasiswa, dan tenaga pendidik dalam mengakses data institusi, mengajukan permohonan informasi, hingga menyampaikan keberatan secara terbuka, cepat, dan akuntabel. Sistem ini dibangun dengan arsitektur modular (Laravel Modules) yang memisahkan panel administrasi internal (modul Sisfo) dengan antarmuka front-end layanan publik (modul User). Dilengkapi dengan sistem Role-Based Access Control (RBAC), integrasi Single Sign-On (SSO) akun akademik Polinema, serta pemanfaatan reusable Laravel Traits untuk audit trail, logging aktivitas, dan penanganan file. Alur bisnis mengotomatiskan siklus pengajuan e-form dari validasi data, delegasi disposisi internal, pencatatan log akuntabilitas, hingga pengiriman respons resmi secara terpadu melalui email dan WhatsApp Gateway (Foonte).'
       },
       3: {
         description: 'Aplikasi web survei kepuasan pelanggan menggunakan teknologi native. Dirancang untuk membantu bisnis mengumpulkan, mengelola, dan menganalisis umpan balik pelanggan secara efisien dengan laporan visual.',
