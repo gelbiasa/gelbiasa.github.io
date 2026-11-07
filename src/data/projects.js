@@ -5,11 +5,16 @@ export const projects = [
     subtitle: 'PT Multi Spunindo Jaya Tbk. - Full-Stack Developer',
     category: 'Intern',
     description:
-      'Engineered a comprehensive manufacturing system with dedicated modules for Jumbo, Slitter, and Meltblown lines. Executed complex database migrations and authored detailed system manual books for production handover.',
+      'An enterprise Bill of Materials (BOM) manufacturing system for Jumbo, Slitter, and Meltblown production lines at PT Multi Spunindo Jaya Tbk, featuring real-time SAP API material validation, automated scrap & quantity calculations, and multi-tier approval workflows.',
     detail:
-      'The system handles complex Bill of Materials structures tailored for industrial manufacturing lines. Focus was on accurate material tracking, minimizing waste, and seamless full-stack integration for factory operations.',
-    image: ['/images/Intern/Spunindo/Project/page 1.png'],
-    tags: ['Laravel', 'MySQL', 'Full-Stack'],
+      'A Bill of Materials (BOM) serves as the definitive production blueprint specifying components, raw materials, and assembly ratios required by manufacturing, engineering, procurement, and QC teams. This Enterprise BOM Management System was engineered to manage integrated BOM structures across the Jumbo, Slitter, and Meltblown lines at PT Multi Spunindo Jaya Tbk. Key capabilities include multi-level version-controlled Master BOM management, real-time SAP API integration to validate material availability and prevent operational discrepancies, and automated calculation engines for precise material quantities, scrap factor adjustments, and production formula simulations. The platform also incorporates multi-tier approval workflows, dynamic analytical reporting with comprehensive filters, and standardized document export to ensure seamless factory operations and minimal material waste.',
+    image: [
+      '/images/Intern/Spunindo/Project/page 1.png',
+      '/images/Intern/Spunindo/Project/page 2.png',
+      '/images/Intern/Spunindo/Project/page 3.png',
+      '/images/Intern/Spunindo/Project/page 4.png'
+    ],
+    tags: ['PHP', 'Laravel', 'MySQL', 'JavaScript', 'HTML5/CSS3', 'Bootstrap', 'jQuery', 'DataTables', 'RESTful API (SAP)', 'Git/GitLab', 'VS Code', 'Figma', 'Draw.io'],
     links: [],
     featured: true,
   },
@@ -19,14 +24,19 @@ export const projects = [
     subtitle: 'UPA TIK Politeknik Negeri Malang - Backend Developer',
     category: 'Intern',
     description:
-      'Developing a web application for PPID Politeknik Negeri Malang using Laravel, PHP, MySQL, and JavaScript. The system includes Public Information, User Access Management, and Activity Log modules, with Summernote Editor integration.',
+      'A digital public information service platform for Politeknik Negeri Malang, engineered with modular Laravel architecture, SSO integration, granular RBAC access control, dynamic e-forms, and automated notification workflows.',
     detail:
-      'The database is designed with MySQL Workbench to ensure data integrity and scalability. Development focuses on efficiency by implementing Laravel Traits for common functions such as soft delete, logging, file management, and response formatting.',
+      'PPID Polinema serves as the official digital gateway for public information disclosure at Politeknik Negeri Malang, enabling students, faculty, and the public to access campus policies, request institutional documents, and track application progress transparently. The system adopts a modular Laravel architecture that cleanly segregates internal administrative operations (Sisfo module) from the public service portal (User module). Key engineering implementations include granular Role-Based Access Control (RBAC), institutional Single Sign-On (SSO) integration for academic credentials, and reusable Laravel Traits for activity logging, soft deletes, and standardized responses. The core business process automates the end-to-end e-form lifecycle: from public inquiry submission and automated data validation to internal disposition delegation and real-time response delivery via SMTP email and WhatsApp Gateway (Foonte).',
     image: [
       '/images/Intern/UPA_TIK/project/page 1.png',
-      '/images/Intern/UPA_TIK/project/page 2.png'
+      '/images/Intern/UPA_TIK/project/page 2.png',
+      '/images/Intern/UPA_TIK/project/page 3.png',
+      '/images/Intern/UPA_TIK/project/page 4.png',
+      '/images/Intern/UPA_TIK/project/page 5.png',
+      '/images/Intern/UPA_TIK/project/page 6.png',
+      '/images/Intern/UPA_TIK/project/page 7.png'
     ],
-    tags: ['Laravel', 'PHP', 'MySQL', 'JavaScript', 'Bootstrap', 'Laravel Modules'],
+    tags: ['PHP', 'Laravel', 'MySQL', 'JavaScript', 'Bootstrap 5', 'Blade', 'HTML5/SCSS', 'jQuery', 'DataTables', 'RESTful API', 'Laravel Modules', 'Vite', 'JWT Auth', 'WhatsApp Gateway (Foonte)', 'SMTP', 'Git', 'Postman', 'VS Code', 'Draw.io'],
     links: [],
     featured: true,
   },
@@ -73,11 +83,10 @@ export const projects = [
     detail:
       'Designed to assist in managing compensations for students with "alpha" attendance records. Provides mechanisms for assigning and completing substitute tasks with a responsive, accessible interface.',
     image: '/images/Web_Kompensasi.png',
-    tags: ['Laravel', 'MySQL', 'PHP', 'Figma'],
+    tags: ['Laravel', 'PHP', 'MySQL', 'JavaScript', 'jQuery', 'Bootstrap', 'Figma'],
     links: [
       { label: 'GitHub', url: 'https://github.com/gelbiasa/Website-E-Kompen', icon: 'github' },
       { label: 'UI/UX', url: 'https://www.figma.com/design/orqBJKFvyQ3Md3CNhgzZ4i/prototype-pbl', icon: 'figma' },
-      { label: 'Live Demo', url: 'http://160.19.167.28/register', icon: 'external' },
     ],
     featured: true,
   },
@@ -95,7 +104,6 @@ export const projects = [
     links: [
       { label: 'GitHub', url: 'https://github.com/gelbiasa/Mobile-E-Kompen', icon: 'github' },
       { label: 'UI/UX', url: 'https://www.figma.com/design/orqBJKFvyQ3Md3CNhgzZ4i/prototype-pbl', icon: 'figma' },
-      { label: 'Download', url: 'https://drive.google.com/file/d/1u59yXPYGMYtfrf2ig7RStmj2B_pckIz1/view', icon: 'download' },
     ],
     featured: false,
   },
