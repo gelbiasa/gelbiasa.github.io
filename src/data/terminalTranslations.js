@@ -24,7 +24,7 @@ export const terminalTranslations = {
       '└──────────────────────────────────────────────────────────────',
       'Summary: Specializes in building standardized enterprise web & mobile applications, designing scalable Physical Database Models (PDM), and integrating complex APIs (SAP API, REST, GraphQL) using Laravel, PHP, JavaScript, Flutter, and MySQL.'
     ],
-    skillsMsg: 'Laravel, PHP, React, Next.js, TypeScript, Tailwind CSS, MySQL, MySQL Workbench, PostgreSQL, MongoDB, Flutter, SAP API, Git.',
+    skillsMsg: 'Laravel, PHP, React, Next.js, Express.js, TypeScript, Tailwind CSS, MySQL, PostgreSQL, MongoDB, Docker, Flutter, SAP API, Git.',
     projectsLines: [
       '┌─ FEATURED PROJECTS ──────────────────────────────────────────',
       '│ 1. Enterprise BOM Management System (Industrial Manufacturing)',
@@ -153,7 +153,7 @@ export const terminalTranslations = {
       '└──────────────────────────────────────────────────────────────',
       'Ringkasan: Berfokus pada pengembangan aplikasi web & mobile terstandardisasi tingkat enterprise, perancangan arsitektur & Physical Database Model (PDM) yang tangguh, serta integrasi API (SAP API, REST, GraphQL) menggunakan Laravel, PHP, JavaScript, Flutter, dan MySQL.'
     ],
-    skillsMsg: 'Laravel, PHP, React, Next.js, TypeScript, Tailwind CSS, MySQL, MySQL Workbench, PostgreSQL, MongoDB, Flutter, SAP API, Git.',
+    skillsMsg: 'Laravel, PHP, React, Next.js, Express.js, TypeScript, Tailwind CSS, MySQL, PostgreSQL, MongoDB, Docker, Flutter, SAP API, Git.',
     projectsLines: [
       '┌─ DAFTAR PROYEK UNGGULAN ─────────────────────────────────────',
       '│ 1. Enterprise BOM Management System (Sistem Manufaktur Industri)',
