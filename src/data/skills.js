@@ -3,7 +3,7 @@ import {
 } from 'react-icons/fa'
 import {
   SiMysql, SiFlutter, SiTailwindcss, SiNotion, SiMongodb, SiPostgresql, SiDbeaver,
-  SiNodedotjs, SiDiagramsdotnet, SiPostman, SiBootstrap, SiVite, SiGitlab
+  SiNodedotjs, SiDiagramsdotnet, SiPostman, SiBootstrap, SiVite, SiGitlab, SiExpress, SiDocker
 } from 'react-icons/si'
 import { VscVscode } from 'react-icons/vsc'
 import { FiCpu, FiCode, FiGrid } from 'react-icons/fi'
@@ -41,6 +41,16 @@ export const skills = [
     name: 'Node.js',
     Icon: SiNodedotjs,
     color: '#5FA04E',
+    category: 'language-stack',
+    type: 'main',
+  },
+  {
+    id: 'express',
+    name: 'Express.js',
+    Icon: SiExpress,
+    color: '#FFFFFF',
+    colorDark: '#FFFFFF',
+    colorLight: '#000000',
     category: 'language-stack',
     type: 'main',
   },
@@ -219,6 +229,14 @@ export const skills = [
     name: 'AI Coding',
     Icon: FiCpu,
     color: '#A855F7',
+    category: 'tools',
+    type: 'main',
+  },
+  {
+    id: 'docker',
+    name: 'Docker',
+    Icon: SiDocker,
+    color: '#2496ED',
     category: 'tools',
     type: 'main',
   },
